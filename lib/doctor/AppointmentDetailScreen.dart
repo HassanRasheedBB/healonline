@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../constants.dart';
+import 'DoctorNotesScreen.dart';
 
 class AppointmentDetail extends StatefulWidget {
   AppointmentDetail({Key key}) : super(key: key);
@@ -20,9 +21,12 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
         backgroundColor: Constants.hexToColor(Constants.whiteColor),
         leading: Padding(
           padding: EdgeInsets.all(19),
-          child: SvgPicture.asset(
-            "assets/images/menu.svg",
-          ),
+          child: InkWell(
+            onTap: (){
+              Navigator.of(context).pop();
+            },
+            child: Icon(Icons.arrow_back_ios, color: Constants.hexToColor(Constants.blackColor)),
+          )
         ),
         title: Text("Appointment Details",
             style: TextStyle(
@@ -318,22 +322,32 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     height: 52,
                     width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            "Doctor Notes",
-                            style: TextStyle(
-                              fontFamily: "ProductSans",
-                              fontSize: 16,
-                              color: Constants.hexToColor(
-                                Constants.primaryDarkColor,
+                    child: InkWell(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DoctorNotesScreen(),
+                          ),
+                        );
+                      },
+                      child:  Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "Doctor Notes",
+                              style: TextStyle(
+                                fontFamily: "ProductSans",
+                                fontSize: 16,
+                                color: Constants.hexToColor(
+                                  Constants.primaryDarkColor,
+                                ),
                               ),
                             ),
                           ),

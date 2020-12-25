@@ -4,6 +4,7 @@ import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart
 import 'package:flutter/material.dart';
 import 'package:healonline/SignUpScreen/SignupScreen.dart';
 import 'package:healonline/doctor/HomePage.dart';
+import 'package:healonline/patient/HomePagePatient.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 import '../constants.dart';
@@ -23,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _passwordController = TextEditingController();
 
   bool _isShowPwd = false;
+  String selectedUserAs;
 
   @override
   void dispose() {
@@ -87,6 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                           TextStyle(fontSize: 16, fontFamily: "ProductSans")),
                   radioButtonValue: (value) {
                     print(value);
+                    selectedUserAs = value;
                   },
                   selectedColor:
                       Constants.hexToColor(Constants.primaryDarkColor),
@@ -161,12 +164,22 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: FlatButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                      );
+                      if(selectedUserAs == "PATIENT"){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePagePatient(),
+                          ),
+                        );
+                      }else{
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(),
+                          ),
+                        );
+                      }
+
                     },
                     child: Center(
                       child: Text('LOGIN',

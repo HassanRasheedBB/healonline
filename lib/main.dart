@@ -3,6 +3,23 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:healonline/constants.dart';
+import 'package:healonline/patient/AddAddressScreen.dart';
+import 'package:healonline/patient/AddedPharmaciesScreen.dart';
+import 'package:healonline/patient/Appointments.dart';
+import 'package:healonline/patient/ContactUsScreen.dart';
+import 'package:healonline/patient/CovidScreen.dart';
+import 'package:healonline/patient/DoctorsFoundScreen.dart';
+import 'package:healonline/patient/EditProfileScreen.dart';
+import 'package:healonline/patient/FAQScreen.dart';
+import 'package:healonline/patient/PasswordChangeScreen.dart';
+import 'package:healonline/patient/PatientNotifications.dart';
+import 'package:healonline/patient/PatientProfile.dart';
+import 'package:healonline/patient/PhysicianInformtion.dart';
+import 'package:healonline/patient/ReferApp.dart';
+import 'package:healonline/patient/RemainingQuestionsScreen.dart';
+import 'package:healonline/patient/SaveCardScreen.dart';
+import 'package:healonline/patient/SchedualAppointmentScreen.dart';
+import 'package:healonline/patient/SettingsScreen.dart';
 import 'dart:async';
 import 'LoginScreen/login_screen.dart';
 import 'doctor/AllPatientsListScreen.dart';
@@ -74,58 +91,59 @@ class FadeIn extends State<SplashScreen> with TickerProviderStateMixin {
     );
     return Scaffold(
         body: Stack(
-      children: [
-        Align(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ScaleTransition(scale: _animation, child: image),
-              AnimatedOpacity(
-                opacity: _visible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 500),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      "HealOnline",
-                      style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "ProductSans"),
-                    ),
-                    SizedBox(height: 8,),
-                    Text(
-                      "Health is Wealth",
-                      style: TextStyle(
-                          fontSize: 14,
+          children: [
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ScaleTransition(scale: _animation, child: image),
+                  AnimatedOpacity(
+                    opacity: _visible ? 1.0 : 0.0,
+                    duration: Duration(milliseconds: 500),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          "HealOnline",
+                          style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "ProductSans"),
+                        ),
+                        SizedBox(height: 8,),
+                        Text(
+                          "Health is Wealth",
+                          style: TextStyle(
+                              fontSize: 14,
 //                          fontWeight: FontWeight.bold,
-                          fontFamily: "ProductSans"),
+                              fontFamily: "ProductSans"),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-                padding:
-                    EdgeInsets.only(bottom: 24.0, top: 0, left: 0, right: 0),
-                child: Opacity(
-                  opacity: isLoading ? 1.0 : 00,
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Constants.hexToColor(Constants.primaryDarkColor)),
                   ),
-                )))
-      ],
-    ));
+                ],
+              ),
+            ),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                    padding:
+                    EdgeInsets.only(bottom: 24.0, top: 0, left: 0, right: 0),
+                    child: Opacity(
+                      opacity: isLoading ? 1.0 : 00,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Constants.hexToColor(Constants.primaryDarkColor)),
+                      ),
+                    )))
+          ],
+        )
+    );
   }
 
   void goToSignUpSignInPage() {
