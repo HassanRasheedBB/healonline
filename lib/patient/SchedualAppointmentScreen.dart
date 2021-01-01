@@ -1,7 +1,10 @@
+
+import 'package:firebase_database/firebase_database.dart' as firebase_database;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../constants.dart';
 
 class SchedualAppointmentScreen extends StatefulWidget {
@@ -14,6 +17,10 @@ class SchedualAppointmentScreen extends StatefulWidget {
 
 class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   final double circleRadius = 70.0;
+  final RoundedLoadingButtonController _btnController =
+  new RoundedLoadingButtonController();
+  List<TimeObject> timeObjectList = List();
+
   var time = [
     "09:00 AM",
     "09:10 AM",
@@ -47,6 +54,18 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     "04:40 PM",
     "04:50 PM"
   ];
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    for(int i=0; i<time.length; i++){
+      timeObjectList.add(TimeObject(time[i], false));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +124,7 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   ),
                 ),
               ),
-              title: Text("Dr. David Jones",
+              title: Text(Constants.appointment.docName,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                     fontSize: 18,
@@ -114,7 +133,7 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                       Constants.primaryDarkColor,
                     ),
                   )),
-              subtitle: Text("Therapist",
+              subtitle: Text(Constants.appointment.docSkills,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                     color: Constants.hexToColor(
@@ -148,26 +167,48 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   crossAxisCount: 4,
                   childAspectRatio: 1.8,
                   // Generate 100 widgets that display their index in the List.
-                  children: List.generate(time.length, (index) {
+                  children: List.generate(timeObjectList.length, (index) {
                     return Container(
                       height: 40,
-                      child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          side: new BorderSide(color: Colors.blue, width: 1.0),
-                          borderRadius: BorderRadius.circular(6.0),
-                        ),
-                        child: Container(
-                          height: 40,
-                          width: 110,
-                          child: Center(
-                            child: Text(time[index],
-                                style: TextStyle(
-                                    color: Constants.hexToColor(
-                                      Constants.blackColor,
-                                    ),
-                                    fontSize: 14,
-                                    fontFamily: "ProductSans")),
+                      child: InkWell(
+                        onTap:() {
+                          setState(() {
+                            for(int i=0; i<timeObjectList.length; i++){
+                              if(i == index){
+                                timeObjectList[i].isSelected = true;
+                                Constants.appointment.appointmentTime = timeObjectList[i].time;
+                              }else{
+                                timeObjectList[i].isSelected = false;
+                              }
+                            }
+                          });
+                        },
+                        child: Card(
+                          elevation: 2,
+//                        shape: RoundedRectangleBorder(
+//                          side: new BorderSide(color: Colors.grey, width: 1.0),
+//                          borderRadius: BorderRadius.circular(6.0),
+//                        ),
+                          shape: timeObjectList[index].isSelected
+                              ? new RoundedRectangleBorder(
+                              side: new BorderSide(color: Constants.hexToColor(Constants.primaryDarkColor), width: 3.0),
+                              borderRadius: BorderRadius.circular(6.0))
+                              : new RoundedRectangleBorder(
+                              side: new BorderSide(color: Colors.grey, width: 1.0),
+                              borderRadius: BorderRadius.circular(6.0)),
+
+                          child: Container(
+                            height: 40,
+                            width: 110,
+                            child: Center(
+                              child: Text(time[index],
+                                  style: TextStyle(
+                                      color: Constants.hexToColor(
+                                        Constants.blackColor,
+                                      ),
+                                      fontSize: 14,
+                                      fontFamily: "ProductSans")),
+                            ),
                           ),
                         ),
                       ),
@@ -175,33 +216,33 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   }),
                 )),
             SizedBox(height: 24),
-
-
-            Container(
-              height: 50,
-              margin: EdgeInsets.only(right: 16, left: 16, bottom: 16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Constants.hexToColor(Constants.primaryDarkColor),
-              ),
-              child: FlatButton(
-                onPressed: () {
-
-                },
-                child: Center(
-                  child: Text('CONFIRM APPOINTMENT',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontFamily: "ProductSans")),
-                ),
-              ),
-            ),
-
           ],
         ),
       ),
       backgroundColor: Colors.white,
+
+      bottomNavigationBar: Container(
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 8, top : 8),
+          child: RoundedLoadingButton(
+
+            width: MediaQuery.of(context).size.width - 32,
+            animateOnTap: true,
+            color: Constants.hexToColor(Constants.primaryDarkColor),
+            elevation: 4,
+            borderRadius: 10,
+            child: Text('CONFIRM APPOINTMENT',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "ProductSans")),
+            controller: _btnController,
+            onPressed: () {
+              schedualAppointment();
+            },
+          ),
+        ),
+      ),
     );
   }
 
@@ -245,7 +286,11 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
           ),
         ),
         onDayPressed: (DateTime date, List<Event> events) {
-          this.setState(() => _currentDate = date);
+          this.setState(() {
+            _currentDate = date;
+            Constants.appointment.appointmentDate = _currentDate.toString();
+            print(date);
+          });
         },
         weekendTextStyle: TextStyle(
           fontFamily: "ProductSans",
@@ -253,9 +298,8 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
             Constants.blackColor,
           ),
         ),
-        thisMonthDayBorderColor: Constants.hexToColor(
-          Constants.primaryDarkColor,
-        ),
+        thisMonthDayBorderColor: Colors.grey,
+
         selectedDayBorderColor: Constants.hexToColor(
           Constants.primaryDarkColor,
         ),
@@ -270,6 +314,104 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
       ),
     );
   }
+
+  void schedualAppointment() {
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text("Confirm Appointment",
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          content: Text("Appointment will schedule at "+Constants.appointment.appointmentDate.split(" ").first+
+              " "+Constants.appointment.appointmentTime,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("OK",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+
+                final mainReference = firebase_database.FirebaseDatabase.instance.reference();
+                mainReference
+                .child("appointments")
+                .child("09007860101")
+                .set(Constants.appointment.toJson())
+                    .then((value) {
+                  showOtherAlertDialog("Success", 'Appointment Confirmed !', context);
+                  _btnController.success();
+
+
+                }, onError: (error) {
+                  print(error + "--------------");
+                }).catchError((error) {
+                  _btnController.reset();
+                  showOtherAlertDialog("Server Error",
+                      'Some information went wrong. Please try again', context);
+                });
+              },
+            ),
+
+            CupertinoDialogAction(
+              child: Text("Cancel",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                _btnController.reset();
+                Navigator.of(context).pop();
+              },
+            ),
+
+          ],
+        ));
+
+  }
+
+
+
+  void showOtherAlertDialog(String title, String msg, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text(title,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          content: Text(msg,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("OK",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                _btnController.reset();
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ));
+
+    ;
+  }
+
+
+}
+
+
+class TimeObject{
+  String time; bool isSelected;
+  TimeObject(this.time, this.isSelected);
 }
 
 /*

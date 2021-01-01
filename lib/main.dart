@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:healonline/constants.dart';
@@ -27,10 +28,16 @@ import 'doctor/AllPatientsListScreen.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: Constants.ThemePrimaryDarkColor,
+      ),
       home: SplashScreen(),
       routes: <String, WidgetBuilder>{
         'main': (context) => new MyApp(),
@@ -52,6 +59,7 @@ class FadeIn extends State<SplashScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    Firebase.initializeApp();
 
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
@@ -86,8 +94,8 @@ class FadeIn extends State<SplashScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     Widget image = Image.asset(
-      "assets/images/kiwi.png",
-      width: 180,
+      "assets/images/logo.png",
+      width: 300,
     );
     return Scaffold(
         body: Stack(
@@ -106,24 +114,24 @@ class FadeIn extends State<SplashScreen> with TickerProviderStateMixin {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          "HealOnline",
-                          style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: "ProductSans"),
-                        ),
-                        SizedBox(height: 8,),
-                        Text(
-                          "Health is Wealth",
-                          style: TextStyle(
-                              fontSize: 14,
-//                          fontWeight: FontWeight.bold,
-                              fontFamily: "ProductSans"),
-                        ),
+//                        SizedBox(
+//                          height: 8,
+//                        ),
+//                        Text(
+//                          "HealOnline",
+//                          style: TextStyle(
+//                              fontSize: 26,
+//                              fontWeight: FontWeight.bold,
+//                              fontFamily: "ProductSans"),
+//                        ),
+//                        SizedBox(height: 8,),
+//                        Text(
+//                          "Health is Wealth",
+//                          style: TextStyle(
+//                              fontSize: 14,
+////                          fontWeight: FontWeight.bold,
+//                              fontFamily: "ProductSans"),
+//                        ),
                       ],
                     ),
                   ),

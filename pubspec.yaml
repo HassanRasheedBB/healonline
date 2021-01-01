@@ -34,6 +34,14 @@ dependencies:
   modal_bottom_sheet: ^1.0.0+1
   flutter_datetime_picker: ^1.4.0
   flutter_calendar_carousel: ^1.5.2
+  firebase_core: ^0.5.3
+  firebase_analytics: ^5.0.2
+  firebase_auth: ^0.18.4+1
+  language_pickers: ^0.2.0+1
+  rounded_loading_button: ^1.0.0
+  firebase_database: ^4.4.0
+  file_picker: ^1.10.0
+  firebase_storage: ^5.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

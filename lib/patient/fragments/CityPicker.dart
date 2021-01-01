@@ -47,7 +47,6 @@ class _HomePageState extends State<CityPicker> {
   ];
 
 
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -102,6 +101,7 @@ class _HomePageState extends State<CityPicker> {
                     ),
                     onChanged: (val) {
                       print("Radio $val");
+                      Constants.appointment.province = cities[val-1];
                       setSelectedRadio(val);
                     },
                   ),

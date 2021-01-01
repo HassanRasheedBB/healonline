@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
               ),
 

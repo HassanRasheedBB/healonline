@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomCheckBoxGroup.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:healonline/SignUpScreen/SignupScreen.dart';
 import 'package:healonline/doctor/HomePage.dart';
 import 'package:healonline/patient/HomePagePatient.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import '../constants.dart';
 
@@ -22,9 +28,11 @@ class _LoginPageState extends State<LoginPage> {
 
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  final RoundedLoadingButtonController _btnController =
+      new RoundedLoadingButtonController();
 
   bool _isShowPwd = false;
-  String selectedUserAs;
+  String selectedUserAs = "PATIENT";
 
   @override
   void dispose() {
@@ -45,12 +53,9 @@ class _LoginPageState extends State<LoginPage> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage("assets/images/kiwi.png"),
-                ),
-                SizedBox(
-                  height: 50,
+                Image(
+                  image: AssetImage("assets/images/logo.png"),
+                  width: 180,
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
@@ -66,6 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 24,
                 ),
                 CustomRadioButton(
+                  defaultSelected: "PATIENT",
                   spacing: 2,
                   elevation: 6,
                   height: 40,
@@ -149,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                     "Forgot Password ?",
                     style: TextStyle(
                       fontFamily: "ProductSans",
-                      color: Constants.hexToColor(Constants.primaryDarkColor),
+                      color: Constants.hexToColor(Constants.primaryColor),
                     ),
                   ),
                 ),
@@ -157,37 +163,21 @@ class _LoginPageState extends State<LoginPage> {
                   height: 40,
                 ),
                 Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  child: RoundedLoadingButton(
+                    width: MediaQuery.of(context).size.width - 32,
+                    animateOnTap: true,
                     color: Constants.hexToColor(Constants.primaryDarkColor),
-                  ),
-                  child: FlatButton(
+                    elevation: 8,
+                    borderRadius: 10,
+                    child: Text('LOGIN',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: "ProductSans")),
+                    controller: _btnController,
                     onPressed: () {
-                      if(selectedUserAs == "PATIENT"){
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomePagePatient(),
-                          ),
-                        );
-                      }else{
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomeScreen(),
-                          ),
-                        );
-                      }
-
+                      loginUser();
                     },
-                    child: Center(
-                      child: Text('LOGIN',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: "ProductSans")),
-                    ),
                   ),
                 ),
                 SizedBox(
@@ -216,8 +206,8 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                               fontSize: 14,
                               fontFamily: "ProductSans",
-                              color: Constants.hexToColor(
-                                  Constants.primaryDarkColor)),
+                              color:
+                                  Constants.hexToColor(Constants.primaryColor)),
                         ),
                       )
                     ],
@@ -230,4 +220,137 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+  Future<void> loginUser() async {
+    if (_formKey.currentState.validate()) {
+      try {
+        await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: _usernameController.text.toString(),
+                password: _passwordController.text.toString())
+            .then((value) {
+
+          bool isFound = false;
+          if (selectedUserAs == "PATIENT") {
+            final databaseReference = FirebaseDatabase.instance.reference();
+            databaseReference
+                .child("users")
+                .child("patient")
+                .once()
+                .then((DataSnapshot snapshot) {
+              Map<dynamic, dynamic> values = snapshot.value;
+
+              values.forEach((key, values) {
+                if (values["email"] == _usernameController.text.toString()) {
+                  isFound = true;
+                }
+              });
+
+              if (isFound) {
+                _btnController.success();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomePagePatient(),
+                  ),
+                );
+              } else {
+                _btnController.reset();
+                showAlertDialog(
+                    "Server error", 'No user found for that email.', context);
+              }
+            });
+          }
+          else {
+            final databaseReference = FirebaseDatabase.instance.reference();
+            databaseReference
+                .child("users")
+                .child("health provider")
+                .once()
+                .then((DataSnapshot snapshot) {
+              Map<dynamic, dynamic> values = snapshot.value;
+
+              values.forEach((key, values) {
+                if (values["email"] == _usernameController.text.toString()) {
+                  isFound = true;
+                }
+              });
+
+              if (isFound) {
+                _btnController.success();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                );
+              } else {
+                _btnController.reset();
+                showAlertDialog("Server error",
+                    'No health provider found for that email.', context);
+              }
+            });
+
+          }
+          goToScreen(context);
+          //_btnController.reset();
+        });
+
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          _btnController.reset();
+          showAlertDialog(
+              "Server Error", 'No user found for that email.', context);
+        } else if (e.code == 'wrong-password') {
+          _btnController.reset();
+          showAlertDialog("Server Error",
+              'Wrong password provided for that user.', context);
+        }else{
+          _btnController.reset();
+          showAlertDialog(
+              "Server Error", 'Invalid email or password.', context);
+        }
+      }
+    } else {
+      showAlertDialog("Missing Information", "Please fill all fields", context);
+      _btnController.reset();
+      return;
+    }
+  }
+
+  void showAlertDialog(String title, String msg, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text(title,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              content: Text(msg,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("OK",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ));
+
+    ;
+  }
+
+  void goToScreen(BuildContext context) {
+    Timer(Duration(seconds: 1), () {
+      FocusScope.of(context).requestFocus(new FocusNode());
+      _btnController.reset();
+    });
+  }
+
 }

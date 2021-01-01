@@ -15,20 +15,21 @@ class _HomePageState extends State<SelectSypmtomScreen> {
 
 
   Map<String, bool> values = {
-    'OCD': true,
+    'OCD': false,
     'Panic Attacks': false,
-    'Social Anxiety': true,
+    'Social Anxiety': false,
     'Anxiety': false,
     'Bereavement / Grief': false,
     'Couples Therapy': false,
-    'Life Transition': true,
+    'Life Transition': false,
     'LGBTQ Counselling': false,
     'PTSD / Trauma': false,
     'Stress Management': false,
-    'Other': true
+    'Other': false
   };
 
   var _checked = false;
+  String symptoms= "";
 
   @override
   Widget build(BuildContext context) {
@@ -54,66 +55,65 @@ class _HomePageState extends State<SelectSypmtomScreen> {
                 fontFamily: "ProductSans",
                 color: Constants.hexToColor(Constants.primaryDarkColor))),
       ),
-      body: Column(
-        children: [
-
-          Container(
-            height: MediaQuery.of(context).size.height - 140,
-            child: ListView.separated(
-              itemCount: values.length,
-              itemBuilder: (context, index) {
-                return CheckboxListTile(
-                  title: new Text(
-                    values.keys.elementAt(index),
-                    style: TextStyle(
-                      fontFamily: "ProductSans",
-                      fontSize: 16,
-                      color: Constants.hexToColor(
-                        Constants.blackColor,
-                      ),
-                    ),
-                  ),
-                  value: values[values.keys.elementAt(index)],
-                  onChanged: (bool value) {
-                    setState(() {
-                      values[values.keys.elementAt(index)] = value;
-                    });
-                  },
-                );
-              },
-              separatorBuilder: (context, index) {
-                return Divider();
-              },
-            ),
-          ),
-
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 12),
-            height: 50,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Constants.hexToColor(Constants.primaryDarkColor),
-            ),
-            child: FlatButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TimeQuestionScreen(),
-                  ),
-                );
-              },
-              child: Center(
-                child: Text('CONTINUE',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: "ProductSans")),
+      body: ListView.separated(
+        itemCount: values.length,
+        itemBuilder: (context, index) {
+          return CheckboxListTile(
+            title: new Text(
+              values.keys.elementAt(index),
+              style: TextStyle(
+                fontFamily: "ProductSans",
+                fontSize: 16,
+                color: Constants.hexToColor(
+                  Constants.blackColor,
+                ),
               ),
             ),
+            value: values[values.keys.elementAt(index)],
+            onChanged: (bool value) {
+              setState(() {
+                values[values.keys.elementAt(index)] = value;
+                if(value){
+                  symptoms+=(values.keys.elementAt(index)+",");
+                }else{
+                  if(symptoms.contains(values.keys.elementAt(index)+",")) {
+                    symptoms = symptoms.replaceAll(values.keys.elementAt(index)+",", "");
+                  }
+                }
+              });
+            },
+          );
+        },
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+      ),
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(6)),
+          color: Constants.hexToColor(Constants.primaryDarkColor),
+        ),
+        child: FlatButton(
+          onPressed: () {
+            Constants.appointment.symptoms = symptoms;
+            print(symptoms);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TimeQuestionScreen(),
+              ),
+            );
+          },
+          child: Center(
+            child: Text('CONTINUE',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "ProductSans")),
           ),
-
-        ],
+        ),
       ),
     );
   }

@@ -29,7 +29,29 @@ class _DurationPickerState extends State<DurationPicker> {
           currentTimeInHour = x.toString();
         }
         setState(() {});
-        widget.onChange('$currentTimeInHour Days,  $currentTimeInMin Months, $currentTimeInYr Years');
+
+        String day, month, year;
+
+        if(currentTimeInHour == '0' || currentTimeInHour == "1"){
+          day = currentTimeInHour +" Day";
+        }else{
+          day = currentTimeInHour +" Days";
+        }
+
+        if(currentTimeInMin == '0' || currentTimeInMin == "1"){
+          month = currentTimeInMin +" Month";
+        }else{
+          month = currentTimeInMin +" Moths";
+        }
+
+        if(currentTimeInYr == '0' || currentTimeInYr == "1"){
+          year = currentTimeInYr +" Year";
+        }else{
+          year = currentTimeInYr +" Years";
+        }
+
+        widget.onChange('$day, $month, $year');
+        Constants.appointment.howLongFelt = '$day, $month, $year';
       },
       children: List.generate(
           inMinutes ? 10 : 10,

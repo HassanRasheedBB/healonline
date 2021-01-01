@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: InkWell(
                           onTap: () {
+                            Constants.appointment.appointmentFor = "Physician";
                             showCupertinoModalBottomSheet(
                               elevation: 8,
                               topRadius: Radius.circular(24),
@@ -149,6 +150,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: InkWell(
                           onTap: () {
+                            Constants.appointment.appointmentFor = "Dermatologist";
                             showCupertinoModalBottomSheet(
                               elevation: 8,
                               topRadius: Radius.circular(24),
@@ -212,6 +214,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: InkWell(
                             onTap: () {
+                              Constants.appointment.appointmentFor = "Therapist";
                               showCupertinoModalBottomSheet(
                                 elevation: 8,
                                 topRadius: Radius.circular(24),
@@ -271,7 +274,9 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: InkWell(
+
                           onTap: () {
+                            Constants.appointment.appointmentFor = "Vets";
                             showCupertinoModalBottomSheet(
                               elevation: 8,
                               topRadius: Radius.circular(24),

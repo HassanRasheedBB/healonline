@@ -1,10 +1,21 @@
+import 'dart:async';
+
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:healonline/LoginScreen/login_screen.dart';
+import 'package:healonline/doctor/HomePage.dart';
+import 'package:healonline/models/RegisterUser.dart';
+import 'package:healonline/patient/HomePagePatient.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:language_pickers/languages.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
+
+import 'package:language_pickers/language_pickers.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import '../constants.dart';
 
@@ -19,11 +30,19 @@ class _SignUpPageState extends State<SignUpPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final RoundedLoadingButtonController _btnController =
+      new RoundedLoadingButtonController();
+
   TextEditingController _firstnameController = TextEditingController();
   TextEditingController _lastnameController = TextEditingController();
   TextEditingController _dateofbirthController = TextEditingController();
+  TextEditingController _lanuageController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
-
+  TextEditingController _conPasswordController = TextEditingController();
+  TextEditingController _phoneNumberController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  String selectType = "PATIENT";
+  String phoneNumber = "";
 
   int _radioValue = 0;
   bool _isShowPwd = false;
@@ -56,6 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 40,
               ),
               CustomRadioButton(
+                defaultSelected: "PATIENT",
                 spacing: 2,
                 elevation: 6,
                 height: 40,
@@ -78,6 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     textStyle:
                         TextStyle(fontSize: 16, fontFamily: "ProductSans")),
                 radioButtonValue: (value) {
+                  selectType = value;
                   print(value);
                 },
                 selectedColor: Constants.hexToColor(Constants.primaryDarkColor),
@@ -114,6 +135,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 10,
               ),
               TextFormField(
+                onTap: () {
+                  _selectDate(context);
+                },
+                readOnly: true,
                 key: Key('DateOfBirth'),
                 controller: _dateofbirthController,
                 validator: (value) =>
@@ -157,8 +182,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         //crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           new Radio(
-                            activeColor: Constants.hexToColor(
-                                Constants.primaryDarkColor),
+                            activeColor:
+                                Constants.hexToColor(Constants.primaryColor),
                             value: 0,
                             groupValue: _radioValue,
                             onChanged: _handleRadioValueChange,
@@ -169,8 +194,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                 fontFamily: "ProductSans", color: Colors.grey),
                           ),
                           new Radio(
-                            activeColor: Constants.hexToColor(
-                                Constants.primaryDarkColor),
+                            activeColor:
+                                Constants.hexToColor(Constants.primaryColor),
                             value: 1,
                             groupValue: _radioValue,
                             onChanged: _handleRadioValueChange,
@@ -181,8 +206,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                 fontFamily: "ProductSans", color: Colors.grey),
                           ),
                           new Radio(
-                            activeColor: Constants.hexToColor(
-                                Constants.primaryDarkColor),
+                            activeColor:
+                                Constants.hexToColor(Constants.primaryColor),
                             value: 2,
                             groupValue: _radioValue,
                             onChanged: _handleRadioValueChange,
@@ -198,42 +223,55 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-
-
-              SizedBox(height: 10,),
-
+              SizedBox(
+                height: 10,
+              ),
               TextFormField(
+                readOnly: true,
+                onTap: () {
+                  _openLanguagePickerDialog();
+                },
                 key: Key('Language'),
-                controller: _dateofbirthController,
+                controller: _lanuageController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Enter Languages" : null,
+                    (value.isEmpty) ? "Please Enter Language" : null,
                 decoration: InputDecoration(
-                  //prefixIcon: Icon(Icons.person_outline),
-                    suffixIcon: Icon(Icons.arrow_forward_ios, size: 16,),
+                    //prefixIcon: Icon(Icons.person_outline),
+                    suffixIcon: Icon(
+                      Icons.arrow_forward_ios,
+                      size: 16,
+                    ),
                     border: OutlineInputBorder(),
-                    hintText: 'Languages*',
+                    hintText: 'Language*',
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
-
-
-              SizedBox(height: 10,),
-
+              SizedBox(
+                height: 10,
+              ),
               TextFormField(
                 key: Key('EmailAddress'),
-                controller: _dateofbirthController,
-                validator: (value) =>
-                (value.isEmpty) ? "Please Enter Email Address" : null,
+                controller: _emailController,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please Enter Email Address";
+                  } else if (!validateEmail(value)) {
+                    return "Invalid Email Address";
+                  } else {
+                    return null;
+                  }
+                },
                 decoration: InputDecoration(
-                  //prefixIcon: Icon(Icons.person_outline),
+                    //prefixIcon: Icon(Icons.person_outline),
                     //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
                     border: OutlineInputBorder(),
                     hintText: 'Email Address*',
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
-
-              SizedBox(height: 10,),
-
+              SizedBox(
+                height: 10,
+              ),
               IntlPhoneField(
+                //controller: _phoneNumberController,
                 decoration: InputDecoration(
                   labelText: 'Mobile Number',
                   border: OutlineInputBorder(
@@ -242,17 +280,28 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 initialCountryCode: 'CA',
                 onChanged: (phone) {
+//                  _phoneNumberController..text = phone.completeNumber;
+//                  _phoneNumberController
+//                    ..selection = TextSelection.collapsed(offset: 0);
+                  phoneNumber = phone.completeNumber;
                   print(phone.completeNumber);
                 },
               ),
-
-              SizedBox(height: 10,),
-
+              SizedBox(
+                height: 10,
+              ),
               TextFormField(
                 key: Key('Password'),
                 controller: _passwordController,
-                validator: (value) =>
-                (value.isEmpty) ? "Please Enter Password" : null,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please Enter Password";
+                  } else if (!validateStructure(value)) {
+                    return "Please use strong password.";
+                  } else {
+                    return null;
+                  }
+                },
                 obscureText: (_isShowPwd) ? false : true,
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.lock_outline),
@@ -260,39 +309,49 @@ class _SignUpPageState extends State<SignUpPage> {
                   hintText: 'Password*',
                   hintStyle: TextStyle(fontFamily: "ProductSans"),
                   suffixIcon: InkWell(
-                    onTap: ()
-                    {
+                    onTap: () {
                       setState(() {
                         _isShowPwd = !_isShowPwd;
                       });
                     },
                     child: _isShowPwd
                         ? Icon(
-                      Icons.visibility,
-                      color: Constants.hexToColor(
-                          Constants.primaryDarkColor),
-                    )
+                            Icons.visibility,
+                            color: Constants.hexToColor(
+                                Constants.primaryDarkColor),
+                          )
                         : Icon(Icons.visibility_off,
-                        color: Constants.hexToColor(
-                            Constants.primaryDarkColor)),
+                            color: Constants.hexToColor(
+                                Constants.primaryDarkColor)),
                   ),
                 ),
               ),
-
-              SizedBox(height: 8,),
+              SizedBox(
+                height: 8,
+              ),
               Text(
                 "(Password must contain at least 8 characters, 1 lower case (a-z) & 1 Upper case (A-Z), 1 number (0-9) or a symbol)",
-                  style: TextStyle(fontFamily: "ProductSans", color: Colors.grey, fontSize: 14),
+                style: TextStyle(
+                    fontFamily: "ProductSans",
+                    color: Colors.grey,
+                    fontSize: 14),
               ),
-
-
-              SizedBox(height: 14,),
-
+              SizedBox(
+                height: 14,
+              ),
               TextFormField(
                 key: Key('ConfirmPassword'),
-                controller: _passwordController,
-                validator: (value) =>
-                (value.isEmpty) ? "Please Enter Confirm Password" : null,
+                controller: _conPasswordController,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please Enter Confirm Password";
+                  } else if (_conPasswordController.text !=
+                      _passwordController.text) {
+                    return "Passwords don't match";
+                  } else {
+                    return null;
+                  }
+                },
                 obscureText: (_isConfirmShowPwd) ? false : true,
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.lock_outline),
@@ -300,44 +359,42 @@ class _SignUpPageState extends State<SignUpPage> {
                   hintText: 'Confirm Password*',
                   hintStyle: TextStyle(fontFamily: "ProductSans"),
                   suffixIcon: InkWell(
-                    onTap: ()
-                    {
+                    onTap: () {
                       setState(() {
                         _isConfirmShowPwd = !_isConfirmShowPwd;
                       });
                     },
                     child: _isConfirmShowPwd
                         ? Icon(
-                      Icons.visibility,
-                      color: Constants.hexToColor(
-                          Constants.primaryDarkColor),
-                    )
+                            Icons.visibility,
+                            color: Constants.hexToColor(
+                                Constants.primaryDarkColor),
+                          )
                         : Icon(Icons.visibility_off,
-                        color: Constants.hexToColor(
-                            Constants.primaryDarkColor)),
+                            color: Constants.hexToColor(
+                                Constants.primaryDarkColor)),
                   ),
                 ),
               ),
-
-
               SizedBox(
                 height: 40,
               ),
               Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                child: RoundedLoadingButton(
+                  width: MediaQuery.of(context).size.width - 32,
+                  animateOnTap: true,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
-                ),
-                child: FlatButton(
-                  onPressed: () {},
-                  child: Center(
-                    child: Text('CREATE ACCOUNT',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontFamily: "ProductSans")),
-                  ),
+                  elevation: 8,
+                  borderRadius: 10,
+                  child: Text('CREATE ACCOUNT',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontFamily: "ProductSans")),
+                  controller: _btnController,
+                  onPressed: () {
+                    registerUser();
+                  },
                 ),
               ),
               SizedBox(
@@ -366,8 +423,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         style: TextStyle(
                             fontSize: 14,
                             fontFamily: "ProductSans",
-                            color: Constants.hexToColor(
-                                Constants.primaryDarkColor)),
+                            color:
+                                Constants.hexToColor(Constants.primaryColor)),
                       ),
                     )
                   ],
@@ -392,6 +449,240 @@ class _SignUpPageState extends State<SignUpPage> {
         case 2:
           break;
       }
+    });
+  }
+
+  Language _selectedDropdownLanguage =
+      LanguagePickerUtils.getLanguageByIsoCode('ko');
+
+// It's sample code of Dropdown Item.
+  Widget _buildDropdownItem(Language language) {
+    return Row(
+      children: <Widget>[
+        SizedBox(
+          width: 8.0,
+        ),
+        Text("${language.name} (${language.isoCode})"),
+      ],
+    );
+  }
+
+  Language _selectedDialogLanguage =
+      LanguagePickerUtils.getLanguageByIsoCode('ko');
+
+// It's sample code of Dialog Item.
+  Widget _buildDialogItem(Language language) => Row(
+        children: <Widget>[
+          Text(language.name,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+                fontSize: 14,
+                //fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              )),
+          SizedBox(width: 8.0),
+          Flexible(
+              child: Text("(${language.isoCode})",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                    fontSize: 14,
+                    //fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  )))
+        ],
+      );
+
+  void _openLanguagePickerDialog() => showDialog(
+        context: context,
+        builder: (context) => Theme(
+            data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+            child: LanguagePickerDialog(
+                titlePadding: EdgeInsets.all(8.0),
+                searchCursorColor: Constants.hexToColor(
+                  Constants.primaryDarkColor,
+                ),
+                searchInputDecoration: InputDecoration(
+                    hintText: 'Search...',
+                    hintStyle: TextStyle(
+                        fontFamily: "ProductSans",
+                        fontSize: 14,
+                        color: Colors.grey)),
+                isSearchable: true,
+                title: Text("Select Language",
+                    style: TextStyle(
+                        fontFamily: "ProductSans",
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Constants.hexToColor(
+                          Constants.primaryDarkColor,
+                        ))),
+                onValuePicked: (Language language) => setState(() {
+                      _selectedDialogLanguage = language;
+                      _lanuageController.text = _selectedDialogLanguage.name;
+                      print(_selectedDialogLanguage.name);
+                      print(_selectedDialogLanguage.isoCode);
+                    }),
+                itemBuilder: _buildDialogItem)),
+      );
+
+  DateTime selectedDate = DateTime.now();
+
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2025),
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        _dateofbirthController.text = "${selectedDate.toLocal()}".split(' ')[0];
+      });
+  }
+
+  Future<void> registerUser() async {
+    if (_formKey.currentState.validate()) {
+      RegisterUser registerUser = new RegisterUser(
+          selectType.toLowerCase().toString(),
+          _firstnameController.text,
+          _lastnameController.text,
+          _dateofbirthController.text,
+          _radioValue.toString(),
+          _lanuageController.text,
+          _emailController.text,
+          phoneNumber,
+          _passwordController.text,
+          _conPasswordController.text,
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "");
+
+      try {
+        await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: registerUser.email, password: registerUser.password)
+            .then((value) {
+          onUserCreated(value, registerUser);
+        });
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          showAlertDialog(
+              "Server Error", 'The password provided is too weak.', context);
+          _btnController.reset();
+        } else if (e.code == 'email-already-in-use') {
+          showAlertDialog("Server Error",
+              'The account already exists for that email.', context);
+          _btnController.reset();
+        } else {
+          showAlertDialog("Server Error", 'Something went wrong.', context);
+          _btnController.reset();
+        }
+      } catch (e) {
+        _btnController.reset();
+        showAlertDialog("Server Error",
+            'Some information went wrong. Please try again', context);
+      }
+    } else {
+      showAlertDialog("Missing Information", "Please fill all fields", context);
+      _btnController.reset();
+      return;
+    }
+  }
+
+  bool validateStructure(String value) {
+    String pattern =
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+    RegExp regExp = new RegExp(pattern);
+    return regExp.hasMatch(value);
+  }
+
+  bool validateEmail(String email) {
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+    if (!(regex.hasMatch(email)))
+      return false;
+    else {
+      return true;
+    }
+  }
+
+  void showAlertDialog(String title, String msg, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+              title: Text(title,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              content: Text(msg,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("OK",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    gotoLoginScreen(context);
+                  },
+                )
+              ],
+            )
+    );
+  }
+
+  onUserCreated(UserCredential value, RegisterUser registerUser) {
+    final mainReference = FirebaseDatabase.instance.reference();
+    mainReference
+        .child("users")
+        .child(registerUser.userType)
+        .child(registerUser.contact_number)
+        .set(registerUser.toJson())
+        .then((value) {
+      showAlertDialog("Success", 'Registered Successfully!', context);
+      _btnController.success();
+    }, onError: (error) {
+      print(error + "--------------");
+    }).catchError((error) {
+      _btnController.reset();
+      showAlertDialog("Server Error",
+          'Some information went wrong. Please try again', context);
+    });
+  }
+
+  void gotoLoginScreen(BuildContext context) {
+    Timer(Duration(seconds: 1), () {
+      _btnController.reset();
+
+      Navigator.of(context).pop();
+//      Navigator.push(
+//        context,
+//        MaterialPageRoute(
+//          builder: (context) => LoginPage(),
+//        ),
+//      );
     });
   }
 }

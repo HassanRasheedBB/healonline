@@ -107,6 +107,28 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
         ],
       ),
 
+      bottomNavigationBar: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(6)),
+          color: Constants.hexToColor(Constants.primaryDarkColor),
+        ),
+        child: FlatButton(
+          onPressed: () {
+
+
+          },
+          child: Center(
+            child: Text('UPDATE PASSWORD',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontFamily: "ProductSans")),
+          ),
+        ),
+      ),
+
     );
   }
 

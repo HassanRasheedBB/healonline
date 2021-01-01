@@ -119,7 +119,7 @@ class _PatientProfileState extends State<PatientProfile> {
               title: Text('Personal Info',
                   style: TextStyle(
                       color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
+                        Constants.blackColor,
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
@@ -148,7 +148,7 @@ class _PatientProfileState extends State<PatientProfile> {
               title: Text('Pharmacies',
                   style: TextStyle(
                       color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
+                        Constants.blackColor,
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
@@ -177,7 +177,7 @@ class _PatientProfileState extends State<PatientProfile> {
               title: Text('Refer Healonline App',
                   style: TextStyle(
                       color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
+                        Constants.blackColor,
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
@@ -206,7 +206,7 @@ class _PatientProfileState extends State<PatientProfile> {
               title: Text('Address',
                   style: TextStyle(
                       color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
+                        Constants.blackColor,
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
@@ -235,7 +235,7 @@ class _PatientProfileState extends State<PatientProfile> {
               title: Text('Payment Method',
                   style: TextStyle(
                       color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
+                        Constants.blackColor,
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
@@ -256,7 +256,7 @@ class _PatientProfileState extends State<PatientProfile> {
               title: Text('Log Out',
                   style: TextStyle(
                       color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
+                        Constants.blackColor,
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
