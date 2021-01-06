@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/Hassa/AndroidStudioProjects/healonline/lib/patient/TimeQuestionScreen.dart';
 
 import '../../constants.dart';
+import '../TimeQuestionScreen.dart';
 
 class SelectSypmtomScreen extends StatefulWidget {
   SelectSypmtomScreen({Key key}) : super(key: key);

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:healonline/patient/RemainingQuestionsScreen.dart';
 import '../constants.dart';
@@ -100,15 +99,6 @@ class _CovidScreenState extends State<CovidScreen> {
                             border: OutlineInputBorder(),
                             suffixIcon: InkWell(
                               onTap: (){
-                                DatePicker.showDatePicker(context,
-                                    showTitleActions: true,
-                                    minTime: DateTime(2020, 1, 1),
-                                    maxTime: DateTime.now(),
-                                    onChanged: (date) {
-                                      _dateController.text = date.year.toString()+" "+months[date.month].toString()+" "+date.day.toString();
-                                    }, onConfirm: (date) {
-                                      _dateController.text = date.year.toString()+" "+months[date.month].toString()+" "+date.day.toString();
-                                    }, currentTime: DateTime.now(), locale: LocaleType.en);
                               },
                               child: Icon(CupertinoIcons.calendar,
                                   color:Constants.hexToColor(Constants.primaryDarkColor)),
