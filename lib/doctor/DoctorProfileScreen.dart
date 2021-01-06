@@ -1,5 +1,7 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:healonline/models/RegisterDoctor.dart';
 
 import '../constants.dart';
 
@@ -12,6 +14,45 @@ class DoctorProfile extends StatefulWidget {
 
 class _DoctorProfileState extends State<DoctorProfile> {
   final double circleRadius = 100.0;
+  RegisterUser user;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    user = new RegisterUser(
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-",
+        "-");
+    getProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +100,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                     height: circleRadius / 2,
                                   ),
                                   Text(
-                                    "Maria Elliot",
+                                    user.fname + " " + user.lName,
                                     style: TextStyle(
                                       fontFamily: "ProductSans",
                                       fontSize: 24,
@@ -69,7 +110,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                     ),
                                   ),
                                   Text(
-                                    "Ontario Canada",
+                                    user.location + " Canada",
                                     style: TextStyle(
                                       fontFamily: "ProductSans",
                                       fontSize: 15,
@@ -109,7 +150,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                             height: 4.0,
                                           ),
                                           Text(
-                                            "174",
+                                            user.appointmentsCount,
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -142,7 +183,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                             height: 4.0,
                                           ),
                                           Text(
-                                            "161",
+                                            user.patientsCount,
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -225,7 +266,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  "mariaelliot@gmail.com",
+                                  user.email,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -238,18 +279,14 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           ),
                         ),
                       ),
-
                       Divider(
                         color:
                             Constants.hexToColor(Constants.graySepratorColor),
                       ),
-
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding:
-                          EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                          padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
@@ -266,7 +303,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  "+1 (905) 554-0200",
+                                  user.contact_number,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -279,19 +316,14 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           ),
                         ),
                       ),
-
                       Divider(
                         color:
-                        Constants.hexToColor(Constants.graySepratorColor),
+                            Constants.hexToColor(Constants.graySepratorColor),
                       ),
-
-
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding:
-                          EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                          padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
@@ -308,7 +340,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  "D-A112369",
+                                  user.PMDC,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -321,19 +353,14 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           ),
                         ),
                       ),
-
                       Divider(
                         color:
-                        Constants.hexToColor(Constants.graySepratorColor),
+                            Constants.hexToColor(Constants.graySepratorColor),
                       ),
-
-
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding:
-                          EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                          padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
@@ -350,7 +377,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  "4 yrs & 2 months",
+                                  user.experience,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -363,17 +390,14 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           ),
                         ),
                       ),
-
                       Divider(
                         color:
-                        Constants.hexToColor(Constants.graySepratorColor),
+                            Constants.hexToColor(Constants.graySepratorColor),
                       ),
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding:
-                          EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                          padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
@@ -390,7 +414,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  "Ontario Canada",
+                                  user.location + " Canada",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -403,17 +427,14 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           ),
                         ),
                       ),
-
                       Divider(
                         color:
-                        Constants.hexToColor(Constants.graySepratorColor),
+                            Constants.hexToColor(Constants.graySepratorColor),
                       ),
-
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
-                          padding:
-                          EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                          padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
@@ -430,7 +451,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  "4.0 / 5",
+                                  user.rating + " / 5",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -443,18 +464,14 @@ class _DoctorProfileState extends State<DoctorProfile> {
                           ),
                         ),
                       ),
-
                     ],
                   ),
                 ),
               ),
             ),
-
-
             SizedBox(height: 20),
-
             Container(
-                margin: EdgeInsets.only(right: 16.0, left:16, bottom : 28),
+                margin: EdgeInsets.only(right: 16.0, left: 16, bottom: 28),
                 height: 54,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
@@ -463,8 +480,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                         Constants.primaryDarkColor,
                       ),
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(8))
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(8))),
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
@@ -477,12 +493,58 @@ class _DoctorProfileState extends State<DoctorProfile> {
                       ),
                     ),
                   ),
-                )
-            )
-
+                ))
           ],
         )),
       ),
     );
+  }
+
+
+  void getProfile() {
+    final databaseReference = FirebaseDatabase.instance.reference();
+    databaseReference
+        .child("users")
+        .child("health provider")
+        .child("+11231236985")
+        .once()
+        .then((DataSnapshot snapshot) {
+
+      RegisterUser _user = new RegisterUser(
+          snapshot.value["userType"],
+          snapshot.value["fname"],
+          snapshot.value["lName"],
+          snapshot.value["dob"],
+          snapshot.value["gender"],
+          snapshot.value["lanuage"],
+          snapshot.value["email"],
+          snapshot.value["contact_number"],
+          snapshot.value["password"],
+          snapshot.value["confirm_password"],
+          snapshot.value["pharmacy"],
+          snapshot.value["pharmacyPhone"],
+          snapshot.value["pharmacyCell"],
+          snapshot.value["healthCardProvince"],
+          snapshot.value["helthCardNo"],
+          snapshot.value["insuranceProvider"],
+          snapshot.value["insurancePolicyNumber"],
+          snapshot.value["appointmentTimes"],
+          snapshot.value["appointmentDays"],
+          snapshot.value["rating"],
+          snapshot.value["location"],
+          snapshot.value["skills"],
+          snapshot.value["patientsCount"],
+          snapshot.value["appointmentsCount"],
+          snapshot.value["PMDC"],
+          snapshot.value["experience"],
+          snapshot.value["reviewerName"],
+          snapshot.value["reviwerComment"],
+          snapshot.value["reviewerRating"],
+          snapshot.value["reviewTimeAgo"]);
+
+      setState(() {
+        user = _user;
+      });
+    });
   }
 }

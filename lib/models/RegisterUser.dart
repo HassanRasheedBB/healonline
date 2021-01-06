@@ -11,6 +11,7 @@ class RegisterUser{
   var selected = false;
 
 
+
   RegisterUser(
       this.userType,
       this.fname,
@@ -41,7 +42,8 @@ class RegisterUser{
       this.reviewerName,
       this.reviwerComment,
       this.reviewerRating,
-      this.reviewTimeAgo);
+      this.reviewTimeAgo,
+      );
 
   toJson() {
     return {
@@ -74,11 +76,9 @@ class RegisterUser{
       "reviewerName": reviewerName,
       "reviwerComment": reviwerComment,
       "reviewerRating": reviewerRating,
-      "reviewTimeAgo": reviewTimeAgo,
+      "reviewTimeAgo": reviewTimeAgo
     };
   }
-
-
 
 
 

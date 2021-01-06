@@ -1,4 +1,3 @@
-
 import 'package:firebase_database/firebase_database.dart' as firebase_database;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ class SchedualAppointmentScreen extends StatefulWidget {
 class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   final double circleRadius = 70.0;
   final RoundedLoadingButtonController _btnController =
-  new RoundedLoadingButtonController();
+      new RoundedLoadingButtonController();
   List<TimeObject> timeObjectList = List();
 
   var time = [
@@ -55,17 +54,14 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     "04:50 PM"
   ];
 
-
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    for(int i=0; i<time.length; i++){
+    for (int i = 0; i < time.length; i++) {
       timeObjectList.add(TimeObject(time[i], false));
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -171,13 +167,14 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                     return Container(
                       height: 40,
                       child: InkWell(
-                        onTap:() {
+                        onTap: () {
                           setState(() {
-                            for(int i=0; i<timeObjectList.length; i++){
-                              if(i == index){
+                            for (int i = 0; i < timeObjectList.length; i++) {
+                              if (i == index) {
                                 timeObjectList[i].isSelected = true;
-                                Constants.appointment.appointmentTime = timeObjectList[i].time;
-                              }else{
+                                Constants.appointment.appointmentTime =
+                                    timeObjectList[i].time;
+                              } else {
                                 timeObjectList[i].isSelected = false;
                               }
                             }
@@ -191,11 +188,15 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
 //                        ),
                           shape: timeObjectList[index].isSelected
                               ? new RoundedRectangleBorder(
-                              side: new BorderSide(color: Constants.hexToColor(Constants.primaryDarkColor), width: 3.0),
-                              borderRadius: BorderRadius.circular(6.0))
+                                  side: new BorderSide(
+                                      color: Constants.hexToColor(
+                                          Constants.primaryDarkColor),
+                                      width: 3.0),
+                                  borderRadius: BorderRadius.circular(6.0))
                               : new RoundedRectangleBorder(
-                              side: new BorderSide(color: Colors.grey, width: 1.0),
-                              borderRadius: BorderRadius.circular(6.0)),
+                                  side: new BorderSide(
+                                      color: Colors.grey, width: 1.0),
+                                  borderRadius: BorderRadius.circular(6.0)),
 
                           child: Container(
                             height: 40,
@@ -220,12 +221,10 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
         ),
       ),
       backgroundColor: Colors.white,
-
       bottomNavigationBar: Container(
         child: Padding(
-          padding: EdgeInsets.only(bottom: 8, top : 8),
+          padding: EdgeInsets.only(bottom: 8, top: 8),
           child: RoundedLoadingButton(
-
             width: MediaQuery.of(context).size.width - 32,
             animateOnTap: true,
             color: Constants.hexToColor(Constants.primaryDarkColor),
@@ -309,108 +308,113 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
         selectedDateTime: _currentDate,
         daysHaveCircularBorder: true,
 
-
         /// null for not rendering any border, true for circular border, false for rectangular border
       ),
     );
   }
 
   void schedualAppointment() {
-
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text("Confirm Appointment",
-              style: TextStyle(
-                fontFamily: "ProductSans",
-              )),
-          content: Text("Appointment will schedule at "+Constants.appointment.appointmentDate.split(" ").first+
-              " "+Constants.appointment.appointmentTime,
-              style: TextStyle(
-                fontFamily: "ProductSans",
-              )),
-          actions: [
-            CupertinoDialogAction(
-              child: Text("OK",
+              title: Text("Confirm Appointment",
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
-              onPressed: () {
-
-                final mainReference = firebase_database.FirebaseDatabase.instance.reference();
-                mainReference
-                .child("appointments")
-                .child("09007860101")
-                .set(Constants.appointment.toJson())
-                    .then((value) {
-                  showOtherAlertDialog("Success", 'Appointment Confirmed !', context);
-                  _btnController.success();
-
-
-                }, onError: (error) {
-                  print(error + "--------------");
-                }).catchError((error) {
-                  _btnController.reset();
-                  showOtherAlertDialog("Server Error",
-                      'Some information went wrong. Please try again', context);
-                });
-              },
-            ),
-
-            CupertinoDialogAction(
-              child: Text("Cancel",
+              content: Text(
+                  "Appointment will schedule at " +
+                      Constants.appointment.appointmentDate.split(" ").first +
+                      " " +
+                      Constants.appointment.appointmentTime,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
-              onPressed: () {
-                _btnController.reset();
-                Navigator.of(context).pop();
-              },
-            ),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("OK",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    final mainReference =
+                        firebase_database.FirebaseDatabase.instance.reference();
 
-          ],
-        ));
+                    String key = mainReference
+                        .child("appointments")
+                        .child("09007860101")
+                        .push()
+                        .key;
 
+                    mainReference
+                        .child("appointments")
+                        .child("09007860101")
+                        .child(key)
+                        .set(Constants.appointment.toJson())
+                        .then((value) {
+                      showOtherAlertDialog(
+                          "Success", 'Appointment Confirmed !', context);
+                      _btnController.success();
+                    }, onError: (error) {
+                      print(error + "--------------");
+                    }).catchError((error) {
+                      _btnController.reset();
+                      showOtherAlertDialog(
+                          "Server Error",
+                          'Some information went wrong. Please try again',
+                          context);
+                    });
+                  },
+                ),
+                CupertinoDialogAction(
+                  child: Text("Cancel",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    _btnController.reset();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ));
   }
-
-
 
   void showOtherAlertDialog(String title, String msg, BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text(title,
-              style: TextStyle(
-                fontFamily: "ProductSans",
-              )),
-          content: Text(msg,
-              style: TextStyle(
-                fontFamily: "ProductSans",
-              )),
-          actions: [
-            CupertinoDialogAction(
-              child: Text("OK",
+              title: Text(title,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
-              onPressed: () {
-                _btnController.reset();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        ));
+              content: Text(msg,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("OK",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    _btnController.reset();
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ));
 
     ;
   }
 
-
 }
 
+class TimeObject {
+  String time;
+  bool isSelected;
 
-class TimeObject{
-  String time; bool isSelected;
   TimeObject(this.time, this.isSelected);
 }
 
