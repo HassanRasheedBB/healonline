@@ -573,7 +573,8 @@ class _SignUpPageState extends State<SignUpPage> {
           "",
           "",
           "",
-          "");
+          ""
+      );
 
       try {
         await FirebaseAuth.instance

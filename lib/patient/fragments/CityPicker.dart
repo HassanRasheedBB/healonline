@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:healonline/SignUpScreen/SignupScreen.dart';
+import 'package:healonline/patient/AddAddressScreen.dart';
 import 'package:healonline/patient/fragments/SelectSymptomScreen.dart';
 
 import '../../constants.dart';
@@ -136,6 +137,12 @@ class _HomePageState extends State<CityPicker> {
               onPressed: () {
 //                Navigator.of(context).pop();
               if(valueRequiredOnBackScreen){
+                if(title == "City"){
+                  AddAddressScreenState.updateCity(cities[selectedRadio  - 1]);
+                }else{
+                  AddAddressScreenState.updateProvince(cities[selectedRadio  - 1]);
+                }
+
                 Navigator.of(context).pop();
               }else{
                 Navigator.pushReplacement(

@@ -2,7 +2,9 @@ class Appointment{
   String province, symptoms, howLongFelt, covidYesNo, covidLocation, covidTimeTravel,
   sickNote, AudioOrVideo, additionalDetails, isImageAttached, doctorPhone, appointmentDate, appointmentTime;
   String docName, docSkills, appointmentFor;
+  String userId, docId, userName;
 
+  String age, weight, height, maritalStatus, bloodGroup, history, gender, userEmail;
 
   Appointment(
       this.province,
@@ -20,7 +22,19 @@ class Appointment{
       this.appointmentTime,
       this.docName,
       this.docSkills,
-      this.appointmentFor);
+      this.appointmentFor,
+      this.userId,
+      this.docId,
+      this.userName,
+      this.age,
+      this.weight,
+      this.height,
+      this.maritalStatus,
+      this.bloodGroup,
+      this.history,
+      this.gender,
+      this.userEmail
+      );
 
 
 
@@ -42,7 +56,18 @@ class Appointment{
       "appointmentTime": appointmentTime,
       "docName": docName,
       "docSkills": docSkills,
-      "appointmentFor":appointmentFor
+      "appointmentFor":appointmentFor,
+      "userName": userName,
+      "userId":userId,
+      "docId":docId,
+      "age": age,
+      "weight": weight,
+      "height": height,
+      "maritalStatus": maritalStatus,
+      "bloodGroup": bloodGroup,
+      "history": history,
+      "gender" : gender,
+      "userEmail": userEmail
     };
   }
 

@@ -1,18 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:healonline/models/Appoitment.dart';
 
 import '../constants.dart';
 import 'DoctorNotesScreen.dart';
 
 class AppointmentDetail extends StatefulWidget {
-  AppointmentDetail({Key key}) : super(key: key);
+  Appointment user;
+  AppointmentDetail(this.user, {Key key}) : super(key: key);
 
   @override
-  _AppointmentDetailState createState() => _AppointmentDetailState();
+  _AppointmentDetailState createState() => _AppointmentDetailState(this.user);
 }
 
 class _AppointmentDetailState extends State<AppointmentDetail> {
+  Appointment user;
+  _AppointmentDetailState(this.user);
+
+  var userGender = ["Male", "Female", "Other"];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +67,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                   ),
                   SizedBox(height: 12),
                   Text(
-                    "John Davis",
+                    user.userName,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -75,7 +82,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "Male",
+                        userGender[int.parse(user.gender)] != null ? userGender[int.parse(user.gender)]  : "-",
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 15,
@@ -92,7 +99,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                         width: 8,
                       ),
                       Text(
-                        "32.0 Y",
+                        user.age+" Y",
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 15,
@@ -152,7 +159,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  "105.0 lbps",
+                                  user.weight+" lbps",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -181,7 +188,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  "5.1 inches",
+                                  user.height+" inches",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -210,7 +217,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  "Unmarried",
+                                  user.maritalStatus,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -239,7 +246,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  "-",
+                                  user.bloodGroup,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -268,7 +275,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  "abc@gmail.com",
+                                  user.userEmail != null ? user.userEmail : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -297,7 +304,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  "+1 (905) 554-0200",
+                                  user.userId,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,

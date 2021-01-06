@@ -160,17 +160,15 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
           return Center(
             child: _buildProgressIndicator(),
           );
-        }else{
+        }
+        else{
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: InkWell(
 
               onTap: (){
                 setState(() {
-
-
                   //users[index].selected = true;
-
                   for(int i=0; i<users.length; i++){
                     if(i == index){
                       users[i].selected = true;
