@@ -98,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     textStyle:
                         TextStyle(fontSize: 16, fontFamily: "ProductSans")),
                 radioButtonValue: (value) {
-                  selectType = value;
+                  selectType = value.toString();
                   print(value);
                 },
                 selectedColor: Constants.hexToColor(Constants.primaryDarkColor),
@@ -110,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('FirstName'),
                 controller: _firstnameController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter First Name" : null,
+                    (value.toString().isEmpty) ? "Please Enter First Name" : null,
                 decoration: InputDecoration(
                     // prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
@@ -124,7 +124,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('LastName'),
                 controller: _lastnameController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Last Name" : null,
+                    (value.toString().isEmpty) ? "Please Enter Last Name" : null,
                 decoration: InputDecoration(
                     //prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),

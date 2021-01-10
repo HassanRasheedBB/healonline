@@ -4,6 +4,7 @@ import 'CovidScreen.dart';
 
 import '../constants.dart';
 import 'DurationPicker.dart';
+import 'RemainingQuestionsScreen.dart';
 
 class TimeQuestionScreen extends StatefulWidget {
   TimeQuestionScreen({Key key}) : super(key: key);
@@ -102,7 +103,7 @@ class _TimeQuestionScreenState extends State<TimeQuestionScreen> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => CovidScreen(),
+                builder: (context) => RemainingQuestionScreen(),
               ),
             );
           },
