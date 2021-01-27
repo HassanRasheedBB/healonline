@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:healonline/patient/fragments/CompletedAppointmets.dart';
-import 'package:healonline/patient/fragments/UpcomingAppointments.dart';
 
 import '../constants.dart';
+import 'fragments/CompletedAppointmets.dart';
+import 'fragments/UpcomingAppointments.dart';
 
 class Appointments extends StatefulWidget {
   Appointments({Key key}) : super(key: key);

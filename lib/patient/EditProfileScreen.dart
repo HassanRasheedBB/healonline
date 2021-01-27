@@ -3,7 +3,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 
 import '../constants.dart';
 
@@ -190,25 +189,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
 
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 18),
-              child: IntlPhoneField(
-                decoration: InputDecoration(
-                  labelText: 'Mobile Number',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                ),
-                initialCountryCode: 'CA',
-                onChanged: (phone) {
-                  print(phone.completeNumber);
-                },
-              ),
-            ),
-
-            SizedBox(
-              height: 24,
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 18),
+            //   child: IntlPhoneField(
+            //     decoration: InputDecoration(
+            //       labelText: 'Mobile Number',
+            //       border: OutlineInputBorder(
+            //         borderSide: BorderSide(),
+            //       ),
+            //     ),
+            //     initialCountryCode: 'CA',
+            //     onChanged: (phone) {
+            //       print(phone.completeNumber);
+            //     },
+            //   ),
+            // ),
+            //
+            // SizedBox(
+            //   height: 24,
+            // ),
 
             Divider(color: Colors.black26,),
 
@@ -251,49 +250,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               height: 16,
             ),
 
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 18),
-              child: IntlPhoneField(
-                decoration: InputDecoration(
-                  labelText: 'Mobile Number',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                ),
-                initialCountryCode: 'CA',
-                onChanged: (phone) {
-                  print(phone.completeNumber);
-                },
-              ),
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 18),
+            //   child: IntlPhoneField(
+            //     decoration: InputDecoration(
+            //       labelText: 'Mobile Number',
+            //       border: OutlineInputBorder(
+            //         borderSide: BorderSide(),
+            //       ),
+            //     ),
+            //     initialCountryCode: 'CA',
+            //     onChanged: (phone) {
+            //       print(phone.completeNumber);
+            //     },
+            //   ),
+            // ),
+            //
+            // SizedBox(
+            //   height: 16,
+            // ),
 
-
-
-
-
-            SizedBox(
-              height: 16,
-            ),
-
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 18),
-              child: IntlPhoneField(
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
-                ),
-                initialCountryCode: 'CA',
-                onChanged: (phone) {
-                  print(phone.completeNumber);
-                },
-              ),
-            ),
-
-            SizedBox(
-              height: 28,
-            ),
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: 18),
+            //   child: IntlPhoneField(
+            //     decoration: InputDecoration(
+            //       labelText: 'Phone Number',
+            //       border: OutlineInputBorder(
+            //         borderSide: BorderSide(),
+            //       ),
+            //     ),
+            //     initialCountryCode: 'CA',
+            //     onChanged: (phone) {
+            //       print(phone.completeNumber);
+            //     },
+            //   ),
+            // ),
+            //
+            // SizedBox(
+            //   height: 28,
+            // ),
 
 
 

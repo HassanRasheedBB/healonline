@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:HealOnline/SignUpScreen/SignupScreen.dart';
+import 'package:HealOnline/doctor/HomePage.dart';
+import 'package:HealOnline/patient/HomePagePatient.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomCheckBoxGroup.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
@@ -7,9 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:healonline/SignUpScreen/SignupScreen.dart';
-import 'package:healonline/doctor/HomePage.dart';
-import 'package:healonline/patient/HomePagePatient.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -194,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       InkWell(
                         onTap: () {
-                          Navigator.pushReplacement(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => SignUpPage(),
@@ -247,7 +247,7 @@ class _LoginPageState extends State<LoginPage> {
               });
 
               if (isFound) {
-                _btnController.success();
+                _btnController.reset();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -277,7 +277,7 @@ class _LoginPageState extends State<LoginPage> {
               });
 
               if (isFound) {
-                _btnController.success();
+                _btnController.reset();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -290,9 +290,7 @@ class _LoginPageState extends State<LoginPage> {
                     'No health provider found for that email.', context);
               }
             });
-
           }
-          goToScreen(context);
           //_btnController.reset();
         });
 
@@ -347,10 +345,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void goToScreen(BuildContext context) {
-    Timer(Duration(seconds: 1), () {
-      FocusScope.of(context).requestFocus(new FocusNode());
-      _btnController.reset();
-    });
+    _btnController.reset();
   }
 
 }

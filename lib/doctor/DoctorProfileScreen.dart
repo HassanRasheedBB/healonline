@@ -1,7 +1,7 @@
+import 'package:HealOnline/models/RegisterDoctor.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:healonline/models/RegisterDoctor.dart';
 
 import '../constants.dart';
 

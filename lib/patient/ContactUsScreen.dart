@@ -1,7 +1,6 @@
 //ContactUsScreen
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 
 import '../constants.dart';
 
@@ -90,21 +89,21 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
             height: 16,
           ),
 
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 18),
-            child: IntlPhoneField(
-              decoration: InputDecoration(
-                labelText: 'Mobile Number',
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(),
-                ),
-              ),
-              initialCountryCode: 'CA',
-              onChanged: (phone) {
-                print(phone.completeNumber);
-              },
-            ),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 18),
+          //   child: IntlPhoneField(
+          //     decoration: InputDecoration(
+          //       labelText: 'Mobile Number',
+          //       border: OutlineInputBorder(
+          //         borderSide: BorderSide(),
+          //       ),
+          //     ),
+          //     initialCountryCode: 'CA',
+          //     onChanged: (phone) {
+          //       print(phone.completeNumber);
+          //     },
+          //   ),
+          // ),
 
           SizedBox(
             height: 16,

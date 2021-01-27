@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/doctor/AllPatientsListScreen.dart';
-import 'package:healonline/doctor/AppointmentDetailScreen.dart';
-import 'package:healonline/doctor/AppointmentListScreen.dart';
-import 'package:healonline/doctor/NotificationScreen.dart';
 import '../constants.dart';
+import 'AllPatientsListScreen.dart';
+import 'AppointmentListScreen.dart';
 import 'DoctorProfileScreen.dart';
+import 'NotificationScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);

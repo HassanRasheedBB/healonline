@@ -1,16 +1,15 @@
 import 'dart:async';
 
+import 'package:HealOnline/LoginScreen/login_screen.dart';
+import 'package:HealOnline/models/RegisterDoctor.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:healonline/LoginScreen/login_screen.dart';
-import 'package:healonline/doctor/HomePage.dart';
-import 'package:healonline/models/RegisterUser.dart';
-import 'package:healonline/patient/HomePagePatient.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+
 import 'package:language_pickers/languages.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 
@@ -31,7 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   final RoundedLoadingButtonController _btnController =
-      new RoundedLoadingButtonController();
+  new RoundedLoadingButtonController();
 
   TextEditingController _firstnameController = TextEditingController();
   TextEditingController _lastnameController = TextEditingController();
@@ -47,6 +46,10 @@ class _SignUpPageState extends State<SignUpPage> {
   int _radioValue = 0;
   bool _isShowPwd = false;
   bool _isConfirmShowPwd = false;
+
+  String initialCountry = 'CA';
+  PhoneNumber number = PhoneNumber(isoCode: 'CA');
+  bool isNumberValidated = false;
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +82,16 @@ class _SignUpPageState extends State<SignUpPage> {
                 spacing: 2,
                 elevation: 6,
                 height: 40,
-                width: MediaQuery.of(context).size.width / 2 - 37,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 2 - 37,
                 customShape: RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(6.0)),
                 enableShape: true,
-                unSelectedColor: Theme.of(context).canvasColor,
+                unSelectedColor: Theme
+                    .of(context)
+                    .canvasColor,
                 buttonLables: [
                   'Patient',
                   'Health Provider',
@@ -96,7 +104,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     selectedColor: Colors.white,
                     unSelectedColor: Colors.black,
                     textStyle:
-                        TextStyle(fontSize: 16, fontFamily: "ProductSans")),
+                    TextStyle(fontSize: 16, fontFamily: "ProductSans")),
                 radioButtonValue: (value) {
                   selectType = value.toString();
                   print(value);
@@ -110,9 +118,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('FirstName'),
                 controller: _firstnameController,
                 validator: (value) =>
-                    (value.toString().isEmpty) ? "Please Enter First Name" : null,
+                (value
+                    .toString()
+                    .isEmpty) ? "Please Enter First Name" : null,
                 decoration: InputDecoration(
-                    // prefixIcon: Icon(Icons.person_outline),
+                  // prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
                     hintText: 'First Name*',
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
@@ -124,9 +134,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('LastName'),
                 controller: _lastnameController,
                 validator: (value) =>
-                    (value.toString().isEmpty) ? "Please Enter Last Name" : null,
+                (value
+                    .toString()
+                    .isEmpty) ? "Please Enter Last Name" : null,
                 decoration: InputDecoration(
-                    //prefixIcon: Icon(Icons.person_outline),
+                  //prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
                     hintText: 'Last Name*',
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
@@ -142,9 +154,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('DateOfBirth'),
                 controller: _dateofbirthController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Date of Birth" : null,
+                (value.isEmpty) ? "Please Enter Date of Birth" : null,
                 decoration: InputDecoration(
-                    //prefixIcon: Icon(Icons.person_outline),
+                  //prefixIcon: Icon(Icons.person_outline),
                     suffixIcon: Icon(Icons.calendar_today),
                     border: OutlineInputBorder(),
                     hintText: 'Date of Birth (mm/dd/yyyy)*',
@@ -155,11 +167,14 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               Container(
                 height: 90,
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 decoration: Constants.InputBoxDecoration(),
                 child: Padding(
                   padding:
-                      EdgeInsets.only(left: 0, top: 0, right: 16, bottom: 0),
+                  EdgeInsets.only(left: 0, top: 0, right: 16, bottom: 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -183,7 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         children: [
                           new Radio(
                             activeColor:
-                                Constants.hexToColor(Constants.primaryColor),
+                            Constants.hexToColor(Constants.primaryColor),
                             value: 0,
                             groupValue: _radioValue,
                             onChanged: _handleRadioValueChange,
@@ -195,7 +210,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           new Radio(
                             activeColor:
-                                Constants.hexToColor(Constants.primaryColor),
+                            Constants.hexToColor(Constants.primaryColor),
                             value: 1,
                             groupValue: _radioValue,
                             onChanged: _handleRadioValueChange,
@@ -207,7 +222,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           new Radio(
                             activeColor:
-                                Constants.hexToColor(Constants.primaryColor),
+                            Constants.hexToColor(Constants.primaryColor),
                             value: 2,
                             groupValue: _radioValue,
                             onChanged: _handleRadioValueChange,
@@ -234,9 +249,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('Language'),
                 controller: _lanuageController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Language" : null,
+                (value.isEmpty) ? "Please Enter Language" : null,
                 decoration: InputDecoration(
-                    //prefixIcon: Icon(Icons.person_outline),
+                  //prefixIcon: Icon(Icons.person_outline),
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
                       size: 16,
@@ -261,8 +276,8 @@ class _SignUpPageState extends State<SignUpPage> {
                   }
                 },
                 decoration: InputDecoration(
-                    //prefixIcon: Icon(Icons.person_outline),
-                    //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
+                  //prefixIcon: Icon(Icons.person_outline),
+                  //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
                     border: OutlineInputBorder(),
                     hintText: 'Email Address*',
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
@@ -270,23 +285,61 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 10,
               ),
-              IntlPhoneField(
-                //controller: _phoneNumberController,
-                decoration: InputDecoration(
-                  labelText: 'Mobile Number',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(),
-                  ),
+//               IntlPhoneField(
+//                 //controller: _phoneNumberController,
+//                 decoration: InputDecoration(
+//                   labelText: 'Mobile Number',
+//                   border: OutlineInputBorder(
+//                     borderSide: BorderSide(),
+//                   ),
+//                 ),
+//                 initialCountryCode: 'CA',
+//                 onChanged: (phone) {
+// //                  _phoneNumberController..text = phone.completeNumber;
+// //                  _phoneNumberController
+// //                    ..selection = TextSelection.collapsed(offset: 0);
+//                   phoneNumber = phone.completeNumber;
+//                   print(phone.completeNumber);
+//                 },
+//               ),
+
+
+              InternationalPhoneNumberInput(
+                onInputChanged: (PhoneNumber number) {
+                  phoneNumber = number.phoneNumber;
+                  // print(number.phoneNumber);
+                },
+                onInputValidated: (bool value) {
+                  isNumberValidated = value;
+                  // print(value);
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return "Please enter phone number";
+                  } else if (!isNumberValidated) {
+                    return "Please use correct number";
+                  } else {
+                    return null;
+                  }
+                },
+                selectorConfig: SelectorConfig(
+                  selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
                 ),
-                initialCountryCode: 'CA',
-                onChanged: (phone) {
-//                  _phoneNumberController..text = phone.completeNumber;
-//                  _phoneNumberController
-//                    ..selection = TextSelection.collapsed(offset: 0);
-                  phoneNumber = phone.completeNumber;
-                  print(phone.completeNumber);
+                ignoreBlank: false,
+                autoValidateMode: AutovalidateMode.disabled,
+                selectorTextStyle: TextStyle(color: Colors.black),
+                textFieldController: _phoneNumberController,
+                initialValue: number,
+                formatInput: false,
+                keyboardType: TextInputType.numberWithOptions(
+                    signed: true, decimal: true),
+                inputBorder: OutlineInputBorder(),
+                onSaved: (PhoneNumber number) {
+                  //print('On Saved: $number');
                 },
               ),
+
+
               SizedBox(
                 height: 10,
               ),
@@ -316,13 +369,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                     child: _isShowPwd
                         ? Icon(
-                            Icons.visibility,
-                            color: Constants.hexToColor(
-                                Constants.primaryDarkColor),
-                          )
+                      Icons.visibility,
+                      color: Constants.hexToColor(
+                          Constants.primaryDarkColor),
+                    )
                         : Icon(Icons.visibility_off,
-                            color: Constants.hexToColor(
-                                Constants.primaryDarkColor)),
+                        color: Constants.hexToColor(
+                            Constants.primaryDarkColor)),
                   ),
                 ),
               ),
@@ -366,13 +419,13 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                     child: _isConfirmShowPwd
                         ? Icon(
-                            Icons.visibility,
-                            color: Constants.hexToColor(
-                                Constants.primaryDarkColor),
-                          )
+                      Icons.visibility,
+                      color: Constants.hexToColor(
+                          Constants.primaryDarkColor),
+                    )
                         : Icon(Icons.visibility_off,
-                            color: Constants.hexToColor(
-                                Constants.primaryDarkColor)),
+                        color: Constants.hexToColor(
+                            Constants.primaryDarkColor)),
                   ),
                 ),
               ),
@@ -381,7 +434,10 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               Container(
                 child: RoundedLoadingButton(
-                  width: MediaQuery.of(context).size.width - 32,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width - 32,
                   animateOnTap: true,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                   elevation: 8,
@@ -424,7 +480,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             fontSize: 14,
                             fontFamily: "ProductSans",
                             color:
-                                Constants.hexToColor(Constants.primaryColor)),
+                            Constants.hexToColor(Constants.primaryColor)),
                       ),
                     )
                   ],
@@ -453,7 +509,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Language _selectedDropdownLanguage =
-      LanguagePickerUtils.getLanguageByIsoCode('ko');
+  LanguagePickerUtils.getLanguageByIsoCode('ko');
 
 // It's sample code of Dropdown Item.
   Widget _buildDropdownItem(Language language) {
@@ -468,10 +524,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Language _selectedDialogLanguage =
-      LanguagePickerUtils.getLanguageByIsoCode('ko');
+  LanguagePickerUtils.getLanguageByIsoCode('ko');
 
 // It's sample code of Dialog Item.
-  Widget _buildDialogItem(Language language) => Row(
+  Widget _buildDialogItem(Language language) =>
+      Row(
         children: <Widget>[
           Text(language.name,
               style: TextStyle(
@@ -492,37 +549,41 @@ class _SignUpPageState extends State<SignUpPage> {
         ],
       );
 
-  void _openLanguagePickerDialog() => showDialog(
+  void _openLanguagePickerDialog() =>
+      showDialog(
         context: context,
-        builder: (context) => Theme(
-            data: Theme.of(context).copyWith(primaryColor: Colors.pink),
-            child: LanguagePickerDialog(
-                titlePadding: EdgeInsets.all(8.0),
-                searchCursorColor: Constants.hexToColor(
-                  Constants.primaryDarkColor,
-                ),
-                searchInputDecoration: InputDecoration(
-                    hintText: 'Search...',
-                    hintStyle: TextStyle(
-                        fontFamily: "ProductSans",
-                        fontSize: 14,
-                        color: Colors.grey)),
-                isSearchable: true,
-                title: Text("Select Language",
-                    style: TextStyle(
-                        fontFamily: "ProductSans",
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Constants.hexToColor(
-                          Constants.primaryDarkColor,
-                        ))),
-                onValuePicked: (Language language) => setState(() {
-                      _selectedDialogLanguage = language;
-                      _lanuageController.text = _selectedDialogLanguage.name;
-                      print(_selectedDialogLanguage.name);
-                      print(_selectedDialogLanguage.isoCode);
-                    }),
-                itemBuilder: _buildDialogItem)),
+        builder: (context) =>
+            Theme(
+                data: Theme.of(context).copyWith(primaryColor: Colors.pink),
+                child: LanguagePickerDialog(
+                    titlePadding: EdgeInsets.all(8.0),
+                    searchCursorColor: Constants.hexToColor(
+                      Constants.primaryDarkColor,
+                    ),
+                    searchInputDecoration: InputDecoration(
+                        hintText: 'Search...',
+                        hintStyle: TextStyle(
+                            fontFamily: "ProductSans",
+                            fontSize: 14,
+                            color: Colors.grey)),
+                    isSearchable: true,
+                    title: Text("Select Language",
+                        style: TextStyle(
+                            fontFamily: "ProductSans",
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Constants.hexToColor(
+                              Constants.primaryDarkColor,
+                            ))),
+                    onValuePicked: (Language language) =>
+                        setState(() {
+                          _selectedDialogLanguage = language;
+                          _lanuageController.text =
+                              _selectedDialogLanguage.name;
+                          print(_selectedDialogLanguage.name);
+                          print(_selectedDialogLanguage.isoCode);
+                        }),
+                    itemBuilder: _buildDialogItem)),
       );
 
   DateTime selectedDate = DateTime.now();
@@ -531,7 +592,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final DateTime picked = await showDatePicker(
       context: context,
       initialDate: selectedDate, // Refer step 1
-      firstDate: DateTime(2000),
+      firstDate: DateTime(1900),
       lastDate: DateTime(2025),
     );
     if (picked != null && picked != selectedDate)
@@ -542,6 +603,8 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> registerUser() async {
+    getPhoneNumber(phoneNumber);
+
     if (_formKey.currentState.validate()) {
       RegisterUser registerUser = new RegisterUser(
           selectType.toLowerCase().toString(),
@@ -551,7 +614,7 @@ class _SignUpPageState extends State<SignUpPage> {
           _radioValue.toString(),
           _lanuageController.text,
           _emailController.text,
-          phoneNumber,
+          number.phoneNumber,
           _passwordController.text,
           _conPasswordController.text,
           "",
@@ -579,20 +642,23 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
-                email: registerUser.email, password: registerUser.password)
+            email: registerUser.email, password: registerUser.password)
             .then((value) {
-          onUserCreated(value, registerUser);
+          onUserCreated(registerUser);
         });
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           showAlertDialog(
               "Server Error", 'The password provided is too weak.', context);
           _btnController.reset();
-        } else if (e.code == 'email-already-in-use') {
-          showAlertDialog("Server Error",
-              'The account already exists for that email.', context);
-          _btnController.reset();
+        }
+        else if (e.code == 'email-already-in-use') {
+          // showAlertDialog("Server Error",
+          //     'The account already exists for that email.', context);
+          onUserCreated(registerUser);
+          //_btnController.reset();
         } else {
+          print(e.message);
           showAlertDialog("Server Error", 'Something went wrong.', context);
           _btnController.reset();
         }
@@ -600,9 +666,9 @@ class _SignUpPageState extends State<SignUpPage> {
         _btnController.reset();
         showAlertDialog("Server Error",
             'Some information went wrong. Please try again', context);
+        print(e.message);
       }
     } else {
-      showAlertDialog("Missing Information", "Please fill all fields", context);
       _btnController.reset();
       return;
     }
@@ -629,7 +695,8 @@ class _SignUpPageState extends State<SignUpPage> {
   void showAlertDialog(String title, String msg, BuildContext context) {
     showDialog(
         context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
+        builder: (BuildContext context) =>
+            CupertinoAlertDialog(
               title: Text(title,
                   style: TextStyle(
                     fontFamily: "ProductSans",
@@ -646,7 +713,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       )),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    gotoLoginScreen(context);
                   },
                 )
               ],
@@ -654,36 +720,78 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  onUserCreated(UserCredential value, RegisterUser registerUser) {
+  onUserCreated(RegisterUser registerUser) {
+    print(registerUser.contact_number);
     final mainReference = FirebaseDatabase.instance.reference();
     mainReference
         .child("users")
         .child(registerUser.userType)
-        .child(registerUser.contact_number)
+        .child(number.phoneNumber)
         .set(registerUser.toJson())
         .then((value) {
-      showAlertDialog("Success", 'Registered Successfully!', context);
+      showSuccessAlertDialog("Success", 'Registered Successfully!', context);
       _btnController.success();
     }, onError: (error) {
-      print(error + "--------------");
+      print(error );
     }).catchError((error) {
+      print(error.toString());
       _btnController.reset();
       showAlertDialog("Server Error",
           'Some information went wrong. Please try again', context);
     });
   }
 
-  void gotoLoginScreen(BuildContext context) {
+  void gotoLoginScreen() {
+    _btnController.reset();
     Timer(Duration(seconds: 1), () {
-      _btnController.reset();
-
       Navigator.of(context).pop();
-//      Navigator.push(
-//        context,
-//        MaterialPageRoute(
-//          builder: (context) => LoginPage(),
-//        ),
-//      );
+     // Navigator.pushReplacement(
+     //   context,
+     //   MaterialPageRoute(
+     //     builder: (context) => LoginPage(),
+     //   ),
+     // );
     });
   }
+
+  void getPhoneNumber(String phoneNumber) async {
+    PhoneNumber number =
+    await PhoneNumber.getRegionInfoFromPhoneNumber(phoneNumber, 'CA');
+
+    setState(() {
+      this.number = number;
+      print(number);
+    });
+  }
+
+  void showSuccessAlertDialog(String title, String msg, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            CupertinoAlertDialog(
+              title: Text(title,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              content: Text(msg,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("OK",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    gotoLoginScreen();
+                  },
+                )
+              ],
+            )
+    );
+  }
+
+
 }

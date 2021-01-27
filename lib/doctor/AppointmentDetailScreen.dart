@@ -1,7 +1,7 @@
+import 'package:HealOnline/models/Appoitment.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/models/Appoitment.dart';
 
 import '../constants.dart';
 import 'DoctorNotesScreen.dart';
@@ -17,11 +17,18 @@ class AppointmentDetail extends StatefulWidget {
 class _AppointmentDetailState extends State<AppointmentDetail> {
   Appointment user;
   _AppointmentDetailState(this.user);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
 
   var userGender = ["Male", "Female", "Other"];
 
   @override
   Widget build(BuildContext context) {
+    print(user.gender);
     return Scaffold(
       appBar: AppBar(
         elevation: 8,
@@ -82,7 +89,8 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        userGender[int.parse(user.gender)] != null ? userGender[int.parse(user.gender)]  : "-",
+                        user.gender != "" ?
+                        userGender[int.parse(user.gender)] != "" ? userGender[int.parse(user.gender)]  : "-" : "-",
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 15,

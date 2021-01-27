@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/SignUpScreen/SignupScreen.dart';
-import 'package:healonline/patient/AddAddressScreen.dart';
-import 'package:healonline/patient/fragments/SelectSymptomScreen.dart';
 
 import '../../constants.dart';
+import '../AddAddressScreen.dart';
+import 'SelectSymptomScreen.dart';
 
 class CityPicker extends StatefulWidget {
   String title;

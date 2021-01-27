@@ -5,15 +5,13 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:healonline/doctor/HomePage.dart';
-import 'package:healonline/models/Appoitment.dart';
-import 'package:healonline/patient/fragments/HomePage.dart';
 import '../constants.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'Appointments.dart';
 import 'PatientNotifications.dart';
 import 'PatientProfile.dart';
+import 'fragments/HomePage.dart';
 //HomePagePatient
 
 class HomePagePatient extends StatelessWidget {

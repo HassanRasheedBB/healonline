@@ -96,61 +96,61 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             SizedBox(
               height: 24,
             ),
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18),
-                  child: Text(
-                    'What method of communication do you\nprefer for your virtual visit',
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Constants.hexToColor(
-                          Constants.primaryDarkColor,
-                        ),
-                        fontFamily: "ProductSans"),
-                  ),
-                )),
-            SizedBox(
-              height: 12,
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 12),
-              child: Align(
-                alignment: Alignment.center,
-                child: CustomRadioButton(
-                  spacing: 2,
-                  elevation: 4,
-                  height: 40,
-                  width: MediaQuery.of(context).size.width / 2 - 37,
-                  customShape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(6.0)),
-                  enableShape: true,
-                  unSelectedColor: Theme.of(context).canvasColor,
-                  buttonLables: [
-                    'Video Call',
-                    'Audio Call',
-                  ],
-                  buttonValues: [
-                    "VIDEO",
-                    "AUDIO",
-                  ],
-                  buttonTextStyle: ButtonTextStyle(
-                      selectedColor: Colors.white,
-                      unSelectedColor: Colors.black,
-                      textStyle: TextStyle(
-                          fontSize: 16, fontFamily: "ProductSans")),
-                  radioButtonValue: (value) {
-                    print(value);
-                    selectedContactedOptionAs = value;
-                  },
-                  selectedColor:
-                  Constants.hexToColor(Constants.primaryDarkColor),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 24,
-            ),
+            // Align(
+            //     alignment: Alignment.centerLeft,
+            //     child: Padding(
+            //       padding: EdgeInsets.symmetric(horizontal: 18),
+            //       child: Text(
+            //         'What method of communication do you\nprefer for your virtual visit',
+            //         style: TextStyle(
+            //             fontSize: 16,
+            //             color: Constants.hexToColor(
+            //               Constants.primaryDarkColor,
+            //             ),
+            //             fontFamily: "ProductSans"),
+            //       ),
+            //     )),
+            // SizedBox(
+            //   height: 12,
+            // ),
+            // Padding(
+            //   padding: EdgeInsets.only(left: 12),
+            //   child: Align(
+            //     alignment: Alignment.center,
+            //     child: CustomRadioButton(
+            //       spacing: 2,
+            //       elevation: 4,
+            //       height: 40,
+            //       width: MediaQuery.of(context).size.width / 2 - 37,
+            //       customShape: RoundedRectangleBorder(
+            //           borderRadius: new BorderRadius.circular(6.0)),
+            //       enableShape: true,
+            //       unSelectedColor: Theme.of(context).canvasColor,
+            //       buttonLables: [
+            //         'Video Call',
+            //         'Audio Call',
+            //       ],
+            //       buttonValues: [
+            //         "VIDEO",
+            //         "AUDIO",
+            //       ],
+            //       buttonTextStyle: ButtonTextStyle(
+            //           selectedColor: Colors.white,
+            //           unSelectedColor: Colors.black,
+            //           textStyle: TextStyle(
+            //               fontSize: 16, fontFamily: "ProductSans")),
+            //       radioButtonValue: (value) {
+            //         print(value);
+            //         selectedContactedOptionAs = value;
+            //       },
+            //       selectedColor:
+            //       Constants.hexToColor(Constants.primaryDarkColor),
+            //     ),
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 24,
+            // ),
             Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -312,11 +312,14 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
   File _imageFile;
 
   Future<void> pickImage() async {
-    File file = await FilePicker.getFile(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'png'],
-    );
+    FilePickerResult result = await FilePicker.platform.pickFiles();
 
+    File file;
+    if(result != null) {
+      _imageFile = File(result.files.single.path);
+    } else {
+      return;
+    }
     _imageFile = File(file.path);
     String imageUrl;
 

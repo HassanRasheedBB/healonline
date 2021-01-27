@@ -2,11 +2,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/patient/FAQScreen.dart';
-import 'package:healonline/patient/PasswordChangeScreen.dart';
 
 import '../constants.dart';
 import 'ContactUsScreen.dart';
+import 'FAQScreen.dart';
+import 'PasswordChangeScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
   SettingsScreen({Key key}) : super(key: key);

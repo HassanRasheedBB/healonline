@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'package:HealOnline/models/UploadItem.dart';
+import 'package:HealOnline/patient/fragments/UploadDocsScreen.dart';
+import 'package:HealOnline/patient/fragments/UploadImages.dart';
+import 'package:HealOnline/patient/fragments/UploadPdfs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart' as firebase_database;
 
@@ -8,10 +12,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/models/UploadItem.dart';
-import 'package:healonline/patient/fragments/UploadDocsScreen.dart';
-import 'package:healonline/patient/fragments/UploadImages.dart';
-import 'package:healonline/patient/fragments/UploadPdfs.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 
 import '../constants.dart';

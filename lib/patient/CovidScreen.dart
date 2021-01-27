@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/patient/RemainingQuestionsScreen.dart';
 import '../constants.dart';
+import 'RemainingQuestionsScreen.dart';
 
 class CovidScreen extends StatefulWidget {
   CovidScreen({Key key}) : super(key: key);

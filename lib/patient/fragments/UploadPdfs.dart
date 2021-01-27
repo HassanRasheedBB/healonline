@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:HealOnline/models/UploadItem.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart' as firebase_database;
 
@@ -8,7 +9,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:healonline/models/UploadItem.dart';
 
 import '../../constants.dart';
 
@@ -157,9 +157,14 @@ class _UploadPdfsState extends State<UploadPdfs> {
   }
 
   Future<void> uploadPdf() async {
-    File file = await FilePicker.getFile(
-      type: FileType.any,
-    );
+    FilePickerResult result = await FilePicker.platform.pickFiles();
+
+    File file;
+    if(result != null) {
+      file = File(result.files.single.path);
+    } else {
+      return;
+    }
 
     _imageFile = File(file.path);
     String imageUrl;

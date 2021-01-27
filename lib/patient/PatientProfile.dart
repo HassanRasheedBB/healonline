@@ -1,4 +1,5 @@
 //PatientProfile
+import 'package:HealOnline/LoginScreen/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -260,6 +261,15 @@ class _PatientProfileState extends State<PatientProfile> {
                       ),
                       fontSize: 18,
                       fontFamily: "ProductSans")),
+
+              onTap: (){
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginPage(),
+                  ),
+                );
+              },
             ),
           ),
 
