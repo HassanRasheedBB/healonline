@@ -58,20 +58,20 @@ class _HomePageState extends State<HomePage> {
                     color: Constants.hexToColor(Constants.primaryDarkColor))),
           ),
           SizedBox(
-            height: 8,
+            height: 24,
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 8, right: 24, bottom: 10),
-            child: Align(
-                alignment: Alignment.centerRight,
-                child: Text('See All',
-                    style: TextStyle(
-                      color: Constants.hexToColor(Constants.primaryDarkColor),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.0,
-                      fontFamily: "ProductSans",
-                    ))),
-          ),
+          // Padding(
+          //   padding: EdgeInsets.only(top: 8, right: 24, bottom: 10),
+          //   child: Align(
+          //       alignment: Alignment.centerRight,
+          //       child: Text('See All',
+          //           style: TextStyle(
+          //             color: Constants.hexToColor(Constants.primaryDarkColor),
+          //             fontWeight: FontWeight.w500,
+          //             fontSize: 14.0,
+          //             fontFamily: "ProductSans",
+          //           ))),
+          // ),
           SingleChildScrollView(
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 16),
@@ -335,41 +335,54 @@ class _HomePageState extends State<HomePage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12.0),
                     ),
-                    child: Container(
-                      height: 110,
-                      width: MediaQuery.of(context).size.width  - 14,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-
-
-                          Text("Mental Health Councelling",
-                              style: TextStyle(
-                                fontFamily: "ProductSans",
-                                fontSize: 18,
-                                color: Constants.hexToColor(
-                                  Constants.blackColor,
-                                ),
-                              )),
-
-                          SizedBox(
-                            width: 14,
+                    child: GestureDetector(
+                      onTap: (){
+                        Constants.appointment.appointmentFor = "Mental Health Councelling";
+                        showCupertinoModalBottomSheet(
+                          elevation: 8,
+                          topRadius: Radius.circular(24),
+                          context: context,
+                          builder: (context) => Container(
+                            margin: EdgeInsets.symmetric(horizontal: 20),
+                            height: 600,
+                            child: CityPicker("Location", false),
                           ),
-                          CircleAvatar(
-                              backgroundColor: Constants.hexToColor(
-                                Constants.primaryDarkColor,
-                              ),
-                              radius: 28,
-                              child: Container(
-                                height: 32,
-                                width: 32,
-                                child: SvgPicture.asset(
-                                  "assets/images/mentalhealth.svg",
-                                  color: Colors.white,
+                        );
+                      },
+                      child:  Container(
+                        height: 110,
+                        width: MediaQuery.of(context).size.width  - 14,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text("Mental Health Councelling",
+                                style: TextStyle(
+                                  fontFamily: "ProductSans",
+                                  fontSize: 18,
+                                  color: Constants.hexToColor(
+                                    Constants.blackColor,
+                                  ),
+                                )),
+
+                            SizedBox(
+                              width: 14,
+                            ),
+                            CircleAvatar(
+                                backgroundColor: Constants.hexToColor(
+                                  Constants.primaryDarkColor,
                                 ),
-                              )),
-                        ],
+                                radius: 28,
+                                child: Container(
+                                  height: 32,
+                                  width: 32,
+                                  child: SvgPicture.asset(
+                                    "assets/images/mentalhealth.svg",
+                                    color: Colors.white,
+                                  ),
+                                )),
+                          ],
+                        ),
                       ),
                     ),
                   )

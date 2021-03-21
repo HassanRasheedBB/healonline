@@ -1,19 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/UploadItem.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart' as firebase_database;
 
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants.dart';
 
 class UploadPdfs extends StatefulWidget {
-  UploadPdfs({Key key}) : super(key: key);
+  String appointmentId;
+  UploadPdfs(this.appointmentId,{Key key}) : super(key: key);
 
   @override
   _UploadPdfsState createState() => _UploadPdfsState();
@@ -60,7 +66,11 @@ class _UploadPdfsState extends State<UploadPdfs> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        if (pdfs[index].link != null) {
+                          _launchURL(pdfs[index].link);
+                        }
+                      },
                       title: Padding(
                         padding: EdgeInsets.only(top: 8),
                         child: Text(
@@ -107,38 +117,56 @@ class _UploadPdfsState extends State<UploadPdfs> {
     );
   }
 
-  void getImagesFromDB() {
-    if (!isLoading) {
-      setState(() {
-        isLoading = true;
-      });
+  Future<void> getImagesFromDB() async {
+    try {
+      if (!isLoading) {
+        setState(() {
+          isLoading = true;
+        });
 
-      String type;
-      List<UploadItem> pdfList = List();
-      final databaseReference = FirebaseDatabase.instance.reference();
+        String url = Utils.baseURL + Utils.GET_APPOINTMNETS;
+        print(url);
+        Map<String, String> headers = {
+          "Content-type": "application/json",
+          HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+        };
+        Response response = await get(url, headers: headers);
+        String body = response.body;
+        print(body);
 
-      databaseReference
-          .child("uploads")
-          .child("09007860101")
-          .once()
-          .then((DataSnapshot snapshot) {
-        Map<dynamic, dynamic> values = snapshot.value;
-        if (values != null) {
-          values.forEach((key, value) {
-            type = value["type"];
+        List<UploadItem> list = [];
 
-            if(type == "pdf") {
-              pdfList.add(new UploadItem(
-                  value["title"], value["date"], value["link"], value["type"]));
+        if (response.statusCode == 200) {
+          List<dynamic> appointments = (json.decode(body))["appointments"];
+
+          for (int i = 0; i < appointments.length; i++) {
+            if (appointments[i]["id"].toString() == widget.appointmentId) {
+              List<dynamic> files = appointments[i]["appointment_files"];
+              if (files != null && files.length > 0) {
+                for (int i = 0; i < files.length; i++) {
+                  if (files[i]["type"] == "pdf") {
+                    UploadItem imgModel = UploadItem(
+                        files[i]["type"],
+                        files[i]["created_at"],
+                        files[i]["name"],
+                        files[i]["type"]);
+                    list.add(imgModel);
+                  }
+                }
+              }
             }
-          });
+          }
         }
 
         setState(() {
           isLoading = false;
           pdfs.clear();
-          pdfs.addAll(pdfList);
+          pdfs.addAll(list);
         });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -157,75 +185,64 @@ class _UploadPdfsState extends State<UploadPdfs> {
   }
 
   Future<void> uploadPdf() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false);
 
     File file;
-    if(result != null) {
+    if (result != null) {
       file = File(result.files.single.path);
     } else {
       return;
     }
 
     _imageFile = File(file.path);
-    String imageUrl;
+
+    String url = Utils.baseURL +
+        Utils.SAVE_PRESCRIPTION +
+        widget.appointmentId.toString();
+    print(url);
+
+    Uri uri = Uri.parse(url);
+    http.MultipartRequest request = new http.MultipartRequest('POST', uri);
+
+    request.fields['prescription[0][type]'] = "pdf";
+
+    request.headers['Content-type'] = "application/json";
+    request.headers['Authorization'] = "Bearer " + Utils.user.token;
+
+    String fileName = _imageFile.path.split('/').last;
+    String ext = fileName.split(".").last;
+    request.files.add(await http.MultipartFile.fromPath(
+        'prescription[0][file]', _imageFile.path,
+        contentType: new MediaType('pdf', ext)));
+
+    request.send().then((http.StreamedResponse response) async {
+      if (response.statusCode == 200) {
+        isLoading = false;
+        getImagesFromDB();
+      } else {
+        showAlertDialog(
+            "Error", "Some information went wrong please try again", context);
+        print(response.toString());
+      }
+    }).catchError((error) async {
+      showAlertDialog(
+          "Error", "Some information went wrong please try again", context);
+      print(error.toString());
+    });
 
     setState(() {
       isLoading = true;
     });
 
-    final mainReference =
-    firebase_database.FirebaseDatabase.instance.reference();
-    String key = mainReference.child("uploads").child("09007860101").push().key;
 
-    Reference reference = FirebaseStorage.instance
-        .ref()
-        .child("Uploads")
-        .child("09007860101")
-        .child(key);
-    UploadTask uploadTask = reference.putFile(_imageFile);
-
-    uploadTask.whenComplete(() async {
-      try {
-        imageUrl = await reference.getDownloadURL();
-        addInDB(key, imageUrl);
-      } catch (onError) {
-        showOtherAlertDialog(
-            "Error", 'Something went wrong on uploading', context);
-      }
-      print(imageUrl);
-    });
   }
 
-  void addInDB(String key, String imageUrl) {
-    final mainReference =
-    firebase_database.FirebaseDatabase.instance.reference();
-    String title = "Prescription # " + (pdfs.length + 1).toString();
-    String date = DateTime.now().toLocal().toString();
-    UploadItem item = new UploadItem(title, date, imageUrl, "pdf");
-    String key = mainReference.child("uploads").child("09007860101").push().key;
 
-    try {
-      mainReference
-          .child("uploads")
-          .child("09007860101")
-          .child(key)
-          .set(item.toJson())
-          .then((value) {
-        setState(() {
-          isLoading = false;
-          pdfs.add(UploadItem(title, date, imageUrl, "pdf"));
-        });
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      showOtherAlertDialog(
-          "Error", 'Something went wrong please try again', context);
-    }
-  }
 
-  void showOtherAlertDialog(String title, String msg, BuildContext context) {
+  void showAlertDialog(String title, String msg, BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
@@ -249,8 +266,10 @@ class _UploadPdfsState extends State<UploadPdfs> {
             )
           ],
         ));
+  }
 
-    ;
+  Future<void> _launchURL(String _url) async {
+    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
   }
 
 }

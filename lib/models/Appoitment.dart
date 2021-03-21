@@ -1,10 +1,15 @@
+import 'package:HealOnline/Utils.dart';
+
 class Appointment{
   String province, symptoms, howLongFelt, covidYesNo, covidLocation, covidTimeTravel,
-  sickNote, AudioOrVideo, additionalDetails, isImageAttached, doctorPhone, appointmentDate, appointmentTime;
-  String docName, docSkills, appointmentFor;
+  sickNote, AudioOrVideo, additionalDetails, appointmentDate, appointmentTime;
+  String appointmentFor;
   String userId, docId, userName;
 
-  String age, weight, height, maritalStatus, bloodGroup, history, gender, userEmail;
+  String docName="";
+  String docEmail="";
+  String skills="";
+
 
   Appointment(
       this.province,
@@ -16,24 +21,12 @@ class Appointment{
       this.sickNote,
       this.AudioOrVideo,
       this.additionalDetails,
-      this.isImageAttached,
-      this.doctorPhone,
       this.appointmentDate,
       this.appointmentTime,
-      this.docName,
-      this.docSkills,
       this.appointmentFor,
       this.userId,
       this.docId,
       this.userName,
-      this.age,
-      this.weight,
-      this.height,
-      this.maritalStatus,
-      this.bloodGroup,
-      this.history,
-      this.gender,
-      this.userEmail
       );
 
 
@@ -41,33 +34,26 @@ class Appointment{
 
   toJson() {
     return {
+      "doc_id":"5",
+      "patient_id":"10",
       "province": province,
       "symptoms": symptoms,
-      "howLongFelt": howLongFelt,
-      "covidYesNo": covidYesNo,
-      "covidLocation": covidLocation,
-      "covidTimeTravel": covidTimeTravel,
-      "sickNote": sickNote,
-      "AudioOrVideo": AudioOrVideo,
-      "additionalDetails": additionalDetails,
-      "isImageAttached": isImageAttached,
-      "doctorPhone": doctorPhone,
-      "appointmentDate": appointmentDate,
-      "appointmentTime": appointmentTime,
-      "docName": docName,
-      "docSkills": docSkills,
-      "appointmentFor":appointmentFor,
+      "how_long_felt": howLongFelt,
+      "covid": "0",
+      "covid_location": covidLocation,
+      "covid_time_travel": covidTimeTravel,
+      "sick_note": sickNote,
+      "appointment_files":"1",
+      "file_data[0][type]":"image",
+      "file_data[0][file]": AudioOrVideo,
+      "additional_details": additionalDetails,
+      "date": "2021-03-02",
+      "time": "05:26",
+      "appointment_for":appointmentFor,
       "userName": userName,
       "userId":userId,
       "docId":docId,
-      "age": age,
-      "weight": weight,
-      "height": height,
-      "maritalStatus": maritalStatus,
-      "bloodGroup": bloodGroup,
-      "history": history,
-      "gender" : gender,
-      "userEmail": userEmail
+      "status":"0"
     };
   }
 

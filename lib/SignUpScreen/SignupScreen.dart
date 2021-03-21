@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:HealOnline/LoginScreen/login_screen.dart';
+import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/models/LoginResponse.dart';
 import 'package:HealOnline/models/RegisterDoctor.dart';
+import 'package:HealOnline/models/RegisterResponse.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 import 'package:language_pickers/languages.dart';
@@ -15,6 +18,7 @@ import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 import 'package:language_pickers/language_pickers.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -50,6 +54,7 @@ class _SignUpPageState extends State<SignUpPage> {
   String initialCountry = 'CA';
   PhoneNumber number = PhoneNumber(isoCode: 'CA');
   bool isNumberValidated = false;
+  String selectedGender  = "male";
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +312,7 @@ class _SignUpPageState extends State<SignUpPage> {
               InternationalPhoneNumberInput(
                 onInputChanged: (PhoneNumber number) {
                   phoneNumber = number.phoneNumber;
-                  // print(number.phoneNumber);
+                   print(number.phoneNumber);
                 },
                 onInputValidated: (bool value) {
                   isNumberValidated = value;
@@ -383,7 +388,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 8,
               ),
               Text(
-                "(Password must contain at least 8 characters, 1 lower case (a-z) & 1 Upper case (A-Z), 1 number (0-9) or a symbol)",
+                "(Password must contain at least 8 characters, 1 lower case (a-z) & 1 Upper case (A-Z), 1 number (0-9) and 1 special character)",
                 style: TextStyle(
                     fontFamily: "ProductSans",
                     color: Colors.grey,
@@ -493,16 +498,20 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+
   void _handleRadioValueChange(int value) {
     setState(() {
       _radioValue = value;
 
       switch (_radioValue) {
         case 0:
+          selectedGender = "male";
           break;
         case 1:
+          selectedGender = "female";
           break;
         case 2:
+          selectedGender = "other";
           break;
       }
     });
@@ -603,70 +612,95 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> registerUser() async {
-    getPhoneNumber(phoneNumber);
+    //getPhoneNumber(phoneNumber);
 
     if (_formKey.currentState.validate()) {
+
+      int roleId = 2;
+      if(selectType.toString() != "PATIENT"){
+        roleId = 3;
+      }
+
+      String body = "";
+
       RegisterUser registerUser = new RegisterUser(
-          selectType.toLowerCase().toString(),
+          roleId,
           _firstnameController.text,
           _lastnameController.text,
           _dateofbirthController.text,
-          _radioValue.toString(),
+          selectedGender,
           _lanuageController.text,
           _emailController.text,
-          number.phoneNumber,
+          phoneNumber,
           _passwordController.text,
           _conPasswordController.text,
           "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-          ""
       );
 
       try {
-        await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-            email: registerUser.email, password: registerUser.password)
-            .then((value) {
-          onUserCreated(registerUser);
-        });
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          showAlertDialog(
-              "Server Error", 'The password provided is too weak.', context);
+
+        String url = Utils.baseURL + Utils.USER_REGISTER;
+        Map<String, String> headers = Utils.HEADERS;
+        String jsonUser = jsonEncode(registerUser);
+        Response response = await post(url, headers: headers, body: jsonUser);
+        int statusCode = response.statusCode;
+
+        if (statusCode == 200 || statusCode == 203) {
+          body = response.body;
+          RegisterReponse p = RegisterReponse.fromJson(json.decode(body));
+
+          if (p.err != null) {
+
+            _btnController.reset();
+            if(p.err.email != null){
+              showAlertDialog("Error", p.err.email.toString(), context);
+            }
+            else{
+              showAlertDialog("Server Error",
+                  'Some information went wrong. Please try again', context);
+            }
+
+          }else{
+            Utils.user = LoginResponse();
+            Utils.user.token = p.auth;
+            Utils.user.profile_obj = p.profile_obj;
+            Utils.user.is_loggedIn = "1";
+
+
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('loggedIn', "1");
+            await prefs.setInt('profile_id', p.profile_obj.umeta_obj.profile_id);
+            await prefs.setInt('id', p.profile_obj.umeta_obj.id);
+            await prefs.setString(
+                'user_login', p.profile_obj.umeta_obj.user_login.toString());
+            await prefs.setString(
+                'user_pass', p.profile_obj.umeta_obj.user_pass.toString());
+            await prefs.setString(
+                'user_email', p.profile_obj.umeta_obj.user_email.toString());
+            await prefs.setString(
+                'user_type', p.profile_obj.pmeta_obj.user_type.toString());
+            await prefs.setString(
+                'full_name', p.profile_obj.pmeta_obj.full_name.toString());
+            await prefs.setString(
+                'profile_img', p.profile_obj.pmeta_obj.profile_img.toString());
+            await prefs.setString('token', p.auth.toString());
+
+            _btnController.reset();
+            showSuccessAlertDialog("Message", "User Registered Successfully !", context);
+
+          }
+        }else{
           _btnController.reset();
+          showAlertDialog("Server Error",
+              'Some information went wrong. Please try again', context);
         }
-        else if (e.code == 'email-already-in-use') {
-          // showAlertDialog("Server Error",
-          //     'The account already exists for that email.', context);
-          onUserCreated(registerUser);
-          //_btnController.reset();
-        } else {
-          print(e.message);
-          showAlertDialog("Server Error", 'Something went wrong.', context);
-          _btnController.reset();
-        }
+
+
       } catch (e) {
         _btnController.reset();
         showAlertDialog("Server Error",
             'Some information went wrong. Please try again', context);
-        print(e.message);
+        //print(e.message);
       }
     } else {
       _btnController.reset();
@@ -720,26 +754,6 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  onUserCreated(RegisterUser registerUser) {
-    print(registerUser.contact_number);
-    final mainReference = FirebaseDatabase.instance.reference();
-    mainReference
-        .child("users")
-        .child(registerUser.userType)
-        .child(number.phoneNumber)
-        .set(registerUser.toJson())
-        .then((value) {
-      showSuccessAlertDialog("Success", 'Registered Successfully!', context);
-      _btnController.success();
-    }, onError: (error) {
-      print(error );
-    }).catchError((error) {
-      print(error.toString());
-      _btnController.reset();
-      showAlertDialog("Server Error",
-          'Some information went wrong. Please try again', context);
-    });
-  }
 
   void gotoLoginScreen() {
     _btnController.reset();

@@ -1,8 +1,12 @@
+import 'package:HealOnline/LoginScreen/login_screen.dart';
+import 'package:HealOnline/VideoCall/call.dart';
+import 'package:HealOnline/VideoCall/index.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants.dart';
 import 'AllPatientsListScreen.dart';
 import 'AppointmentListScreen.dart';
@@ -351,6 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
+
               ListTile(
                 leading: Container(
                   height: 26,
@@ -367,11 +372,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 16,
                       color: Constants.hexToColor(Constants.blackColor)),
                 ),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
+                onTap: () async {
                   Navigator.pop(context);
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('loggedIn');
+
+                  Future.delayed(
+                    Duration(milliseconds: 500),
+                        () {
+                      setState(() {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ),
+                        );
+                      });
+                    },
+                  );
                 },
               ),
               Padding(
@@ -397,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (c, s) => s.connectionState == ConnectionState.done
                 ? AllPatientListScreen()
                 : Container(
-                    height: MediaQuery.of(context).size.height,
+                    height: 80,
                     child: Center(
                       child: CircularProgressIndicator(),
                     ),
@@ -421,7 +439,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   )),
       );
       //home = NotificationScreen();
-    } else {
+    }
+
+    else if (_page == 9) {
+      //appBarTitle = "Call";
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => IndexPage(),
+        ),
+      );
+      //home = IndexPage();
+      //home = NotificationScreen();
+    }
+
+    else {
       appBarTitle = "Profile";
       home = Container(
         child: FutureBuilder(
@@ -437,4 +469,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
+
+
 }

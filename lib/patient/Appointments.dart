@@ -56,7 +56,7 @@ class _AppointmentsState extends State<Appointments> {
                 Padding(
                   padding: EdgeInsets.only(bottom:8.0),
                   child: Text(
-                    "Completed",
+                    "Today",
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,

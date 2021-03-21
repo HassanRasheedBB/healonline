@@ -1,13 +1,20 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/Appoitment.dart';
+import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
 
 import '../constants.dart';
 import 'DoctorNotesScreen.dart';
 
 class AppointmentDetail extends StatefulWidget {
-  Appointment user;
+  AppointmentUI user;
+
   AppointmentDetail(this.user, {Key key}) : super(key: key);
 
   @override
@@ -15,33 +22,35 @@ class AppointmentDetail extends StatefulWidget {
 }
 
 class _AppointmentDetailState extends State<AppointmentDetail> {
-  Appointment user;
+  AppointmentUI user;
+
   _AppointmentDetailState(this.user);
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    getUser(widget.user.patientId);
   }
 
   var userGender = ["Male", "Female", "Other"];
 
   @override
   Widget build(BuildContext context) {
-    print(user.gender);
+    //print(user.gender);
     return Scaffold(
       appBar: AppBar(
         elevation: 8,
         backgroundColor: Constants.hexToColor(Constants.whiteColor),
         leading: Padding(
-          padding: EdgeInsets.all(19),
-          child: InkWell(
-            onTap: (){
-              Navigator.of(context).pop();
-            },
-            child: Icon(Icons.arrow_back_ios, color: Constants.hexToColor(Constants.blackColor)),
-          )
-        ),
+            padding: EdgeInsets.all(19),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: Icon(Icons.arrow_back_ios,
+                  color: Constants.hexToColor(Constants.blackColor)),
+            )),
         title: Text("Appointment Details",
             style: TextStyle(
                 fontSize: 20,
@@ -89,8 +98,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        user.gender != "" ?
-                        userGender[int.parse(user.gender)] != "" ? userGender[int.parse(user.gender)]  : "-" : "-",
+                        user.gender != null ? user.gender : "-",
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 15,
@@ -107,7 +115,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                         width: 8,
                       ),
                       Text(
-                        user.age+" Y",
+                        user.age != null ? user.age.toString() + " Y" : "",
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 15,
@@ -124,7 +132,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                         width: 8,
                       ),
                       Text(
-                        "dhgb",
+                        user.lang != null ? user.lang.toString() : "",
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 15,
@@ -167,7 +175,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  user.weight+" lbps",
+                                  user.weight != null
+                                      ? user.weight + " lbps"
+                                      : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -196,7 +206,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  user.height+" inches",
+                                  user.height != null
+                                      ? user.height + " inches"
+                                      : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -225,7 +237,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  user.maritalStatus,
+                                  user.maritalStatus != null
+                                      ? user.maritalStatus
+                                      : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -254,7 +268,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  user.bloodGroup,
+                                  user.bloodGrp != null ? user.bloodGrp : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -283,7 +297,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  user.userEmail != null ? user.userEmail : "-",
+                                  Utils.user.profile_obj.umeta_obj.user_email,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -312,7 +326,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                                   ),
                                 ),
                                 Text(
-                                  user.userId,
+                                  user.phoneNum != null ? user.phoneNum : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -332,21 +346,21 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     ),
                   ),
                   SizedBox(height: 8),
-
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     height: 52,
                     width: MediaQuery.of(context).size.width,
                     child: InkWell(
-                      onTap: (){
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DoctorNotesScreen(),
+                            builder: (context) =>
+                                DoctorNotesScreen(user.id.toString()),
                           ),
                         );
                       },
-                      child:  Card(
+                      child: Card(
                         elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
@@ -370,10 +384,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                       ),
                     ),
                   ),
-
-
                   SizedBox(height: 8),
-
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
                     height: 52,
@@ -401,10 +412,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                       ),
                     ),
                   ),
-
-
                   SizedBox(height: 20),
-
                   Container(
                       margin: EdgeInsets.symmetric(horizontal: 20.0),
                       height: 54,
@@ -415,8 +423,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               Constants.primaryDarkColor,
                             ),
                           ),
-                          borderRadius: BorderRadius.all(Radius.circular(8))
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(8))),
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
@@ -429,10 +436,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                             ),
                           ),
                         ),
-                      )
-                  )
-
-
+                      ))
                 ],
               ),
             )
@@ -440,5 +444,40 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
         ),
       ),
     );
+  }
+
+  Future<void> getUser(String patientId) async {
+    String url =
+        Utils.baseURL + Utils.GET_PATIENT_WITH_ID + patientId.toString();
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(url, headers: headers);
+    String body = response.body;
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      var mainStream = (json.decode(response.body))["patient"]["profile"];
+      if (mainStream != null) {
+        setState(() {
+          user.age = mainStream["age"];
+          user.weight = mainStream["weight"];
+          user.height = mainStream["height"];
+          user.maritalStatus = mainStream["martial_status"];
+          user.bloodGrp = mainStream["blood_group"];
+          user.phoneNum = mainStream["mobile"];
+          user.lang = mainStream["language"];
+          if (mainStream["gender"] != null) {
+            if (mainStream["gender"] == "male") {
+              user.gender = userGender[0];
+            } else {
+              user.gender = userGender[1];
+            }
+          }
+        });
+      }
+    }
   }
 }

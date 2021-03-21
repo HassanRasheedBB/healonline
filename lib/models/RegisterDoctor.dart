@@ -1,18 +1,22 @@
 
 class RegisterUser{
-  String userType,fname, lName, dob, gender, lanuage, email, contact_number,
-      password, confirm_password;
-  String pharmacy, pharmacyPhone, pharmacyCell, healthCardProvince, helthCardNo,
-      insuranceProvider, insurancePolicyNumber;
 
-  String appointmentTimes, appointmentDays, rating, location, skills, patientsCount, appointmentsCount,
-  PMDC, experience, reviewerName, reviwerComment, reviewerRating, reviewTimeAgo;
+  int roleId;
+  int id;
+  String userType,fname, lName, dob, gender, lanuage, email, contact_number,
+      password, confirm_password, lanuage_abr;
+
+  int patients;
+  int appointments;
+
 
   bool selected = false;
-
+  String location="";
+  String csnNo="";
+  List<String> speciality = [];
 
   RegisterUser(
-      this.userType,
+      this.roleId,
       this.fname,
       this.lName,
       this.dob,
@@ -22,59 +26,22 @@ class RegisterUser{
       this.contact_number,
       this.password,
       this.confirm_password,
-      this.pharmacy,
-      this.pharmacyPhone,
-      this.pharmacyCell,
-      this.healthCardProvince,
-      this.helthCardNo,
-      this.insuranceProvider,
-      this.insurancePolicyNumber,
-      this.appointmentTimes,
-      this.appointmentDays,
-      this.rating,
-      this.location,
-      this.skills,
-      this.patientsCount,
-      this.appointmentsCount,
-      this.PMDC,
-      this.experience,
-      this.reviewerName,
-      this.reviwerComment,
-      this.reviewerRating,
-      this.reviewTimeAgo);
+      this.lanuage_abr
+      );
 
   toJson() {
     return {
-      "userType": userType,
-      "fname": fname,
-      "lName": lName,
+      "role_id": roleId,
+      "first_name": fname,
+      "last_name": lName,
       "dob": dob,
       "gender": gender,
-      "lanuage": lanuage,
+      "language": lanuage,
       "email": email,
-      "contact_number": contact_number,
+      "mobile": contact_number,
       "password": password,
-      "confirm_password": confirm_password,
-      "pharmacy": pharmacy,
-      "pharmacyPhone": pharmacyPhone,
-      "pharmacyCell": pharmacyCell,
-      "healthCardProvince": healthCardProvince,
-      "helthCardNo": helthCardNo,
-      "insuranceProvider": insuranceProvider,
-      "insurancePolicyNumber": insurancePolicyNumber,
-      "appointmentTimes": appointmentTimes,
-      "appointmentDays": appointmentDays,
-      "rating": rating,
-      "location": location,
-      "skills": skills,
-      "patientsCount": patientsCount,
-      "appointmentsCount": appointmentsCount,
-      "PMDC": PMDC,
-      "experience": experience,
-      "reviewerName": reviewerName,
-      "reviwerComment": reviwerComment,
-      "reviewerRating": reviewerRating,
-      "reviewTimeAgo": reviewTimeAgo,
+      "password_confirmation": confirm_password,
+      "language_abr": lanuage_abr,
     };
   }
 

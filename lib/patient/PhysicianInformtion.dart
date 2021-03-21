@@ -310,7 +310,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "PMDC No.",
+                                "CSN No.",
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,

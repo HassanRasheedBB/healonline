@@ -1,10 +1,17 @@
-import 'package:firebase_database/firebase_database.dart' as firebase_database;
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
+import 'package:http/http.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../constants.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:intl/intl.dart';
 
 class SchedualAppointmentScreen extends StatefulWidget {
   SchedualAppointmentScreen({Key key}) : super(key: key);
@@ -58,6 +65,7 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    Constants.appointment.appointmentDate = DateTime.now().toString();
     for (int i = 0; i < time.length; i++) {
       timeObjectList.add(TimeObject(time[i], false));
     }
@@ -129,7 +137,7 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                       Constants.primaryDarkColor,
                     ),
                   )),
-              subtitle: Text(Constants.appointment.docSkills,
+              subtitle: Text(Constants.appointment.skills,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                     color: Constants.hexToColor(
@@ -245,7 +253,7 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     );
   }
 
-  DateTime _currentDate = DateTime(2020, 12, 31);
+  DateTime _currentDate = DateTime.now();
 
   Widget getCalender() {
     return Container(
@@ -288,7 +296,6 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
           this.setState(() {
             _currentDate = date;
             Constants.appointment.appointmentDate = _currentDate.toString();
-            print(date);
           });
         },
         weekendTextStyle: TextStyle(
@@ -314,6 +321,13 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   }
 
   void schedualAppointment() {
+    if(Constants.appointment.appointmentTime.isEmpty){
+      showOtherAlertDialog("Error", "Please select appointment time", context);
+      return;
+    }else if(Constants.appointment.appointmentDate.isEmpty){
+      showOtherAlertDialog("Error", "Please select appointment date", context);
+      return;
+    }
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
@@ -335,34 +349,9 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
-                  onPressed: () {
-                    final mainReference =
-                        firebase_database.FirebaseDatabase.instance.reference();
-
-                    String key = mainReference
-                        .child("appointments")
-                        .child("09007860101")
-                        .push()
-                        .key;
-
-                    mainReference
-                        .child("appointments")
-                        .child("09007860101")
-                        .child(key)
-                        .set(Constants.appointment.toJson())
-                        .then((value) {
-                      showOtherAlertDialog(
-                          "Success", 'Appointment Confirmed !', context);
-                      _btnController.success();
-                    }, onError: (error) {
-                      print(error + "--------------");
-                    }).catchError((error) {
-                      _btnController.reset();
-                      showOtherAlertDialog(
-                          "Server Error",
-                          'Some information went wrong. Please try again',
-                          context);
-                    });
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    bookAppointment();
                   },
                 ),
                 CupertinoDialogAction(
@@ -400,7 +389,6 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   onPressed: () {
                     _btnController.reset();
                     Navigator.of(context).pop();
-                    Navigator.of(context).pop();
                   },
                 )
               ],
@@ -409,6 +397,81 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     ;
   }
 
+  Future<void> bookAppointment() async {
+
+    String url = Utils.baseURL + Utils.BOOK_APPOINTMENT;
+    print(url);
+
+    Uri uri = Uri.parse(url);
+    http.MultipartRequest request = new http.MultipartRequest('POST', uri);
+
+    String time = Constants.appointment.appointmentTime.split(" ").first;
+    var timeFirst = int.parse(time.split(":").first);
+    if(timeFirst >= 1 && timeFirst < 9){
+      timeFirst+= 12;
+      time = timeFirst.toString()+":"+(time.split(":").last);
+    }else{
+      time = Constants.appointment.appointmentTime.split(" ").first;
+    }
+
+    print(time);
+
+    request.fields['doc_id'] = Constants.appointment.docId;
+    request.fields['patient_id'] = Utils.user.profile_obj.umeta_obj.id.toString();
+    request.fields['province'] = Constants.appointment.province;
+    request.fields['symptoms'] = Constants.appointment.symptoms;
+    request.fields['how_long_felt'] = Constants.appointment.howLongFelt;
+    request.fields['covid'] = "0";
+    request.fields['covid_location'] = Constants.appointment.covidLocation;
+    request.fields['covid_time_travel'] = Constants.appointment.covidTimeTravel;
+    request.fields['sick_note'] = Constants.appointment.sickNote;
+    if(Constants.appointment.AudioOrVideo != null && Constants.appointment.AudioOrVideo.isNotEmpty){
+      request.fields['appointment_files'] = "1";
+    }
+    else{
+      request.fields['appointment_files'] = "0";
+    }
+    request.fields['file_data[0][type]'] = "image";
+    request.fields['additional_details'] =
+        Constants.appointment.additionalDetails;
+    request.fields['date'] = Constants.appointment.appointmentDate.split(" ").first;
+    request.fields['time'] = time;
+    request.fields['appointment_for'] = Constants.appointment.appointmentFor;
+    request.fields['userName'] = Constants.appointment.userName;
+    request.fields['userId'] = Constants.appointment.userId;
+    request.fields['userName'] = Constants.appointment.userName;
+    request.fields['status'] = "0";
+
+    request.headers['Content-type'] = "application/json";
+    request.headers['Authorization'] = "Bearer " + Utils.user.token;
+
+
+    if(Constants.appointment.AudioOrVideo != null && Constants.appointment.AudioOrVideo.isNotEmpty){
+      String fileName = Constants.appointment.AudioOrVideo.split('/').last;
+      String ext = fileName.split(".").last;
+      request.files.add(await http.MultipartFile.fromPath(
+          'file_data[0][file]', Constants.appointment.AudioOrVideo,
+          contentType: new MediaType('image', ext)));
+    }
+
+    print(Constants.appointment.appointmentDate.split(" ").first);
+    print(time);
+
+
+    request.send().then((http.StreamedResponse response) async {
+      _btnController.reset();
+      if (response.statusCode == 200) {
+        showOtherAlertDialog("Confirmed!", "Your appointment is confirmed", context);
+      } else {
+        showOtherAlertDialog("Error", "Some information went wrong please try again", context);
+        print(response.toString());
+      }
+    }).catchError((error) async {
+      _btnController.reset();
+      showOtherAlertDialog("Error", "Some information went wrong please try again", context);
+      print(error.toString());
+    });
+  }
 }
 
 class TimeObject {

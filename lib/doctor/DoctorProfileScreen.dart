@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/doctor/DoctorProfileSettingsScreen.dart';
 import 'package:HealOnline/models/RegisterDoctor.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 import '../constants.dart';
 
@@ -21,6 +26,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
     // TODO: implement initState
     super.initState();
     user = new RegisterUser(
+        3,
         "-",
         "-",
         "-",
@@ -31,26 +37,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
         "-",
         "-",
         "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-",
-        "-");
+        );
     getProfile();
   }
 
@@ -71,6 +58,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                   child: Stack(
                     alignment: Alignment.topCenter,
                     children: <Widget>[
+
                       Padding(
                         padding: EdgeInsets.only(
                           top: circleRadius / 2.0,
@@ -78,7 +66,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
 
                         ///here we create space for the circle avatar to get ut of the box
                         child: Container(
-                          height: 228.0,
+                          height: 230.0,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12.0),
                             color: Colors.white,
@@ -96,8 +84,27 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                   top: 15.0, bottom: 15.0),
                               child: Column(
                                 children: <Widget>[
+
+                                  GestureDetector(
+                                    onTap: (){
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DoctorProfileSettingScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right:16),
+                                      child: Align(
+                                        alignment: Alignment.topRight,
+                                        child: Icon(Icons.edit, color: Constants.hexToColor(Constants.primaryDarkColor), size: 24,),
+                                      ),
+                                    ),
+                                  ),
+
                                   SizedBox(
-                                    height: circleRadius / 2,
+                                    height: circleRadius / 2 - 16,
                                   ),
                                   Text(
                                     user.fname + " " + user.lName,
@@ -110,7 +117,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                     ),
                                   ),
                                   Text(
-                                    user.location + " Canada",
+                                     user.location != null ? user.location : "",
                                     style: TextStyle(
                                       fontFamily: "ProductSans",
                                       fontSize: 15,
@@ -150,7 +157,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                             height: 4.0,
                                           ),
                                           Text(
-                                            user.appointmentsCount,
+                                            user.appointments != null ? user.appointments.toString() : "-",
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -183,7 +190,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                             height: 4.0,
                                           ),
                                           Text(
-                                            user.patientsCount,
+                                            user.patients != null ? user.patients.toString() : "-",
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -266,7 +273,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.email,
+                                  Utils.user.profile_obj.umeta_obj.user_login,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -303,7 +310,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.contact_number,
+                                  user.contact_number != null ? user.contact_number : "-",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -328,7 +335,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "PMDC No.",
+                                "CSN No.",
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -340,7 +347,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.PMDC,
+                                  user.csnNo,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -377,7 +384,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.experience,
+                                  "4 yrs",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -414,7 +421,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.location + " Canada",
+                                  user.location != null ? user.location : "",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -451,7 +458,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.rating + " / 5",
+                                  "4.2" + " / 5",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -470,81 +477,77 @@ class _DoctorProfileState extends State<DoctorProfile> {
               ),
             ),
             SizedBox(height: 20),
-            Container(
-                margin: EdgeInsets.only(right: 16.0, left: 16, bottom: 28),
-                height: 54,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
-                      ),
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(8))),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Edit Profile",
-                    style: TextStyle(
-                      fontFamily: "ProductSans",
-                      fontSize: 18,
-                      color: Constants.hexToColor(
-                        Constants.primaryDarkColor,
-                      ),
-                    ),
+            GestureDetector(
+              onTap: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorProfileSettingScreen(),
                   ),
-                ))
+                );
+              },
+              child: Container(
+                  margin: EdgeInsets.only(right: 16.0, left: 16, bottom: 28),
+                  height: 54,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Constants.hexToColor(
+                          Constants.primaryDarkColor,
+                        ),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(8))),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Edit Profile",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                        fontSize: 18,
+                        color: Constants.hexToColor(
+                          Constants.primaryDarkColor,
+                        ),
+                      ),
+                    ),
+                  )),
+            ),
           ],
         )),
       ),
     );
   }
 
+  Future<void> getProfile() async {
 
-  void getProfile() {
-    final databaseReference = FirebaseDatabase.instance.reference();
-    databaseReference
-        .child("users")
-        .child("health provider")
-        .child("+11231236985")
-        .once()
-        .then((DataSnapshot snapshot) {
+    String url = Utils.baseURL +
+        Utils.GET_DOCTOR +
+        Utils.user.profile_obj.umeta_obj.profile_id.toString();
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(url, headers: headers);
+    String body = response.body;
+    print(response.body);
 
-      RegisterUser _user = new RegisterUser(
-          snapshot.value["userType"],
-          snapshot.value["fname"],
-          snapshot.value["lName"],
-          snapshot.value["dob"],
-          snapshot.value["gender"],
-          snapshot.value["lanuage"],
-          snapshot.value["email"],
-          snapshot.value["contact_number"],
-          snapshot.value["password"],
-          snapshot.value["confirm_password"],
-          snapshot.value["pharmacy"],
-          snapshot.value["pharmacyPhone"],
-          snapshot.value["pharmacyCell"],
-          snapshot.value["healthCardProvince"],
-          snapshot.value["helthCardNo"],
-          snapshot.value["insuranceProvider"],
-          snapshot.value["insurancePolicyNumber"],
-          snapshot.value["appointmentTimes"],
-          snapshot.value["appointmentDays"],
-          snapshot.value["rating"],
-          snapshot.value["location"],
-          snapshot.value["skills"],
-          snapshot.value["patientsCount"],
-          snapshot.value["appointmentsCount"],
-          snapshot.value["PMDC"],
-          snapshot.value["experience"],
-          snapshot.value["reviewerName"],
-          snapshot.value["reviwerComment"],
-          snapshot.value["reviewerRating"],
-          snapshot.value["reviewTimeAgo"]);
+    final List typeList = (json.decode(response.body))["doctor"];
+    setState(() {
+      if (typeList.isNotEmpty) {
+        setState(() {
 
-      setState(() {
-        user = _user;
-      });
+          user.fname = typeList[0]["first_name"];
+          user.lName = typeList[0]["last_name"];
+          user.gender = typeList[0]["gender"];
+          user.location = typeList[0]["province"];
+          user.contact_number = typeList[0]["mobile"];
+          user.csnNo = typeList[0]["cpso"];
+          user.appointments = (json.decode(response.body))["appointments"];
+          user.patients = (json.decode(response.body))["patients"];
+
+        });
+      }
     });
+
   }
 }

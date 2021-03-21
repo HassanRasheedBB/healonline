@@ -1,17 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:HealOnline/SignUpScreen/SignupScreen.dart';
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/doctor/HomePage.dart';
+import 'package:HealOnline/models/LoginRequest.dart';
+import 'package:HealOnline/models/LoginResponse.dart';
 import 'package:HealOnline/patient/HomePagePatient.dart';
+import 'package:HealOnline/patient/fragments/HomePage.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomCheckBoxGroup.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -177,6 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _btnController,
                     onPressed: () {
                       loginUser();
+                      //loginTemporary();
                     },
                   ),
                 ),
@@ -223,92 +229,61 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> loginUser() async {
     if (_formKey.currentState.validate()) {
-      try {
-        await FirebaseAuth.instance
-            .signInWithEmailAndPassword(
-                email: _usernameController.text.toString(),
-                password: _passwordController.text.toString())
-            .then((value) {
 
-          bool isFound = false;
-          if (selectedUserAs == "PATIENT") {
-            final databaseReference = FirebaseDatabase.instance.reference();
-            databaseReference
-                .child("users")
-                .child("patient")
-                .once()
-                .then((DataSnapshot snapshot) {
-              Map<dynamic, dynamic> values = snapshot.value;
+      String url = Utils.baseURL + Utils.USER_LOGIN;
+      Map<String, String> headers = Utils.HEADERS;
+      LoginRequest user = LoginRequest(_usernameController.text, _passwordController.text);
+      String jsonUser = jsonEncode(user);
+      Response response = await post(url, headers: headers, body: jsonUser);
+      int statusCode = response.statusCode;
 
-              values.forEach((key, values) {
-                if (values["email"] == _usernameController.text.toString()) {
-                  isFound = true;
-                }
-              });
+      if(statusCode == 200){
+        String body = response.body;
+        LoginResponse _loginResponse = LoginResponse.fromJson(
+            json.decode(body));
 
-              if (isFound) {
-                _btnController.reset();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomePagePatient(),
-                  ),
-                );
-              } else {
-                _btnController.reset();
-                showAlertDialog(
-                    "Server error", 'No user found for that email.', context);
-              }
-            });
-          }
-          else {
-            final databaseReference = FirebaseDatabase.instance.reference();
-            databaseReference
-                .child("users")
-                .child("health provider")
-                .once()
-                .then((DataSnapshot snapshot) {
-              Map<dynamic, dynamic> values = snapshot.value;
+        Utils.user = _loginResponse;
+        Utils.user.is_loggedIn = "1";
 
-              values.forEach((key, values) {
-                if (values["email"] == _usernameController.text.toString()) {
-                  isFound = true;
-                }
-              });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('loggedIn', "1");
+        await prefs.setInt('profile_id', _loginResponse.profile_obj.umeta_obj.profile_id);
+        await prefs.setInt('id', _loginResponse.profile_obj.umeta_obj.id);
+        await prefs.setString('user_login', _loginResponse.profile_obj.umeta_obj.user_login.toString());
+        await prefs.setString('user_pass', _loginResponse.profile_obj.umeta_obj.user_pass.toString());
+        await prefs.setString('user_email', _loginResponse.profile_obj.umeta_obj.user_email.toString());
+        await prefs.setString('user_type', _loginResponse.profile_obj.pmeta_obj.user_type.toString());
+        await prefs.setString('full_name', _loginResponse.profile_obj.pmeta_obj.full_name.toString());
+        await prefs.setString('profile_img', _loginResponse.profile_obj.pmeta_obj.profile_img.toString());
+        await prefs.setString('token', _loginResponse.token.toString());
 
-              if (isFound) {
-                _btnController.reset();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeScreen(),
-                  ),
-                );
-              } else {
-                _btnController.reset();
-                showAlertDialog("Server error",
-                    'No health provider found for that email.', context);
-              }
-            });
-          }
-          //_btnController.reset();
-        });
+        _btnController.reset();
 
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          _btnController.reset();
-          showAlertDialog(
-              "Server Error", 'No user found for that email.', context);
-        } else if (e.code == 'wrong-password') {
-          _btnController.reset();
-          showAlertDialog("Server Error",
-              'Wrong password provided for that user.', context);
-        }else{
-          _btnController.reset();
-          showAlertDialog(
-              "Server Error", 'Invalid email or password.', context);
+        if(_loginResponse.profile_obj.pmeta_obj.user_type == "patient"){
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePagePatient(),
+            ),
+          );
         }
+        else{
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+        }
+
+
+
+      }else{
+        showAlertDialog("Invalid Credentials", "Either your username or password is not correct. Please try again.", context);
+        _btnController.reset();
       }
+
+
     } else {
       showAlertDialog("Missing Information", "Please fill all fields", context);
       _btnController.reset();
@@ -344,7 +319,26 @@ class _LoginPageState extends State<LoginPage> {
     ;
   }
 
-  void goToScreen(BuildContext context) {
+  void loginTemporary() {
+    if(selectedUserAs ==  "PATIENT" && _usernameController.text == 'anya@gmail.com' && _passwordController.text == 'Pakistan@123'){
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePagePatient(),
+        ),
+      );
+    }else if(selectedUserAs !=  "PATIENT" && _usernameController.text == 'David@gmail.com' && _passwordController.text == 'Pakistan@123'){
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(),
+        ),
+      );
+    }else{
+      showAlertDialog("Error", "Invalid Credentials", context);
+    }
     _btnController.reset();
   }
 

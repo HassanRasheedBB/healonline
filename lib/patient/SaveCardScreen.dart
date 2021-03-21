@@ -1,10 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/CreditCardModel.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:firebase_database/firebase_database.dart' as firebase_database;
+import 'package:http/http.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:http/http.dart' as http;
 
 import '../constants.dart';
 
@@ -26,6 +30,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
       new RoundedLoadingButtonController();
 
   CreditCard card;
+  int creditCardId;
 
   @override
   void initState() {
@@ -182,39 +187,45 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
 
   Future<void> saveCard() async {
     if (_formKey.currentState.validate()) {
+
+      if(!_cardExpiryController.text.contains("/")){
+        showAlertDialog("Error", "Expiry date format should be Month/Year (00/00)", context);
+        return;
+      }
+
       CreditCard creditCard = new CreditCard(
-          _cardNumberController.text.toString(),
-          _cardHolderNameController.text.toString(),
-          _cardExpiryController.text.toString(),
-          _cardSecurityCodeController.text.toString());
+          card_number: _cardNumberController.text.toString(),
+          card_holder_name: _cardHolderNameController.text.toString(),
+          expiry_month: _cardExpiryController.text.toString().split("/").first,
+          expiry_year: _cardExpiryController.text.toString().split("/").last,
+          card_code: _cardSecurityCodeController.text.toString());
 
-      final mainReference =
-          firebase_database.FirebaseDatabase.instance.reference();
+      String url = "";
+      if (creditCardId == 0 || creditCardId == null) {
+        url = Utils.baseURL + Utils.UPDATE_CARD;
+      } else {
+        url = Utils.baseURL + Utils.UPDATE_CARD + "/" + creditCardId.toString();
+      }
 
-      String key =
-          mainReference.child("credit_cards").child("09007860101").push().key;
+      String jsonUser = jsonEncode(creditCard);
+      Map<String, String> headers = {
+        "Content-type": "application/json",
+        HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+      };
+      Response response = await post(url, headers: headers, body: jsonUser);
+      int statusCode = response.statusCode;
 
-      await mainReference.child("credit_cards").child("09007860101").remove();
-
-      mainReference
-          .child("credit_cards")
-          .child("09007860101")
-          .child(key)
-          .set(creditCard.toJson())
-          .then((value) {
-        showAlertDialog("Success", 'Card saved successfully !', context);
-        _btnController.success();
-      }, onError: (error) {
+      if (statusCode == 200) {
+        _btnController.reset();
+        showAlertDialog("Success", "Card is updated successfully", context);
+      } else {
         _btnController.reset();
         showAlertDialog(
-            "Server Error", 'Card not added please try again', context);
-      }).catchError((error) {
-        _btnController.reset();
-        showAlertDialog(
-            "Server Error", 'Card not added please try again', context);
-      });
-
-    }else{
+            "Error", "Something went wrong please try again", context);
+      }
+    } else {
+      showAlertDialog(
+          "Error", "Something went wrong please try again", context);
       _btnController.reset();
     }
   }
@@ -246,23 +257,26 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
   }
 
   Future<void> getCardFromDB() async {
-    final databaseReference = FirebaseDatabase.instance.reference();
-    databaseReference.child("credit_cards").child("09007860101").once().then(
-        (DataSnapshot snapshot) {
-      if (snapshot != null) {
-
-        setState(() {
-
-          Map<dynamic, dynamic> values = snapshot.value;
-          values.forEach((key, value) {
-            _cardSecurityCodeController.text = value["card_code"];
-            _cardHolderNameController.text = value["card_holder_name"];
-            _cardExpiryController.text = value["card_expiry"];
-            _cardNumberController.text = value["card_number"];
-          });
-
-        });
+    String url = Utils.baseURL +
+        Utils.GET_CARD +
+        Utils.user.profile_obj.umeta_obj.profile_id.toString();
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(url, headers: headers);
+    String body = response.body;
+    print(response.body);
+    final List typeList = (json.decode(response.body))["cards"];
+    setState(() {
+      if (typeList.isNotEmpty) {
+        _cardNumberController.text = typeList[0]["number"];
+        _cardHolderNameController.text = typeList[0]["name"];
+        _cardExpiryController.text = typeList[0]["expiry_month"]+"/"+typeList[0]["expiry_year"];
+        _cardSecurityCodeController.text = typeList[0]["code"];
+        creditCardId = typeList[0]["id"];
       }
-    }, onError: (error) {}).catchError((error) {});
+    });
   }
 }

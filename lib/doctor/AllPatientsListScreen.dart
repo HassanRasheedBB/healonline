@@ -1,6 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
 
 import '../constants.dart';
 
@@ -31,47 +36,112 @@ class _AllPatientListScreenState extends State<AllPatientListScreen> {
     'Chambly',
   ];
 
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPatients();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _buildList();
+  }
 
-      body: ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemCount: patientsName.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              elevation: 4,
+  List<dynamic> patientsList = [];
+
+  Future<void> getPatients() async {
+    if (!isLoading) {
+      setState(() {
+        isLoading = true;
+      });
+
+      String url = Utils.baseURL + Utils.GET_PATIENTS;
+      print(url);
+      Map<String, String> headers = {
+        "Content-type": "application/json",
+        HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+      };
+      Response response = await get(url, headers: headers);
+      String body = response.body;
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        if (response.body != null) {
+          List patientList = (json.decode(response.body))["patients"];
+          setState(() {
+            isLoading = false;
+            if (patientList.isNotEmpty) {
+              patientsList.clear();
+            }
+            patientsList.addAll(patientList);
+          });
+        }
+      } else {
+        setState(() {
+          patientsList.clear();
+        });
+      }
+    }
+  }
+
+  Widget _buildProgressIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity: isLoading ? 1.0 : 00,
+          child: new CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    return ListView.builder(
+      itemCount: patientsList.length + 1,
+      // Add one more item for progress indicator
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      itemBuilder: (BuildContext context, int index) {
+        if (index == patientsList.length) {
+          return Center(
+            child: _buildProgressIndicator(),
+          );
+        } else {
+          return Container(
+            height: 100,
+            width: MediaQuery.of(context).size.width - 16,
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Material(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  leading: SvgPicture.asset(
-                    "assets/images/user_avatar.svg",
+              elevation: 8,
+              child: ListTile(
+                title: Text(
+                  patientsList[index]["name"],
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                    fontSize: 18,
                   ),
-                  title: Text(
-                    patientsName[index],
-                    style: TextStyle(
-                      fontFamily: "ProductSans",
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Constants.hexToColor(Constants.blackColor),
-                    ),
+                ),
+                subtitle: Text(
+                  patientsList[index]["email"],
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                    fontSize: 14,
                   ),
-                  subtitle: Text(
-                    patientsLocation[index],
-                    style: TextStyle(
-                      fontFamily: "ProductSans",
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Constants.hexToColor(Constants.graySepratorColor),),
+                ),
+                leading: SvgPicture.asset(
+                  "assets/images/user_avatar.svg",
                 ),
               ),
-            );
-          }),
+            ),
+          );
+        }
+      },
     );
   }
 }

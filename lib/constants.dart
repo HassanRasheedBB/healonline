@@ -14,7 +14,7 @@ class Constants {
 
   static var ThemePrimaryDarkColor = const Color(0xFF4dcfe0);
 
-  static Appointment appointment = Appointment("","","","","","","","","","","","","","","","","","","","","","","","","","","");
+  static Appointment appointment = Appointment("","","","","","","","","","","","","","","");
 
   static Color hexToColor(String code) {
     return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);

@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/RegisterDoctor.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
 
 import '../constants.dart';
 import 'PhysicianInformtion.dart';
@@ -56,7 +60,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
       ),
       body: _buildList(),
 
-      bottomNavigationBar:  Container(
+      bottomNavigationBar: Container(
         height: 50,
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -87,62 +91,55 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
   List<RegisterUser> users = List();
   bool isLoading = false;
 
-  void getDoctors() {
-
+  Future<void> getDoctors() async {
     if (!isLoading) {
       setState(() {
         isLoading = true;
       });
 
-      List<RegisterUser> _users = List();
-      final databaseReference = FirebaseDatabase.instance.reference();
-      databaseReference
-          .child("users")
-          .child("health provider")
-          .once()
-          .then((DataSnapshot snapshot) {
-        //print('Data : ${snapshot.value}');
 
-        Map<dynamic, dynamic> values = snapshot.value;
-        values.forEach((key, values) {
-          //print(key+" , "+values["lName"]);
-          _users.add(new RegisterUser(
-              values["userType"],
-              values["fname"],
-              values["lName"],
-              values["dob"],
-              values["gender"],
-              values["lanuage"],
-              values["email"],
-              values["contact_number"],
-              values["password"],
-              values["confirm_password"],
-              values["pharmacy"],
-              values["pharmacyPhone"],
-              values["pharmacyCell"],
-              values["healthCardProvince"],
-              values["helthCardNo"],
-              values["insuranceProvider"],
-              values["insurancePolicyNumber"],
-              values["appointmentTimes"],
-              values["appointmentDays"],
-              values["rating"],
-              values["location"],
-              values["skills"],
-              values["patientsCount"],
-              values["appointmentsCount"],
-              values["PMDC"],
-              values["experience"],
-              values["reviewerName"],
-              values["reviwerComment"],
-              values["reviewerRating"],
-              values["reviewTimeAgo"]));
-        });
+      String url = Utils.baseURL + Utils.GET_DOCTORS;
+      print(url);
+      Map<String, String> headers = {
+        "Content-type": "application/json",
+        HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+      };
+      Response response = await get(url, headers: headers);
+      String body = response.body;
+      print(response.body);
 
-        setState(() {
-          isLoading = false;
-          users.addAll(_users);
-        });
+      List<RegisterUser> user = [];
+      
+      final List typeList = (json.decode(response.body))["doctors"];
+      if(typeList != null && typeList.isNotEmpty){
+        for(int i=0; i< typeList.length; i++){
+
+          RegisterUser registerUser = RegisterUser(
+              int.parse(typeList[i]["role_id"]),
+              typeList[i]["profile"]["first_name"],
+              typeList[i]["profile"]["last_name"],
+              typeList[i]["profile"]["dob"],
+              typeList[i]["profile"]["gender"],
+              typeList[i]["profile"]["language"],
+              typeList[i]["email"],
+              typeList[i]["profile"]["p_mob_1"],
+              "",
+              "", "");
+          registerUser.location =  typeList[i]["profile"]["province"];
+          registerUser.id = typeList[i]["id"];
+          List specs = typeList[i]["profile"]["experience"];
+          if(specs != null && specs.isNotEmpty){
+            registerUser.speciality.addAll(specs[0]["skills"].toString().split(","));
+          }
+          user.add(registerUser);
+
+        }
+      }
+
+
+      setState(() {
+        isLoading = false;
+        users.addAll(user);
       });
     }
   }
@@ -155,27 +152,33 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
       itemCount: users.length + 1, // Add one more item for progress indicator
       padding: EdgeInsets.symmetric(vertical: 8.0),
       itemBuilder: (BuildContext context, int index) {
-
         if (index == users.length) {
           return Center(
             child: _buildProgressIndicator(),
           );
         }
-        else{
+        else {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: InkWell(
 
-              onTap: (){
+              onTap: () {
                 setState(() {
                   //users[index].selected = true;
-                  for(int i=0; i<users.length; i++){
-                    if(i == index){
+                  for (int i = 0; i < users.length; i++) {
+                    if (i == index) {
                       users[i].selected = true;
-                      Constants.appointment.doctorPhone =  users[i].contact_number;
-                      Constants.appointment.docName =  "Dr. "+users[i].fname+" "+users[i].lName;
-                      Constants.appointment.docSkills =  users[i].skills;
-                    }else{
+                       //Constants.appointment.doctorPhone =  users[i].contact_number;
+                       Constants.appointment.docName =  "Dr. "+users[i].fname+" "+users[i].lName;
+                       Constants.appointment.docEmail =  users[i].email;
+
+                      if(users[i].speciality != null && users[i].speciality.isNotEmpty){
+                        Constants.appointment.skills =  users[i].speciality.first;
+                      }else{
+                        Constants.appointment.skills = "";
+                      }
+                      Constants.appointment.docId = users[index].id.toString();
+                    } else {
                       users[i].selected = false;
                     }
                   }
@@ -187,14 +190,19 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
 
                 shape: users[index].selected
                     ? new RoundedRectangleBorder(
-                    side: new BorderSide(color: Constants.hexToColor(Constants.primaryDarkColor), width: 1.5),
+                    side: new BorderSide(
+                        color: Constants.hexToColor(Constants.primaryDarkColor),
+                        width: 1.5),
                     borderRadius: BorderRadius.circular(12.0))
                     : new RoundedRectangleBorder(
                     side: new BorderSide(color: Colors.white, width: 1.5),
                     borderRadius: BorderRadius.circular(12.0)),
 
                 child: Container(
-                  width: MediaQuery.of(context).size.width,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
                   height: 220,
                   child: Stack(
                     alignment: Alignment.topLeft,
@@ -205,7 +213,8 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                         height: circleRadius,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Constants.hexToColor(Constants.primaryDarkColor),
+                          color: Constants.hexToColor(
+                              Constants.primaryDarkColor),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black26,
@@ -219,7 +228,8 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                           child: Center(
                             child: Container(
                               child: Image(
-                                  image: AssetImage("assets/images/doctor.png")),
+                                  image: AssetImage(
+                                      "assets/images/doctor.png")),
 
                               /// replace your image with the Icon
                             ),
@@ -228,7 +238,8 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(left: 95, top: 24),
-                        child: Text("Dr. "+users[index].fname+" "+users[index].lName,
+                        child: Text("Dr. " + users[index].fname + " " +
+                            users[index].lName,
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 18,
@@ -240,8 +251,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(left: 95, top: 48),
-                        child: Text("Available today at "+users[index].appointmentTimes.split(" ").first+"\n"+
-                            users[index].appointmentTimes.split(" ").last,
+                        child: Text(users[index].email,
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 16,
@@ -269,7 +279,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                               SizedBox(
                                 width: 4,
                               ),
-                              Text(users[index].location,
+                              Text(users[index].location != null ? users[index].location : "",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -288,24 +298,29 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                           alignment: Alignment.topRight,
                           child: Container(
                             height: 40,
-                            width: MediaQuery.of(context).size.width - 120,
+                            width: MediaQuery
+                                .of(context)
+                                .size
+                                .width - 120,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
                               shrinkWrap: true,
-                              itemCount: speciallity.length,
-                              itemBuilder: (ctx, index) {
+                              itemCount: users[index].speciality.length,
+                              itemBuilder: (ctx, indexx) {
                                 return Card(
                                   elevation: 2,
                                   shape: RoundedRectangleBorder(
                                     side: new BorderSide(
-                                        color: Constants.hexToColor(Constants.primaryDarkColor), width: 1.0),
+                                        color: Constants.hexToColor(
+                                            Constants.primaryDarkColor),
+                                        width: 1.0),
                                     borderRadius: BorderRadius.circular(6.0),
                                   ),
                                   child: Container(
                                     height: 40,
                                     width: 110,
                                     child: Center(
-                                      child: Text(speciallity[index],
+                                      child: Text(users[index].speciality[indexx],
                                           style: TextStyle(
                                               color: Constants.hexToColor(
                                                 Constants.primaryDarkColor,
@@ -325,7 +340,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                         child: Align(
                           alignment: Alignment.bottomRight,
                           child: InkWell(
-                            onTap: (){
+                            onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -347,7 +362,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(left: 78, top: 184),
-                        child: Text("Language: "+users[index].lanuage,
+                        child: Text("Language: " + users[index].lanuage.toUpperCase(),
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 12,
@@ -370,8 +385,8 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                             ),
                             SizedBox(width: 4,),
                             Padding(
-                              padding: EdgeInsets.only(top:4),
-                              child: Text(users[index].rating,
+                              padding: EdgeInsets.only(top: 4),
+                              child: Text("4.5",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 16,
@@ -391,7 +406,6 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
             ),
           );
         }
-
       },
 
     );

@@ -1,19 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/UploadItem.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart' as firebase_database;
+import 'package:HealOnline/patient/fragments/UploadImages.dart';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants.dart';
 
 class UploadDocs extends StatefulWidget {
-  UploadDocs({Key key}) : super(key: key);
+  String appointmentId;
+
+  UploadDocs(this.appointmentId, {Key key}) : super(key: key);
 
   @override
   _UploadDocsState createState() => _UploadDocsState();
@@ -36,7 +42,7 @@ class _UploadDocsState extends State<UploadDocs> {
     // TODO: implement build
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           uploadDoc();
         },
         child: Icon(Icons.add),
@@ -49,98 +55,120 @@ class _UploadDocsState extends State<UploadDocs> {
           return index == docs.length
               ? Center(child: _buildProgressIndicator())
               : Padding(
-              padding: EdgeInsets.only(top: 4, bottom: 4),
-              child: Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ListTile(
-                      onTap: () {},
-                      title: Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Text(
-                          docs[index].title,
-                          style: TextStyle(
-                            fontFamily: "ProductSans",
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Constants.hexToColor(Constants.blackColor),
-                          ),
-                        ),
-                      ),
-                      subtitle: Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Text(
-                          docs[index].date.split(" ").first,
-                          style: TextStyle(
-                            fontFamily: "ProductSans",
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      leading: Container(
-                        height: 38,
-                        width: 38,
-                        child: SvgPicture.asset(
-                          "assets/images/doc_files.svg",
-                          color: Constants.hexToColor(Constants.primaryColor),
-                        ),
-                      ),
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
-                        color: Constants.hexToColor(Constants.primaryColor),
-                        size: 16,
-                      ),
+                  padding: EdgeInsets.only(top: 4, bottom: 4),
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                  ],
-                ),
-                //
-              ));
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ListTile(
+                          onTap: () {
+                            if (docs[index].link != null) {
+                              _launchURL(docs[index].link);
+                            }
+                          },
+                          title: Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              docs[index].title,
+                              style: TextStyle(
+                                fontFamily: "ProductSans",
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color:
+                                    Constants.hexToColor(Constants.blackColor),
+                              ),
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Text(
+                              docs[index].date.split(" ").first,
+                              style: TextStyle(
+                                fontFamily: "ProductSans",
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                          leading: Container(
+                            height: 38,
+                            width: 38,
+                            child: SvgPicture.asset(
+                              "assets/images/doc_files.svg",
+                              color:
+                                  Constants.hexToColor(Constants.primaryColor),
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward_ios,
+                            color: Constants.hexToColor(Constants.primaryColor),
+                            size: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    //
+                  ));
         },
       ),
     );
   }
 
-  void getImagesFromDB() {
-    if (!isLoading) {
-      setState(() {
-        isLoading = true;
-      });
+  Future<void> getImagesFromDB() async {
+    try {
+      if (!isLoading) {
+        setState(() {
+          isLoading = true;
+        });
 
-      String type;
-      List<UploadItem> imageList = List();
-      List<UploadItem> docList = List();
-      List<UploadItem> pdfList = List();
-      final databaseReference = FirebaseDatabase.instance.reference();
+        String url = Utils.baseURL + Utils.GET_APPOINTMNETS;
+        print(url);
+        Map<String, String> headers = {
+          "Content-type": "application/json",
+          HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+        };
+        Response response = await get(url, headers: headers);
+        String body = response.body;
+        print(body);
 
-      databaseReference
-          .child("uploads")
-          .child("09007860101")
-          .once()
-          .then((DataSnapshot snapshot) {
-        Map<dynamic, dynamic> values = snapshot.value;
-        if (values != null) {
-          values.forEach((key, value) {
-            type = value["type"];
+        List<UploadItem> list = [];
 
-            if(type == "doc") {
-              docList.add(new UploadItem(
-                  value["title"], value["date"], value["link"], value["type"]));
+        if (response.statusCode == 200) {
+          List<dynamic> appointments = (json.decode(body))["appointments"];
+
+          for (int i = 0; i < appointments.length; i++) {
+            if (appointments[i]["id"].toString() == widget.appointmentId) {
+              List<dynamic> files = appointments[i]["appointment_files"];
+              if (files != null && files.length > 0) {
+                for (int i = 0; i < files.length; i++) {
+                  if (files[i]["type"] == "doc") {
+                    UploadItem imgModel = UploadItem(
+                        files[i]["type"],
+                        files[i]["created_at"],
+                        files[i]["name"],
+                        files[i]["type"]);
+                    list.add(imgModel);
+                  }
+                }
+              }
             }
-          });
+          }
         }
 
         setState(() {
           isLoading = false;
           docs.clear();
-          docs.addAll(docList);
+          docs.addAll(list);
         });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
       });
     }
   }
@@ -159,100 +187,86 @@ class _UploadDocsState extends State<UploadDocs> {
   }
 
   Future<void> uploadDoc() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['doc'],
+        allowMultiple: false);
 
     File file;
-    if(result != null) {
+    if (result != null) {
       file = File(result.files.single.path);
     } else {
       return;
     }
 
     _imageFile = File(file.path);
-    String imageUrl;
+
+    String url = Utils.baseURL +
+        Utils.SAVE_PRESCRIPTION +
+        widget.appointmentId.toString();
+    print(url);
+
+    Uri uri = Uri.parse(url);
+    http.MultipartRequest request = new http.MultipartRequest('POST', uri);
+
+    request.fields['prescription[0][type]'] = "doc";
+
+    request.headers['Content-type'] = "application/json";
+    request.headers['Authorization'] = "Bearer " + Utils.user.token;
+
+    String fileName = _imageFile.path.split('/').last;
+    String ext = fileName.split(".").last;
+    request.files.add(await http.MultipartFile.fromPath(
+        'prescription[0][file]', _imageFile.path,
+        contentType: new MediaType('doc', ext)));
+
+    request.send().then((http.StreamedResponse response) async {
+      if (response.statusCode == 200) {
+        isLoading = false;
+        getImagesFromDB();
+      } else {
+        showAlertDialog(
+            "Error", "Some information went wrong please try again", context);
+        print(response.toString());
+      }
+    }).catchError((error) async {
+      showAlertDialog(
+          "Error", "Some information went wrong please try again", context);
+      print(error.toString());
+    });
 
     setState(() {
       isLoading = true;
     });
-
-    final mainReference =
-    firebase_database.FirebaseDatabase.instance.reference();
-    String key = mainReference.child("uploads").child("09007860101").push().key;
-
-    Reference reference = FirebaseStorage.instance
-        .ref()
-        .child("Uploads")
-        .child("09007860101")
-        .child(key);
-    UploadTask uploadTask = reference.putFile(_imageFile);
-
-    uploadTask.whenComplete(() async {
-      try {
-        imageUrl = await reference.getDownloadURL();
-        addInDB(key, imageUrl);
-      } catch (onError) {
-        showOtherAlertDialog(
-            "Error", 'Something went wrong on uploading', context);
-      }
-      print(imageUrl);
-    });
   }
 
-  void addInDB(String key, String imageUrl) {
-    final mainReference =
-    firebase_database.FirebaseDatabase.instance.reference();
-    String title = "Prescription # " + (docs.length + 1).toString();
-    String date = DateTime.now().toLocal().toString();
-    UploadItem item = new UploadItem(title, date, imageUrl, "doc");
-    String key = mainReference.child("uploads").child("09007860101").push().key;
-
-    try {
-      mainReference
-          .child("uploads")
-          .child("09007860101")
-          .child(key)
-          .set(item.toJson())
-          .then((value) {
-        setState(() {
-          isLoading = false;
-          docs.add(UploadItem(title, date, imageUrl, "doc"));
-        });
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      showOtherAlertDialog(
-          "Error", 'Something went wrong please try again', context);
-    }
-  }
-
-  void showOtherAlertDialog(String title, String msg, BuildContext context) {
+  void showAlertDialog(String title, String msg, BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text(title,
-              style: TextStyle(
-                fontFamily: "ProductSans",
-              )),
-          content: Text(msg,
-              style: TextStyle(
-                fontFamily: "ProductSans",
-              )),
-          actions: [
-            CupertinoDialogAction(
-              child: Text("OK",
+              title: Text(title,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        ));
-
-    ;
+              content: Text(msg,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              actions: [
+                CupertinoDialogAction(
+                  child: Text("OK",
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+            ));
   }
 
+  Future<void> _launchURL(String _url) async {
+    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+  }
 }

@@ -1,3 +1,6 @@
+import 'package:HealOnline/doctor/DoctorNotesScreen.dart';
+import 'package:HealOnline/patient/AppointmentDetail.dart';
+import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bubbled_navigation_bar/bubbled_navigation_bar.dart';
@@ -48,14 +51,15 @@ class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   PageController _pageController;
   MenuPositionController _menuPositionController;
   bool userPageDragging = false;
 
+  static BuildContext ctx;
 
   @override
   void initState() {
@@ -84,8 +88,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+
+
   @override
   Widget build(BuildContext context) {
+    ctx = context;
     return Scaffold(
 
         body: NotificationListener<ScrollNotification>(
@@ -144,5 +151,15 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Icon(
           widget.icons[index], size: 30, color: color)
       );
+  }
+
+  static void openAppointmentDetailScreen(AppointmentUI appointment) {
+    Navigator.push(
+      ctx,
+      MaterialPageRoute(
+        builder: (context) =>
+            AppointmentDetail(appointment),
+      ),
+    );
   }
 }

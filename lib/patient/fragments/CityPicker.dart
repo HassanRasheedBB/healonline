@@ -1,3 +1,5 @@
+import 'package:HealOnline/patient/EditProfileScreen.dart';
+import 'package:HealOnline/patient/HealthCardScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -138,8 +140,11 @@ class _HomePageState extends State<CityPicker> {
               if(valueRequiredOnBackScreen){
                 if(title == "City"){
                   AddAddressScreenState.updateCity(cities[selectedRadio  - 1]);
+
                 }else{
                   AddAddressScreenState.updateProvince(cities[selectedRadio  - 1]);
+                  EditProfileScreenState.updateProvince(cities[selectedRadio  - 1]);
+                  HealthCardScreenState.updateProvince(cities[selectedRadio  - 1]);
                 }
 
                 Navigator.of(context).pop();

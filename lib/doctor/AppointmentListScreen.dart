@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/VideoCall/call.dart';
 import 'package:HealOnline/models/Appoitment.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../constants.dart';
 import 'AppointmentDetailScreen.dart';
@@ -16,7 +24,6 @@ class AppointmentList extends StatefulWidget {
 
 class _AppointmentListState extends State<AppointmentList> {
   bool isLoading = false;
-  List<Appointment> users = List();
 
   @override
   void initState() {
@@ -33,10 +40,10 @@ class _AppointmentListState extends State<AppointmentList> {
 
   Widget _buildList() {
     return ListView.builder(
-      itemCount: users.length + 1, // Add one more item for progress indicator
+      itemCount: appointments.length + 1, // Add one more item for progress indicator
       padding: EdgeInsets.symmetric(vertical: 8.0),
       itemBuilder: (BuildContext context, int index) {
-        if (index == users.length) {
+        if (index == appointments.length) {
           return Center(
             child: _buildProgressIndicator(),
           );
@@ -57,12 +64,12 @@ class _AppointmentListState extends State<AppointmentList> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AppointmentDetail(users[index]),
+                            builder: (context) => AppointmentDetail(appointments[index]),
                           ),
                         );
                       },
                       title: Text(
-                        users[index].userName,
+                        appointments[index].userName,
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 16,
@@ -71,7 +78,7 @@ class _AppointmentListState extends State<AppointmentList> {
                         ),
                       ),
                       subtitle: Text(
-                        users[index].appointmentDate.split(" ").first +" "+users[index].appointmentTime,
+                        appointments[index].appointmentDate.split(" ").first +" "+appointments[index].appointmentTime,
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 14,
@@ -93,14 +100,20 @@ class _AppointmentListState extends State<AppointmentList> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 16, top: 8),
-                          child: Text(
-                            "Next Appointment",
-                            style: TextStyle(
-                                fontFamily: "ProductSans",
-                                fontSize: 14,
-                                color: Colors.grey),
+                        GestureDetector(
+                          onTap: (){
+                            getToken(appointments[index].channelName);
+                            //onJoin(appointments[index].channelName,appointments[index].videoToken);
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: 16, top: 8),
+                            child: Text(
+                              "Call",
+                              style: TextStyle(
+                                  fontFamily: "ProductSans",
+                                  fontSize: 16,
+                                  color: Colors.grey),
+                            ),
                           ),
                         ),
                         Padding(
@@ -146,63 +159,94 @@ class _AppointmentListState extends State<AppointmentList> {
     );
   }
 
-  void getAppointments() {
+  List<AppointmentUI> appointments = [];
+
+  Future<void> getAppointments() async {
     if (!isLoading) {
       setState(() {
         isLoading = true;
       });
 
-      List<Appointment> _users = List();
-      final databaseReference = FirebaseDatabase.instance.reference();
+      String url = Utils.baseURL + Utils.GET_APPOINTMNETS;
+      print(url);
+      Map<String, String> headers = {
+        "Content-type": "application/json",
+        HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+      };
+      Response response = await get(url, headers: headers);
+      String body = response.body;
+      print(response.body);
 
-      databaseReference
-          .child("appointments")
-          .child("09007860101")
-          .once()
-          .then((DataSnapshot snapshot) {
-        Map<dynamic, dynamic> values = snapshot.value;
-        values.forEach((key, value) {
-          print(value);
+      List<AppointmentUI> appointmentList = [];
 
-          _users.add(new Appointment(
-            value["province"],
-            value["symptoms"],
-            value["howLongFelt"],
-            value["covidYesNo"],
-            value["covidLocation"],
-            value["covidTimeTravel"],
-            value["sickNote"],
-            value["AudioOrVideo"],
-            value["additionalDetails"],
-            value["isImageAttached"],
-            value["doctorPhone"],
-            value["appointmentDate"],
-            value["appointmentTime"],
-            value["docName"],
-            value["docSkills"],
-            value["appointmentFor"],
-            value["userId"],
-            value["docId"],
-            value["userName"],
-            value["age"],
-            value["weight"],
-            value["height"],
-            value["maritalStatus"],
-            value["bloodGroup"],
-            value["history"],
-            value["gender"],
-            value["userEmail"]
-          ));
+      List mainStream = (json.decode(response.body))["appointments"];
+      if(mainStream!= null && mainStream.isNotEmpty ){
 
-          setState(() {
-            isLoading = false;
-            users.addAll(_users);
-          });
+        for(int i=0; i<mainStream.length; i++){
+          AppointmentUI appointmentUI = new AppointmentUI();
+          appointmentUI.id = mainStream[i]["id"];
+          appointmentUI.patientId = mainStream[i]["patient_id"];
+          appointmentUI.userName = mainStream[i]["user"]["name"];
+          appointmentUI.appointmentDate =  mainStream[i]["date"];
+          appointmentUI.appointmentTime =  mainStream[i]["time"];
+          appointmentUI.channelName = mainStream[i]["channel_name"];
+          appointmentUI.videoToken = mainStream[i]["token"];
 
-        });
+          appointmentList.add(appointmentUI);
+        }
+      }
+
+      setState(() {
+        isLoading = false;
+        if(appointmentList.isNotEmpty){
+          appointments.clear();
+        }
+        appointments.addAll(appointmentList);
       });
     }
   }
+
+  Future<void> onJoin(String channelName, String videoToken) async {
+    await _handleCameraAndMic(Permission.camera);
+    await _handleCameraAndMic(Permission.microphone);
+    // push video page with given channel name
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CallPage(
+            channelName: channelName,
+            role: ClientRole.Broadcaster,
+            token: videoToken
+        ),
+      ),
+    );
+  }
+  Future<void> _handleCameraAndMic(Permission permission) async {
+    final status = await permission.request();
+    print(status);
+  }
+
+  Future<void> getToken(String channelName) async {
+
+    String url = Utils.baseURL + Utils.GET_TOKEN + channelName;
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(url, headers: headers);
+    String body = response.body;
+    print(response.body);
+
+    if(response.statusCode == 200){
+      String token = (json.decode(response.body))["token"];
+      onJoin(channelName, token);
+    }else{
+
+    }
+
+  }
+
 }
 
 

@@ -3,12 +3,8 @@ import 'package:HealOnline/models/UploadItem.dart';
 import 'package:HealOnline/patient/fragments/UploadDocsScreen.dart';
 import 'package:HealOnline/patient/fragments/UploadImages.dart';
 import 'package:HealOnline/patient/fragments/UploadPdfs.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart' as firebase_database;
 
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -17,7 +13,8 @@ import 'package:sticky_headers/sticky_headers/widget.dart';
 import '../constants.dart';
 
 class DoctorNotesScreen extends StatefulWidget {
-  DoctorNotesScreen({Key key}) : super(key: key);
+  String appointmentId;
+  DoctorNotesScreen(this.appointmentId, {Key key}) : super(key: key);
 
   @override
   _DoctorNotesScreenState createState() => _DoctorNotesScreenState();
@@ -147,9 +144,9 @@ class _DoctorNotesScreenState extends State<DoctorNotesScreen>
         body: TabBarView(
          // controller: _tabController,
           children: [
-            UploadImages(),
-            UploadDocs(),
-            UploadPdfs(),
+            UploadImages(widget.appointmentId),
+            UploadDocs(widget.appointmentId),
+            UploadPdfs(widget.appointmentId),
           ],
         ),
       ),

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,12 +24,14 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
 
   String selectedContactedOptionAs;
   Widget imgContainer;
+  Widget imagePlaceHolder;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     imgContainer = Container();
+    imagePlaceHolder = Container();
   }
 
   @override
@@ -237,6 +238,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
                   ),
                   child: Stack(
                     children: [
+                      imagePlaceHolder,
                       Align(
                         alignment: Alignment.center,
                         child: InkWell(
@@ -287,8 +289,6 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             Constants.appointment.sickNote = _noteController.text;
             Constants.appointment.additionalDetails =
                 _additionalDetilsController.text;
-            Constants.appointment.AudioOrVideo =
-                selectedContactedOptionAs;
 
             Navigator.pushReplacement(
               context,
@@ -312,16 +312,35 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
   File _imageFile;
 
   Future<void> pickImage() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    FilePickerResult result = await FilePicker.platform.pickFiles(allowMultiple: false,type: FileType.image);
 
     File file;
     if(result != null) {
       _imageFile = File(result.files.single.path);
+      setState(() {
+        imagePlaceHolder = Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: EdgeInsets.all(8),
+            child: Icon(CupertinoIcons.photo_fill, size: 16, color: Constants.hexToColor(Constants.primaryColor),),
+          ),
+        );
+      });
     } else {
       return;
     }
-    _imageFile = File(file.path);
-    String imageUrl;
+    Constants.appointment.AudioOrVideo = _imageFile.path;
+    print(_imageFile);
+
+  }
+}
+
+
+
+
+/*
+
+String imageUrl;
 
     Reference reference = FirebaseStorage.instance.ref().child("Appointments").child("09007860101");
 
@@ -347,5 +366,6 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
         color: Constants.hexToColor(Constants.primaryDarkColor),
       );
     });
-  }
-}
+
+
+ */
