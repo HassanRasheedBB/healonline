@@ -2,6 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/models/CreditCardModel.dart';
+import 'package:HealOnline/models/HealthCardModel.dart';
+import 'package:HealOnline/models/PaymentModel.dart';
+import 'package:HealOnline/patient/HealthCardScreen.dart';
+import 'package:HealOnline/patient/SaveCardScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
@@ -17,15 +22,18 @@ class SchedualAppointmentScreen extends StatefulWidget {
   SchedualAppointmentScreen({Key key}) : super(key: key);
 
   @override
-  _SchedualAppointmentScreenState createState() =>
-      _SchedualAppointmentScreenState();
+  SchedualAppointmentScreenState createState() =>
+      SchedualAppointmentScreenState();
 }
 
-class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
+class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   final double circleRadius = 70.0;
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
   List<TimeObject> timeObjectList = List();
+
+  var _selectedTimeStandard = "EST−05:00";
+  List<String> _times = ["EST−05:00", "EST−04:00"];
 
   var time = [
     "09:00 AM",
@@ -61,10 +69,19 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     "04:50 PM"
   ];
 
+
+  @override
+  void dispose() {
+    super.dispose();
+    creditCard = null;
+    healthCard = null;
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    getHealthCard();
+    getCardFromDB();
     Constants.appointment.appointmentDate = DateTime.now().toString();
     for (int i = 0; i < time.length; i++) {
       timeObjectList.add(TimeObject(time[i], false));
@@ -146,8 +163,68 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   )),
             ),
             getCalender(),
+
+
             Padding(
-              padding: EdgeInsets.only(left: 20),
+              padding: EdgeInsets.only(left: 20,),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text("Time Standard",
+                    style: TextStyle(
+                      fontFamily: "ProductSans",
+                      fontSize: 22,
+                      //fontWeight: FontWeight.bold,
+                      color: Constants.hexToColor(
+                        Constants.primaryDarkColor,
+                      ),
+                    )),
+              ),
+            ),
+
+            SizedBox(
+              height: 16,
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Times',
+                    labelStyle: Theme.of(context)
+                        .primaryTextTheme
+                        .caption
+                        .copyWith(color: Colors.black),
+                    border: const OutlineInputBorder(),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                      hint: Text(
+                        'Select Time Standard',
+                        style: TextStyle(fontFamily: "ProductSans"),
+                      ),
+                      //isExpanded: true,
+                      isDense: true,
+                      // Reduces the dropdowns height by +/- 50%
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      value: _selectedTimeStandard,
+                      items: _times.map((item) {
+                        return DropdownMenuItem(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: TextStyle(fontFamily: "ProductSans"),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (selectedItem) =>
+                          setState(() => _selectedTimeStandard = selectedItem),
+                    ),
+                  )
+              ),
+            ),
+
+
+            Padding(
+              padding: EdgeInsets.only(left: 20, top: 16),
               child: Align(
                 alignment: Alignment.topLeft,
                 child: Text("Appointment Time",
@@ -245,13 +322,21 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                     fontFamily: "ProductSans")),
             controller: _btnController,
             onPressed: () {
-              schedualAppointment();
+
+              if(healthCard != null){
+                schedualAppointment();
+                //askToFillTheCard();
+              }else{
+                askToFillTheCard();
+              }
+
             },
           ),
         ),
       ),
     );
   }
+
 
   DateTime _currentDate = DateTime.now();
 
@@ -311,7 +396,7 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
         ),
 
         weekFormat: false,
-        height: 400.0,
+        height: 380.0,
         selectedDateTime: _currentDate,
         daysHaveCircularBorder: true,
 
@@ -321,10 +406,10 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   }
 
   void schedualAppointment() {
-    if(Constants.appointment.appointmentTime.isEmpty){
+    if (Constants.appointment.appointmentTime.isEmpty) {
       showOtherAlertDialog("Error", "Please select appointment time", context);
       return;
-    }else if(Constants.appointment.appointmentDate.isEmpty){
+    } else if (Constants.appointment.appointmentDate.isEmpty) {
       showOtherAlertDialog("Error", "Please select appointment date", context);
       return;
     }
@@ -397,8 +482,82 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     ;
   }
 
-  Future<void> bookAppointment() async {
 
+  void askToFillTheCard() {
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text("Health Card",
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          content: Text("Your health card information is required to book an appointment. To add or update health card, please press 'Continue' or press 'Pay Now' to pay via a stripe card now. Appointment Fee is CAD 50.00.",
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          actions: [
+
+            CupertinoDialogAction(
+              child: Text("Continue",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                _btnController.reset();
+                Navigator.of(context).pop();
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HealthCardScreen(showMessage: true),
+                    ),
+                  );
+
+              },
+            ),
+
+            CupertinoDialogAction(
+              child: Text("Pay Now",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                if(creditCard != null){
+                  paymentProcess();
+                }else{
+                  _btnController.reset();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SaveCardScreen(showMessage: true),
+                    ),
+                  );
+                }
+              },
+            ),
+
+
+            CupertinoDialogAction(
+              child: Text("Cancel",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                _btnController.reset();
+                Navigator.of(context).pop();
+              },
+            ),
+
+          ],
+        ));
+
+
+  }
+
+  Future<void> bookAppointment() async {
     String url = Utils.baseURL + Utils.BOOK_APPOINTMENT;
     print(url);
 
@@ -407,17 +566,18 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
 
     String time = Constants.appointment.appointmentTime.split(" ").first;
     var timeFirst = int.parse(time.split(":").first);
-    if(timeFirst >= 1 && timeFirst < 9){
-      timeFirst+= 12;
-      time = timeFirst.toString()+":"+(time.split(":").last);
-    }else{
+    if (timeFirst >= 1 && timeFirst < 9) {
+      timeFirst += 12;
+      time = timeFirst.toString() + ":" + (time.split(":").last);
+    } else {
       time = Constants.appointment.appointmentTime.split(" ").first;
     }
 
     print(time);
 
     request.fields['doc_id'] = Constants.appointment.docId;
-    request.fields['patient_id'] = Utils.user.profile_obj.umeta_obj.id.toString();
+    request.fields['patient_id'] =
+        Utils.user.profile_obj.umeta_obj.id.toString();
     request.fields['province'] = Constants.appointment.province;
     request.fields['symptoms'] = Constants.appointment.symptoms;
     request.fields['how_long_felt'] = Constants.appointment.howLongFelt;
@@ -425,28 +585,30 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     request.fields['covid_location'] = Constants.appointment.covidLocation;
     request.fields['covid_time_travel'] = Constants.appointment.covidTimeTravel;
     request.fields['sick_note'] = Constants.appointment.sickNote;
-    if(Constants.appointment.AudioOrVideo != null && Constants.appointment.AudioOrVideo.isNotEmpty){
+    if (Constants.appointment.AudioOrVideo != null &&
+        Constants.appointment.AudioOrVideo.isNotEmpty) {
       request.fields['appointment_files'] = "1";
-    }
-    else{
+    } else {
       request.fields['appointment_files'] = "0";
     }
     request.fields['file_data[0][type]'] = "image";
     request.fields['additional_details'] =
         Constants.appointment.additionalDetails;
-    request.fields['date'] = Constants.appointment.appointmentDate.split(" ").first;
+    request.fields['date'] =
+        Constants.appointment.appointmentDate.split(" ").first;
     request.fields['time'] = time;
     request.fields['appointment_for'] = Constants.appointment.appointmentFor;
     request.fields['userName'] = Constants.appointment.userName;
     request.fields['userId'] = Constants.appointment.userId;
     request.fields['userName'] = Constants.appointment.userName;
     request.fields['status'] = "0";
+    request.fields['time_standard'] = _selectedTimeStandard;
 
     request.headers['Content-type'] = "application/json";
     request.headers['Authorization'] = "Bearer " + Utils.user.token;
 
-
-    if(Constants.appointment.AudioOrVideo != null && Constants.appointment.AudioOrVideo.isNotEmpty){
+    if (Constants.appointment.AudioOrVideo != null &&
+        Constants.appointment.AudioOrVideo.isNotEmpty) {
       String fileName = Constants.appointment.AudioOrVideo.split('/').last;
       String ext = fileName.split(".").last;
       request.files.add(await http.MultipartFile.fromPath(
@@ -457,54 +619,145 @@ class _SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     print(Constants.appointment.appointmentDate.split(" ").first);
     print(time);
 
-
     request.send().then((http.StreamedResponse response) async {
       _btnController.reset();
       if (response.statusCode == 200) {
-        showOtherAlertDialog("Confirmed!", "Your appointment is confirmed", context);
+        showOtherAlertDialog(
+            "Confirmed!", "Your appointment is confirmed", context);
       } else {
-        showOtherAlertDialog("Error", "Some information went wrong please try again", context);
+        showOtherAlertDialog(
+            "Error", "Some information went wrong please try again", context);
         print(response.toString());
       }
     }).catchError((error) async {
       _btnController.reset();
-      showOtherAlertDialog("Error", "Some information went wrong please try again", context);
+      showOtherAlertDialog(
+          "Error", "Some information went wrong please try again", context);
       print(error.toString());
     });
   }
+
+  static HealthCardModel healthCard;
+
+  Future<void> getHealthCard() async {
+    String url = Utils.baseURL + Utils.HEALTH_CARD;
+
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(Uri.parse(url), headers: headers);
+    String body = response.body;
+    print(body);
+
+    var _healthCard = (json.decode(response.body))["card"];
+
+    if (_healthCard != null) {
+      healthCard = new HealthCardModel();
+      healthCard.id = _healthCard["id"];
+      healthCard.health_card_province = _healthCard["province"];
+      healthCard.number = _healthCard["number"];
+      healthCard.dob = _healthCard["dob"];
+      healthCard.phone = _healthCard["phone"];
+      healthCard.address = _healthCard["address"];
+      healthCard.postal_code = _healthCard["postal_code"];
+      healthCard.sex = _healthCard["sex"];
+    }
+  }
+
+
+
+  static CreditCard creditCard;
+  Future<void> getCardFromDB() async {
+    String url = Utils.baseURL +
+        Utils.GET_CARD +
+        Utils.user.profile_obj.umeta_obj.profile_id.toString();
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(Uri.parse(url), headers: headers);
+    String body = response.body;
+    print(response.body);
+    final List typeList = (json.decode(response.body))["cards"];
+
+      if (typeList.isNotEmpty) {
+        creditCard = new CreditCard();
+        creditCard.card_number = typeList[0]["number"];
+        creditCard.card_holder_name = typeList[0]["name"];
+        creditCard.expiry_month = typeList[0]["expiry_month"];
+        creditCard.expiry_year = typeList[0]["expiry_year"];
+        creditCard.card_code = typeList[0]["code"];
+        creditCard.id = typeList[0]["id"];
+      }
+
+  }
+
+  Future<void> paymentProcess() async {
+
+    PaymentModel paymentModel = new PaymentModel(
+      card_id: creditCard.id.toString(),
+      amount: "50"
+    );
+
+    String url =  Utils.baseURL + Utils.CARD_PAY+ Utils.user.profile_obj.umeta_obj.profile_id.toString();
+    print(url);
+    String jsonUser = jsonEncode(paymentModel);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
+    int statusCode = response.statusCode;
+
+    print(jsonUser);
+    print(response.body);
+
+    if (statusCode == 200) {
+      schedualAppointment();
+    }else{
+      _btnController.reset();
+      showAlertDialog(
+          "Error", "Something went wrong in processing payment, please try again", context);
+    }
+
+  }
+
+
+  void showAlertDialog(String title, String msg, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text(title,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          content: Text(msg,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("OK",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ));
+  }
+
+
 }
 
 class TimeObject {
   String time;
   bool isSelected;
-
   TimeObject(this.time, this.isSelected);
+
 }
-
-/*
-
-customDayBuilder: (   /// you can provide your own build function to make custom day containers
-            bool isSelectable,
-            int index,
-            bool isSelectedDay,
-            bool isToday,
-            bool isPrevMonthDay,
-            TextStyle textStyle,
-            bool isNextMonthDay,
-            bool isThisMonthDay,
-            DateTime day,
-            ) {
-          /// If you return null, [CalendarCarousel] will build container for current [day] with default function.
-          /// This way you can build custom containers for specific days only, leaving rest as default.
-
-          // Example: every 15th of month, we have a flight, we can place an icon in the container like that:
-          if (day.day == 15) {
-            return Center(
-              child: Icon(Icons.local_airport),
-            );
-          } else {
-            return null;
-          }
-        },
-
- */

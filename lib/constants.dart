@@ -20,6 +20,7 @@ class Constants {
     return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
   }
 
+  static String fcm_token = "1234";
 
   static BoxDecoration InputBoxDecoration() {
     return BoxDecoration(

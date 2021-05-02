@@ -9,6 +9,8 @@ class RegisterUser{
   int patients;
   int appointments;
 
+  String device_token;
+
 
   bool selected = false;
   String location="";
@@ -26,7 +28,8 @@ class RegisterUser{
       this.contact_number,
       this.password,
       this.confirm_password,
-      this.lanuage_abr
+      this.lanuage_abr,
+      this.device_token
       );
 
   toJson() {
@@ -42,6 +45,7 @@ class RegisterUser{
       "password": password,
       "password_confirmation": confirm_password,
       "language_abr": lanuage_abr,
+      "device_token":device_token
     };
   }
 

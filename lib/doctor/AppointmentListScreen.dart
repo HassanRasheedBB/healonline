@@ -100,7 +100,7 @@ class _AppointmentListState extends State<AppointmentList> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        GestureDetector(
+                        InkWell(
                           onTap: (){
                             getToken(appointments[index].channelName);
                             //onJoin(appointments[index].channelName,appointments[index].videoToken);
@@ -173,7 +173,7 @@ class _AppointmentListState extends State<AppointmentList> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await get(url, headers: headers);
+      Response response = await get(Uri.parse(url), headers: headers);
       String body = response.body;
       print(response.body);
 
@@ -191,6 +191,7 @@ class _AppointmentListState extends State<AppointmentList> {
           appointmentUI.appointmentTime =  mainStream[i]["time"];
           appointmentUI.channelName = mainStream[i]["channel_name"];
           appointmentUI.videoToken = mainStream[i]["token"];
+          appointmentUI.notes = mainStream[i]["notes"];
 
           appointmentList.add(appointmentUI);
         }
@@ -234,7 +235,7 @@ class _AppointmentListState extends State<AppointmentList> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await get(url, headers: headers);
+    Response response = await get(Uri.parse(url), headers: headers);
     String body = response.body;
     print(response.body);
 

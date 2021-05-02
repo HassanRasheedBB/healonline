@@ -131,7 +131,7 @@ class _UploadImagesState extends State<UploadImages> {
           "Content-type": "application/json",
           HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
         };
-        Response response = await get(url, headers: headers);
+        Response response = await get(Uri.parse(url), headers: headers);
         String body = response.body;
         print(body);
 

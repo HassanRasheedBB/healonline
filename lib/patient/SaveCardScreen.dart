@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/CreditCardModel.dart';
+import 'package:HealOnline/patient/SchedualAppointmentScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -13,7 +14,8 @@ import 'package:http/http.dart' as http;
 import '../constants.dart';
 
 class SaveCardScreen extends StatefulWidget {
-  SaveCardScreen({Key key}) : super(key: key);
+  bool showMessage = false;
+  SaveCardScreen({Key key, this.showMessage}) : super(key: key);
 
   @override
   _SaveCardScreenState createState() => _SaveCardScreenState();
@@ -32,6 +34,8 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
   CreditCard card;
   int creditCardId;
 
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -43,7 +47,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      //resizeToAvoidBottomPadding: false,
+      //resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         elevation: 8,
@@ -57,7 +61,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Add Card",
+        title: Text("Add Your Stripe Card",
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -84,7 +88,8 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
+
                   key: Key('Username'),
                   controller: _cardNumberController,
                   validator: (value) =>
@@ -102,7 +107,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Username'),
                   controller: _cardHolderNameController,
                   validator: (value) =>
@@ -124,7 +129,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
                   children: [
                     Container(
                       width: MediaQuery.of(context).size.width / 2 - 22,
-                      child: TextFormField(
+                      child:  TextFormField(textInputAction: TextInputAction.done,
                         keyboardType: TextInputType.datetime,
                         key: Key('Username'),
                         controller: _cardExpiryController,
@@ -142,7 +147,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width / 2 - 22,
-                      child: TextFormField(
+                      child:  TextFormField(textInputAction: TextInputAction.done,
                         keyboardType: TextInputType.number,
                         key: Key('Username'),
                         controller: _cardSecurityCodeController,
@@ -185,6 +190,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
     );
   }
 
+
   Future<void> saveCard() async {
     if (_formKey.currentState.validate()) {
 
@@ -212,12 +218,18 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await post(url, headers: headers, body: jsonUser);
+      Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
       int statusCode = response.statusCode;
 
       if (statusCode == 200) {
+        if(widget.showMessage){
+          if(SchedualAppointmentScreenState.creditCard == null){
+            SchedualAppointmentScreenState.creditCard = creditCard;
+          }
+        }
         _btnController.reset();
         showAlertDialog("Success", "Card is updated successfully", context);
+
       } else {
         _btnController.reset();
         showAlertDialog(
@@ -250,6 +262,9 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
                       )),
                   onPressed: () {
                     Navigator.of(context).pop();
+                    if(widget.showMessage) {
+                      getCardFromDB();
+                    }
                   },
                 )
               ],
@@ -265,7 +280,7 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await get(url, headers: headers);
+    Response response = await get(Uri.parse(url), headers: headers);
     String body = response.body;
     print(response.body);
     final List typeList = (json.decode(response.body))["cards"];
@@ -276,6 +291,25 @@ class _SaveCardScreenState extends State<SaveCardScreen> {
         _cardExpiryController.text = typeList[0]["expiry_month"]+"/"+typeList[0]["expiry_year"];
         _cardSecurityCodeController.text = typeList[0]["code"];
         creditCardId = typeList[0]["id"];
+
+
+
+        CreditCard creditCard = new CreditCard();
+        creditCard.card_number = typeList[0]["number"];
+        creditCard.card_holder_name = typeList[0]["name"];
+        creditCard.expiry_month = typeList[0]["expiry_month"];
+        creditCard.expiry_year = typeList[0]["expiry_year"];
+        creditCard.card_code = typeList[0]["code"];
+        creditCard.id = typeList[0]["id"];
+
+
+        if(SchedualAppointmentScreenState.creditCard == null){
+          SchedualAppointmentScreenState.creditCard = creditCard;
+        }
+        if(widget.showMessage){
+          Navigator.of(context).pop();
+        }
+
       }
     });
   }

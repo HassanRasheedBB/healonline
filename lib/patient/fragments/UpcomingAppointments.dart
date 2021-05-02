@@ -55,7 +55,7 @@ class _UpcomingAppointmentsState extends State<UpcomingAppointments> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await get(url, headers: headers);
+      Response response = await get(Uri.parse(url), headers: headers);
       String body = response.body;
       print(response.body);
 
@@ -193,7 +193,7 @@ class _UpcomingAppointmentsState extends State<UpcomingAppointments> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          GestureDetector(
+                          InkWell(
                             onTap: (){
                               onJoin(appointments[index].channelName,appointments[index].videoToken);
                             },
@@ -280,6 +280,6 @@ class AppointmentUI{
   int id;
   String patientId, gender, weight, height, maritalStatus, bloodGrp, phoneNum, lang;
   int age;
-
+  String notes;
   String symptoms, sick_note, additional_details, appointment_for;
 }

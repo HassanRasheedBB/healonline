@@ -46,7 +46,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         elevation: 8,
@@ -79,7 +79,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Address 1'),
                   controller: addressOneController,
                   validator: (value) =>
@@ -96,7 +96,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Address 2'),
                   controller: addressTwoController,
                   validator: (value) =>
@@ -113,7 +113,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   readOnly: true,
                   onTap: () {
                     showCupertinoModalBottomSheet(
@@ -148,7 +148,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Postal / ZipCode'),
                   controller: zipCodeController,
                   validator: (value) =>
@@ -165,7 +165,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Province'),
                   readOnly: true,
                   onTap: () {
@@ -246,7 +246,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await post(url, headers: headers, body: jsonUser);
+      Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
       int statusCode = response.statusCode;
 
       if (statusCode == 200) {
@@ -310,7 +310,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await get(url, headers: headers);
+    Response response = await get(Uri.parse(url), headers: headers);
     String body = response.body;
     print(response.body);
     final List typeList = (json.decode(response.body))["addresss"];

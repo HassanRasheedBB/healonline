@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:HealOnline/SignUpScreen/SignupScreen.dart';
 import 'package:HealOnline/Utils.dart';
@@ -8,6 +9,7 @@ import 'package:HealOnline/models/LoginRequest.dart';
 import 'package:HealOnline/models/LoginResponse.dart';
 import 'package:HealOnline/patient/HomePagePatient.dart';
 import 'package:HealOnline/patient/fragments/HomePage.dart';
+import 'package:HealOnline/phone_authentication/phone_number_screen.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomCheckBoxGroup.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
@@ -17,6 +19,7 @@ import 'package:http/http.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../constants.dart';
 
@@ -36,8 +39,57 @@ class _LoginPageState extends State<LoginPage> {
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
 
+  // FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+
   bool _isShowPwd = false;
   String selectedUserAs = "PATIENT";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // firebaseCloudMessaging_Listeners();
+  }
+
+  // String token;
+
+  // void firebaseCloudMessaging_Listeners() {
+  //   if (Platform.isIOS) iOS_Permission();
+  //
+  //   _firebaseMessaging.getToken().then((token){
+  //     this.token = token;
+  //     Constants.fcm_token = token;
+  //     print("token----:   "+token);
+  //   });
+  //
+  //   _firebaseMessaging.configure(
+  //     onMessage: (Map<String, dynamic> message) async {
+  //       print('on message $message');
+  //     },
+  //     onResume: (Map<String, dynamic> message) async {
+  //       print('on resume $message');
+  //     },
+  //     onLaunch: (Map<String, dynamic> message) async {
+  //       print('on launch $message');
+  //     },
+  //   );
+  // }
+  //
+  //
+  // void iOS_Permission() {
+  //   _firebaseMessaging.requestNotificationPermissions(
+  //       IosNotificationSettings(sound: true, badge: true, alert: true)
+  //   );
+  //   _firebaseMessaging.onIosSettingsRegistered
+  //       .listen((IosNotificationSettings settings)
+  //   {
+  //     print("Settings registered: $settings");
+  //   });
+  // }
+
+
+
 
   @override
   void dispose() {
@@ -108,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 16,
                 ),
-                TextFormField(
+                 TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Username'),
                   controller: _usernameController,
                   validator: (value) =>
@@ -122,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   height: 10,
                 ),
-                TextFormField(
+                 TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Password'),
                   controller: _passwordController,
                   validator: (value) =>
@@ -203,7 +255,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SignUpPage(),
+                              builder: (context) => PhoneNumberScreen(),
                             ),
                           );
                         },
@@ -232,9 +284,9 @@ class _LoginPageState extends State<LoginPage> {
 
       String url = Utils.baseURL + Utils.USER_LOGIN;
       Map<String, String> headers = Utils.HEADERS;
-      LoginRequest user = LoginRequest(_usernameController.text, _passwordController.text);
+      LoginRequest user = LoginRequest(_usernameController.text, _passwordController.text, Constants.fcm_token.toString());
       String jsonUser = jsonEncode(user);
-      Response response = await post(url, headers: headers, body: jsonUser);
+      Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
       int statusCode = response.statusCode;
 
       if(statusCode == 200){

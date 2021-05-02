@@ -29,6 +29,16 @@ class Utils{
 
   static String HEALTH_CARD = "health_card";
 
+  static String CARD_PAY = "pay/";
+
+  static String PASSWORD_RESET = "password/update";
+
+  static String QUERY_TO_ADMIN = "query";
+
+  static String UPDATE_APPOINTMENT = "appointment/";
+
+  static String UPDATE_NOTES= "appointment_notes/";
+
 
   static Map<String, String> HEADERS = {"Content-type": "application/json"};
 

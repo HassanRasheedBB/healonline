@@ -5,6 +5,7 @@ class Appointment{
   sickNote, AudioOrVideo, additionalDetails, appointmentDate, appointmentTime;
   String appointmentFor;
   String userId, docId, userName;
+  String time_standard;
 
   String docName="";
   String docEmail="";

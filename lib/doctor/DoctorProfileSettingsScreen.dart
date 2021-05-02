@@ -96,7 +96,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         elevation: 8,
@@ -128,7 +128,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Username'),
                 controller: fNameController,
                 validator: (value) =>
@@ -146,7 +146,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Username'),
                 controller: lNameController,
                 validator: (value) =>
@@ -164,7 +164,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Phone Number'),
                 controller: phoneNoController,
                 validator: (value) =>
@@ -187,7 +187,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 onTap: () {
                   _selectDate(context);
                 },
@@ -214,7 +214,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 readOnly: true,
                 onTap: () {
                   _openLanguagePickerDialog();
@@ -249,7 +249,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('DOB'),
                 controller: emailController,
                 validator: (value) =>
@@ -267,7 +267,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('CPSO'),
                 controller: cpsoController,
                 validator: (value) =>
@@ -285,7 +285,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('MINC'),
                 controller: mincController,
                 validator: (value) =>
@@ -346,7 +346,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Degree'),
                 controller: degreeController,
                 validator: (value) =>
@@ -364,7 +364,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Degree Date'),
                 controller: degreeDateController,
                 validator: (value) =>
@@ -391,7 +391,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Degree Date'),
                 controller: degreeUniversityController,
                 validator: (value) =>
@@ -416,7 +416,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Degree Location'),
                 controller: degreeLocationController,
                 validator: (value) =>
@@ -457,7 +457,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 readOnly: true,
                 onTap: () => showTotExpModal(context),
                 key: Key('Years'),
@@ -483,7 +483,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Speciality'),
                 controller: specialityController,
                 validator: (value) =>
@@ -511,7 +511,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Speciality'),
                 controller: speciality1Controller,
                 validator: (value) =>
@@ -539,7 +539,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Speciality'),
                 controller: speciality2Controller,
                 validator: (value) =>
@@ -567,7 +567,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Speciality'),
                 controller: speciality3Controller,
                 validator: (value) =>
@@ -595,7 +595,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Speciality'),
                 controller: speciality4Controller,
                 validator: (value) =>
@@ -728,7 +728,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await post(url, headers: headers, body: jsonUser);
+    Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
     int statusCode = response.statusCode;
 
     if (statusCode == 200) {
@@ -786,7 +786,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await get(url, headers: headers);
+      Response response = await get(Uri.parse(url), headers: headers);
       String body = response.body;
       print(response.body);
       var typeList = (json.decode(response.body))["doctor"];

@@ -23,7 +23,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({Key key}) : super(key: key);
+  String phoneNumber;
+  SignUpPage(this.phoneNumber, {Key key}) : super(key: key);
 
   @override
   _SignUpPageState createState() => _SignUpPageState();
@@ -55,6 +56,14 @@ class _SignUpPageState extends State<SignUpPage> {
   PhoneNumber number = PhoneNumber(isoCode: 'CA');
   bool isNumberValidated = false;
   String selectedGender  = "male";
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _phoneNumberController.text = widget.phoneNumber;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +128,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 16,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 key: Key('FirstName'),
                 controller: _firstnameController,
                 validator: (value) =>
@@ -135,7 +144,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 10,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 key: Key('LastName'),
                 controller: _lastnameController,
                 validator: (value) =>
@@ -151,7 +160,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 10,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 onTap: () {
                   _selectDate(context);
                 },
@@ -246,7 +255,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 10,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 readOnly: true,
                 onTap: () {
                   _openLanguagePickerDialog();
@@ -268,7 +277,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 10,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 key: Key('EmailAddress'),
                 controller: _emailController,
                 validator: (value) {
@@ -309,46 +318,68 @@ class _SignUpPageState extends State<SignUpPage> {
 //               ),
 
 
-              InternationalPhoneNumberInput(
-                onInputChanged: (PhoneNumber number) {
-                  phoneNumber = number.phoneNumber;
-                   print(number.phoneNumber);
-                },
-                onInputValidated: (bool value) {
-                  isNumberValidated = value;
-                  // print(value);
-                },
+
+
+               TextFormField(textInputAction: TextInputAction.done,
+                readOnly: true,
+                key: Key('Phone Number'),
+                controller: _phoneNumberController,
                 validator: (value) {
                   if (value.isEmpty) {
                     return "Please enter phone number";
-                  } else if (!isNumberValidated) {
-                    return "Please use correct number";
                   } else {
                     return null;
                   }
                 },
-                selectorConfig: SelectorConfig(
-                  selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                ),
-                ignoreBlank: false,
-                autoValidateMode: AutovalidateMode.disabled,
-                selectorTextStyle: TextStyle(color: Colors.black),
-                textFieldController: _phoneNumberController,
-                initialValue: number,
-                formatInput: false,
-                keyboardType: TextInputType.numberWithOptions(
-                    signed: true, decimal: true),
-                inputBorder: OutlineInputBorder(),
-                onSaved: (PhoneNumber number) {
-                  //print('On Saved: $number');
-                },
+                decoration: InputDecoration(
+                  //prefixIcon: Icon(Icons.person_outline),
+                  //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
+                    border: OutlineInputBorder(),
+                    hintText: 'Phone Number*',
+                    hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
+
+
+              // InternationalPhoneNumberInput(
+              //   onInputChanged: (PhoneNumber number) {
+              //     phoneNumber = number.phoneNumber;
+              //      print(number.phoneNumber);
+              //   },
+              //   onInputValidated: (bool value) {
+              //     isNumberValidated = value;
+              //     // print(value);
+              //   },
+              //   validator: (value) {
+              //     if (value.isEmpty) {
+              //       return "Please enter phone number";
+              //     } else if (!isNumberValidated) {
+              //       return "Please use correct number";
+              //     } else {
+              //       return null;
+              //     }
+              //   },
+              //   selectorConfig: SelectorConfig(
+              //     selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+              //   ),
+              //   ignoreBlank: false,
+              //   autoValidateMode: AutovalidateMode.disabled,
+              //   selectorTextStyle: TextStyle(color: Colors.black),
+              //   textFieldController: _phoneNumberController,
+              //   initialValue: number,
+              //   formatInput: false,
+              //   keyboardType: TextInputType.numberWithOptions(
+              //       signed: true, decimal: true),
+              //   inputBorder: OutlineInputBorder(),
+              //   onSaved: (PhoneNumber number) {
+              //     //print('On Saved: $number');
+              //   },
+              // ),
 
 
               SizedBox(
                 height: 10,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Password'),
                 controller: _passwordController,
                 validator: (value) {
@@ -397,7 +428,7 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 14,
               ),
-              TextFormField(
+               TextFormField(textInputAction: TextInputAction.done,
                 key: Key('ConfirmPassword'),
                 controller: _conPasswordController,
                 validator: (value) {
@@ -631,10 +662,11 @@ class _SignUpPageState extends State<SignUpPage> {
           selectedGender,
           _lanuageController.text,
           _emailController.text,
-          phoneNumber,
+          _phoneNumberController.text,
           _passwordController.text,
           _conPasswordController.text,
           "",
+          Constants.fcm_token
       );
 
       try {
@@ -642,7 +674,7 @@ class _SignUpPageState extends State<SignUpPage> {
         String url = Utils.baseURL + Utils.USER_REGISTER;
         Map<String, String> headers = Utils.HEADERS;
         String jsonUser = jsonEncode(registerUser);
-        Response response = await post(url, headers: headers, body: jsonUser);
+        Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
         int statusCode = response.statusCode;
 
         if (statusCode == 200 || statusCode == 203) {

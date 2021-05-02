@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/HealthCardModel.dart';
+import 'package:HealOnline/patient/SchedualAppointmentScreen.dart';
 import 'package:HealOnline/patient/fragments/CityPicker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,8 @@ import 'package:rounded_loading_button/rounded_loading_button.dart';
 import '../constants.dart';
 
 class HealthCardScreen extends StatefulWidget {
-  HealthCardScreen({Key key}) : super(key: key);
+  bool showMessage = false;
+  HealthCardScreen({Key key, this.showMessage}) : super(key: key);
 
   @override
   HealthCardScreenState createState() => HealthCardScreenState();
@@ -42,7 +44,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
   void initState() {
     getHealthCard();
     super.initState();
+
+
+
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +85,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   readOnly: true,
                   onTap: () {
                     showCupertinoModalBottomSheet(
@@ -114,7 +120,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Health Card'),
                   controller: cardNoController,
                   validator: (value) =>
@@ -131,7 +137,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   onTap: () {
                     _selectDate(context);
                   },
@@ -152,7 +158,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Phone Number'),
                   controller: phoneController,
                   validator: (value) =>
@@ -169,7 +175,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Address'),
                   controller: addressController,
                   validator: (value) =>
@@ -225,7 +231,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 18),
-                child: TextFormField(
+                child:  TextFormField(textInputAction: TextInputAction.done,
                   key: Key('Postal Code'),
                   controller: postalCodeController,
                   validator: (value) =>
@@ -270,6 +276,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
     provinceController.text = citi;
   }
 
+
   Future<void> updateInformation() async {
     if (_formKey.currentState.validate()) {
       HealthCardModel healthCardModel = new HealthCardModel(
@@ -283,15 +290,14 @@ class HealthCardScreenState extends State<HealthCardScreen> {
           sex: selectedGender,
           postal_code: postalCodeController.text);
 
-      String url = Utils.baseURL + Utils.HEALTH_CARD;
-      ;
+      String url = Utils.baseURL + Utils.HEALTH_CARD;;
 
       String jsonUser = jsonEncode(healthCardModel);
       Map<String, String> headers = {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await post(url, headers: headers, body: jsonUser);
+      Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
       int statusCode = response.statusCode;
 
       print(url);
@@ -300,6 +306,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
 
       if (statusCode == 200) {
         _btnController.reset();
+        if(widget.showMessage){
+          if(SchedualAppointmentScreenState.healthCard == null){
+            SchedualAppointmentScreenState.healthCard = healthCardModel;
+          }
+        }
         showAlertDialog(
             "Success", "Health card is updated successfully", context);
       } else {
@@ -334,6 +345,9 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                       )),
                   onPressed: () {
                     Navigator.of(context).pop();
+                    if(widget.showMessage){
+                      Navigator.of(context).pop();
+                    }
                   },
                 )
               ],
@@ -364,7 +378,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await get(url, headers: headers);
+    Response response = await get(Uri.parse(url), headers: headers);
     String body = response.body;
     print(response.body);
 

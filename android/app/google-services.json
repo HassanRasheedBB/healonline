@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "298617521081-ihm3of4vqbab4lk7eephmcrp57jg8e8f.apps.googleusercontent.com",
+          "client_id": "298617521081-7pg023p5r612d5g4ft95i0tnhkuip236.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ca.healonline",
-            "certificate_hash": "a5523c78e39f6890e3c128f97b5d5fa6b0c8f26d"
+            "certificate_hash": "37a64b11de99570ec00b4115c6f07b258289b723"
           }
         },
         {
@@ -43,7 +43,8 @@
               "client_id": "298617521081-ktm68icv8d8ss5vrfc1gomvhj66in19s.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "ca.healonline"
+                "bundle_id": "ca.healonline",
+                "app_store_id": "1544983893"
               }
             }
           ]

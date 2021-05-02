@@ -104,7 +104,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await get(url, headers: headers);
+      Response response = await get(Uri.parse(url), headers: headers);
       String body = response.body;
       print(response.body);
 
@@ -124,7 +124,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
               typeList[i]["email"],
               typeList[i]["profile"]["p_mob_1"],
               "",
-              "", "");
+              "", "", Constants.fcm_token);
           registerUser.location =  typeList[i]["profile"]["province"];
           registerUser.id = typeList[i]["id"];
           List specs = typeList[i]["profile"]["experience"];

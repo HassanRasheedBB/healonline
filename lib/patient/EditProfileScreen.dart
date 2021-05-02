@@ -87,7 +87,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         centerTitle: true,
         elevation: 8,
@@ -119,7 +119,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Username'),
                 controller: fNameController,
                 validator: (value) =>
@@ -137,7 +137,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Username'),
                 controller: lNameController,
                 validator: (value) =>
@@ -155,7 +155,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Phone Number'),
                 controller: phoneNoController,
                 validator: (value) =>
@@ -178,7 +178,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 onTap: () {
                   _selectDate(context);
                 },
@@ -200,7 +200,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 readOnly: true,
                 onTap: () {
                   _openLanguagePickerDialog();
@@ -235,7 +235,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 readOnly: true,
                 key: Key('DOB'),
                 controller: emailController,
@@ -258,7 +258,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Weight'),
                 keyboardType: TextInputType.number,
                 controller: weightController,
@@ -276,7 +276,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Height'),
                 keyboardType: TextInputType.number,
                 controller: heightController,
@@ -297,7 +297,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('BloodGrp'),
                 controller: bloodGrpController,
                 decoration: InputDecoration(
@@ -400,7 +400,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 readOnly: true,
                 onTap: () {
                   showCupertinoModalBottomSheet(
@@ -481,7 +481,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Username'),
                 controller: pharmacyController,
                 validator: (value) =>
@@ -529,7 +529,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Health'),
                 controller: insuranceProviderController,
                 validator: (value) =>
@@ -547,7 +547,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Health'),
                 controller: policyNoController,
                 validator: (value) =>
@@ -627,7 +627,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
       print(jsonUser);
 
-      Response response = await post(url, headers: headers, body: jsonUser);
+      Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
       int statusCode = response.statusCode;
 
       if (statusCode == 200) {
@@ -690,7 +690,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await get(url, headers: headers);
+      Response response = await get(Uri.parse(url), headers: headers);
       String body = response.body;
       print(response.body);
       var typeList = (json.decode(response.body))["Profile"];
@@ -716,7 +716,25 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             typeList["policy_number"] != null ? typeList["policy_number"] : "";
         pharmacyController.text =
         typeList["pharmacy"] != null ? typeList["pharmacy"] : "";
-        gender = typeList["gender"];
+
+        weightController.text =
+        typeList["weight"] != null ? typeList["weight"] : "";
+        heightController.text =
+        typeList["height"] != null ? typeList["height"] : "";
+        bloodGrpController.text =
+        typeList["blood_group"] != null ? typeList["blood_group"] : "";
+
+        setState(() {
+          if(typeList["martial_status"] != null){
+            selectedMaritalStatus = typeList["martial_status"] ;
+          }
+          if(typeList["gender"] != null){
+            selectedGender = typeList["gender"];
+          }
+        });
+
+
+
       }
     } catch (e) {}
   }

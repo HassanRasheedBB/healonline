@@ -37,6 +37,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
         "-",
         "-",
         "-",
+        Constants.fcm_token
         );
     getProfile();
   }
@@ -527,7 +528,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await get(url, headers: headers);
+    Response response = await get(Uri.parse(url), headers: headers);
     String body = response.body;
     print(response.body);
 

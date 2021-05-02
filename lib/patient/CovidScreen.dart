@@ -73,7 +73,7 @@ class _CovidScreenState extends State<CovidScreen> {
                       SizedBox(
                         height: 18,
                       ),
-                      TextFormField(
+                       TextFormField(textInputAction: TextInputAction.done,
                         key: Key('Location'),
                         controller: _countryController,
                         validator: (value) =>
@@ -87,7 +87,7 @@ class _CovidScreenState extends State<CovidScreen> {
                       SizedBox(
                         height: 10,
                       ),
-                      TextFormField(
+                       TextFormField(textInputAction: TextInputAction.done,
                         cursorColor: Colors.transparent,
                         key: Key('Travel Date'),
                         readOnly: true,
@@ -128,7 +128,7 @@ class _CovidScreenState extends State<CovidScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         elevation: 8,

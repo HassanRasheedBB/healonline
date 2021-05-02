@@ -1,6 +1,9 @@
 import 'package:HealOnline/LoginScreen/login_screen.dart';
+import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/VideoCall/call.dart';
 import 'package:HealOnline/VideoCall/index.dart';
+import 'package:HealOnline/patient/ContactUsScreen.dart';
+import 'package:HealOnline/patient/SettingsScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -90,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontFamily: "ProductSans",
                 color: Constants.hexToColor(Constants.blackColor))),
       ),
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: Constants.hexToColor(Constants.whiteColor),
       bottomNavigationBar: CurvedNavigationBar(
         color: Constants.hexToColor(Constants.primaryDarkColor),
@@ -146,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Dr. John Davis",
+                          "Dr. "+Utils.user.profile_obj.pmeta_obj.full_name,
                           style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 16,
@@ -329,13 +332,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Container(
                   height: 26,
                   width: 26,
-                  child: SvgPicture.asset(
-                    "assets/images/call.svg",
-                    color: Constants.hexToColor(Constants.primaryDarkColor),
-                  ),
+                  child: Icon(Icons.settings, color: Constants.hexToColor(Constants.primaryDarkColor),),
                 ),
                 title: Text(
-                  "Contact Us",
+                  "Settings",
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -346,6 +346,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   // ...
                   // Then close the drawer
                   Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SettingsScreen(),
+                    ),
+                  );
                 },
               ),
               Padding(

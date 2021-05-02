@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/models/Appoitment.dart';
+import 'package:HealOnline/models/UpdateAppointmentModel.dart';
+import 'package:HealOnline/models/appointment_notes.dart';
 import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +25,18 @@ class AppointmentDetail extends StatefulWidget {
 
 class _AppointmentDetailState extends State<AppointmentDetail> {
   AppointmentUI user;
+  TextEditingController notesController = TextEditingController();
 
   _AppointmentDetailState(this.user);
+
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    notesController.text = user.notes != null ? user.notes : "";
     getUser(widget.user.patientId);
   }
 
@@ -347,8 +354,8 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                   ),
                   SizedBox(height: 8),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    height: 52,
+                    padding: EdgeInsets.symmetric(horizontal: 22.0),
+                    height: 70,
                     width: MediaQuery.of(context).size.width,
                     child: InkWell(
                       onTap: () {
@@ -361,16 +368,14 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                         );
                       },
                       child: Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
+                        elevation: 4,
+                       margin: EdgeInsets.zero,
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16.0),
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "Doctor Notes",
+                              "Appointment Prescriptions",
                               style: TextStyle(
                                 fontFamily: "ProductSans",
                                 fontSize: 16,
@@ -385,58 +390,96 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    height: 52,
-                    width: MediaQuery.of(context).size.width,
-                    child: Card(
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
+
+                  Card(
+                    elevation: 4,
+                    margin: EdgeInsets.symmetric(horizontal: 22),
+                    child: ExpansionTile(
+                      tilePadding: EdgeInsets.only(left: 16.0, right: 16, top: 4),
+                      childrenPadding: EdgeInsets.all(8),
+                      title: Text(
+                        "Notes",
+                        style: TextStyle(
+                          fontFamily: "ProductSans",
+                          fontSize: 16,
+
+                          color: Constants.hexToColor(
+                            Constants.primaryDarkColor,
+                          ),
+                        ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      children: <Widget>[
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Container(
+                            padding: EdgeInsets.zero,
+                            height: 100,
+                            child:  TextFormField(textInputAction: TextInputAction.done,
+                              style: TextStyle(
+                                color: Colors.grey
+                              ),
+                              controller: notesController,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: 4,
+                              decoration: InputDecoration(
+                                // prefixIcon: Icon(Icons.person_outline),
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Notes',
+                                  hintStyle: TextStyle(fontFamily: "ProductSans")),
+                            ),
+                          ),
+                        ),
+
+                        SizedBox(height: 8,),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 40,
+                          child: RaisedButton(
+                            color: Constants.hexToColor(Constants.primaryColor),
+                            onPressed: (){
+                              updateNotes();
+                            },
+                            child: Text("UPDATE NOTES", style: TextStyle(color: Colors.white),),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+
+
+                  SizedBox(height: 20),
+                  InkWell(
+                    onTap: (){
+
+                      showAppointmentDateAndTime();
+
+                    },
+                    child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 20.0),
+                        height: 54,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Constants.hexToColor(
+                                Constants.primaryDarkColor,
+                              ),
+                            ),
+                            borderRadius: BorderRadius.all(Radius.circular(8))),
                         child: Align(
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.center,
                           child: Text(
-                            "History",
+                            "Next Appointment",
                             style: TextStyle(
                               fontFamily: "ProductSans",
-                              fontSize: 16,
+                              fontSize: 18,
                               color: Constants.hexToColor(
                                 Constants.primaryDarkColor,
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20.0),
-                      height: 54,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Constants.hexToColor(
-                              Constants.primaryDarkColor,
-                            ),
-                          ),
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Next Appointment",
-                          style: TextStyle(
-                            fontFamily: "ProductSans",
-                            fontSize: 18,
-                            color: Constants.hexToColor(
-                              Constants.primaryDarkColor,
-                            ),
-                          ),
-                        ),
-                      ))
+                        )),
+                  )
                 ],
               ),
             )
@@ -454,7 +497,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
       "Content-type": "application/json",
       HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
     };
-    Response response = await get(url, headers: headers);
+    Response response = await get(Uri.parse(url), headers: headers);
     String body = response.body;
     print(response.body);
 
@@ -480,4 +523,211 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
       }
     }
   }
+
+
+  var periods = ["am", "pm"];
+
+  void showAppointmentDateAndTime() {
+
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            height: 260,
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                SizedBox(
+                  height: 24,
+                ),
+
+                Text(
+                  "Select Next Schedule",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    color: Constants.hexToColor(Constants.primaryDarkColor)
+                  ),
+                ),
+
+                SizedBox(
+                  height: 16,
+                ),
+
+                 TextFormField(
+                  textInputAction: TextInputAction.done,
+                  onTap: () async {
+                    final DateTime picked = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime.now(),
+                      firstDate: DateTime(1900),
+                      lastDate: DateTime(2025),
+                    );
+
+                    setState(() {
+                      dateController.text = picked.toLocal().toString().split(' ')[0];
+                    });
+                  },
+                  readOnly: true,
+                  key: Key('Date'),
+                  controller: dateController,
+                  decoration: InputDecoration(
+                    //prefixIcon: Icon(Icons.person_outline),
+                    //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
+                      border: OutlineInputBorder(),
+                      hintText: 'Select Date*',
+                      hintStyle: TextStyle(fontFamily: "ProductSans")),
+                ),
+
+                SizedBox(
+                  height: 10,
+                ),
+
+                 TextFormField(textInputAction: TextInputAction.done,
+                  onTap: () async {
+
+                    final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                    );
+
+                    setState(() {
+                      timeController.text = selectedTime.hour.toString()+":"+selectedTime.minute.toString()+" "+periods[selectedTime.period.index];
+                    });
+
+                  },
+                  readOnly: true,
+                  key: Key('Time'),
+                  controller: timeController,
+                  decoration: InputDecoration(
+                    //prefixIcon: Icon(Icons.person_outline),
+                    //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
+                      border: OutlineInputBorder(),
+                      hintText: 'Select Time*',
+                      hintStyle: TextStyle(fontFamily: "ProductSans")),
+                ),
+
+
+                SizedBox(
+                  height: 24,
+                ),
+
+                Container(
+                  height: 40,
+                  width: MediaQuery.of(context).size.width-16,
+                  child: RaisedButton(
+                    onPressed: (){
+
+                      updateAppointment();
+                    },
+                    child: Text("SUBMIT"),
+                    textColor: Colors.white,
+                    color: Constants.hexToColor(Constants.primaryDarkColor),
+                  ),
+                ),
+
+
+              ],
+            ),
+          );
+        });
+
+  }
+
+  Future<void> updateAppointment() async {
+
+    if(dateController.text == "" || timeController.text == ""){
+          showAlertDialog("Error", "Appointment time and date both are required", context);
+          return;
+    }else{
+      Navigator.pop(context);
+      UpdateAppointment updateAppointment = new UpdateAppointment(
+        date: dateController.text, status: "2", time: timeController.text
+      );
+      String url = Utils.baseURL + Utils.UPDATE_APPOINTMENT+ user.id.toString();
+      print (url);
+
+      String jsonUser = jsonEncode(updateAppointment);
+      Map<String, String> headers = {
+        "Content-type": "application/json",
+        HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+      };
+      Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
+      int statusCode = response.statusCode;
+
+
+      print(jsonUser);
+      print(response.body);
+
+      if (statusCode == 200) {
+        showAlertDialog("Success", "Appointment is updated successfully", context);
+
+      } else {
+        showAlertDialog(
+            "Error", "Something went wrong please try again", context);
+      }
+
+
+    }
+
+
+  }
+
+
+  void showAlertDialog(String title, String msg, BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: Text(title,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          content: Text(msg,
+              style: TextStyle(
+                fontFamily: "ProductSans",
+              )),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("OK",
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ));
+  }
+
+  Future<void> updateNotes() async {
+    //notesController
+
+    AppointmentNotes appointmentNotes = new AppointmentNotes(notes: notesController.text.toString());
+    String url = Utils.baseURL + Utils.UPDATE_NOTES+user.id.toString();
+    String jsonUser = jsonEncode(appointmentNotes);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await post(Uri.parse(url), headers: headers, body: jsonUser);
+    int statusCode = response.statusCode;
+
+    print(url);
+    print(jsonUser);
+    print(response.body);
+
+    if (statusCode == 200){
+      showAlertDialog("Success", "Notes updated successfully", context);
+    }else{
+      showAlertDialog("Error", "Something went wrong, Please try again", context);
+    }
+
+
+  }
+
+
 }

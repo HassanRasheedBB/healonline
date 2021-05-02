@@ -1,7 +1,10 @@
 //SettingsScreen
+import 'package:HealOnline/patient/StripePaymentScreen.dart';
+import 'package:HealOnline/patient/pages/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import 'ContactUsScreen.dart';
@@ -92,6 +95,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: ListTile(
 
+                  onTap: () async {
+
+                    const url = "tel:+19055540200";
+                    if (await canLaunch(url)) {
+                    await launch(url);
+                    } else {
+                    throw 'Could not launch $url';
+                    }
+
+                  },
+
                   title: Text(
                     "Hotline",
                     style: TextStyle(
@@ -155,7 +169,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
                 child: ListTile(
-
+                  onTap: () async {
+                    String url = "https://healonline.ca/index.html";
+                    if (await canLaunch(url)) {
+                    await launch(url);
+                    } else {
+                    throw 'Could not launch $url';
+                    }
+                  },
                   title: Text(
                     "About Us",
                     style: TextStyle(
@@ -206,6 +227,43 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
+
+
+
+
+          // SizedBox(height: 12),
+          // Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 16),
+          //   child:  Material(
+          //     elevation: 4,
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(8.0),
+          //     ),
+          //     child: Padding(
+          //       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          //       child: ListTile(
+          //           onTap: () async {
+          //             Navigator.push(
+          //               context,
+          //               MaterialPageRoute(
+          //                 builder: (context) => PaymentHomePage(),
+          //               ),
+          //             );
+          //           },
+          //         title: Text(
+          //           "Payment Due",
+          //           style: TextStyle(
+          //             fontFamily: "ProductSans",
+          //             fontSize: 18,
+          //             fontWeight: FontWeight.w400,
+          //             color: Constants.hexToColor(Constants.blackColor),
+          //           ),
+          //         ),
+          //         trailing: Icon(Icons.arrow_forward_ios, size: 18, color: Constants.hexToColor(Constants.graySepratorColor),),
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
 
         ],

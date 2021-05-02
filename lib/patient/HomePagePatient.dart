@@ -1,6 +1,7 @@
 import 'package:HealOnline/doctor/DoctorNotesScreen.dart';
 import 'package:HealOnline/patient/AppointmentDetail.dart';
 import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bubbled_navigation_bar/bubbled_navigation_bar.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../constants.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -33,6 +35,8 @@ class HomePagePatient extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
 
+
+
   final titles = ['Home', 'Appointments', 'Notifications', 'Profile'];
   final components = [
     HomePage(),
@@ -55,11 +59,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class MyHomePageState extends State<MyHomePage> {
+
+  // FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
   PageController _pageController;
   MenuPositionController _menuPositionController;
   bool userPageDragging = false;
 
   static BuildContext ctx;
+
+
+
 
   @override
   void initState() {
@@ -70,6 +80,8 @@ class MyHomePageState extends State<MyHomePage> {
     _pageController.addListener(handlePageChange);
 
     super.initState();
+
+    firebaseCloudMessaging_Listeners();
   }
 
   void handlePageChange() {
@@ -161,5 +173,24 @@ class MyHomePageState extends State<MyHomePage> {
             AppointmentDetail(appointment),
       ),
     );
+  }
+
+  void firebaseCloudMessaging_Listeners() {
+
+    // _firebaseMessaging.configure(
+    //   onMessage: (Map<String, dynamic> message) async {
+    //     Fluttertoast.showToast(msg: "on: $message");
+    //     print('on message $message');
+    //   },
+    //   onResume: (Map<String, dynamic> message) async {
+    //     Fluttertoast.showToast(msg: "resume: $message");
+    //     print('on resume $message');
+    //   },
+    //   onLaunch: (Map<String, dynamic> message) async {
+    //     Fluttertoast.showToast(msg: "launch: $message");
+    //     print('on launch $message');
+    //   },
+    // );
+
   }
 }

@@ -38,7 +38,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-        resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           centerTitle: true,
           elevation: 8,
@@ -82,7 +82,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 key: Key('Location'),
                 controller: _noteController,
 //            validator: (value) =>
@@ -189,7 +189,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             Container(
               height: 100,
               padding: EdgeInsets.symmetric(horizontal: 18),
-              child: TextFormField(
+              child:  TextFormField(textInputAction: TextInputAction.done,
                 controller: _additionalDetilsController,
                 keyboardType: TextInputType.multiline,
                 maxLines: 4,

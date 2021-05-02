@@ -53,7 +53,7 @@ class _CompletedAppointmentsState extends State<CompletedAppointments> {
         "Content-type": "application/json",
         HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
       };
-      Response response = await get(url, headers: headers);
+      Response response = await get(Uri.parse(url), headers: headers);
       String body = response.body;
       print(response.body);
 
@@ -191,7 +191,7 @@ class _CompletedAppointmentsState extends State<CompletedAppointments> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          GestureDetector(
+                          InkWell(
                             onTap: (){
                               onJoin(appointments[index].channelName,appointments[index].videoToken);
                             },
@@ -221,8 +221,7 @@ class _CompletedAppointmentsState extends State<CompletedAppointments> {
                               "Cancel",
                               style: TextStyle(
                                   fontFamily: "ProductSans",
-                                  fontSize: 16,
-                                  color: Colors.red),
+                                  fontSize: 16, color: Colors.grey),
                             ),
                           ),
                         ],
