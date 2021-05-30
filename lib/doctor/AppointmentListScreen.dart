@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/VideoCall/call.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/Appoitment.dart';
 import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
@@ -108,7 +109,7 @@ class _AppointmentListState extends State<AppointmentList> {
                           child: Padding(
                             padding: EdgeInsets.only(bottom: 16, top: 8),
                             child: Text(
-                              "Call",
+                              Languages.of(context).call,
                               style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -128,7 +129,7 @@ class _AppointmentListState extends State<AppointmentList> {
                         Padding(
                           padding: EdgeInsets.only(bottom: 16, top: 8),
                           child: Text(
-                            "Cancel",
+                            Languages.of(context).cancel,
                             style: TextStyle(
                                 fontFamily: "ProductSans",
                                 fontSize: 14,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/Appoitment.dart';
 import 'package:HealOnline/models/UpdateAppointmentModel.dart';
 import 'package:HealOnline/models/appointment_notes.dart';
@@ -58,7 +59,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Appointment Details",
+        title: Text(Languages.of(context).appointment_detail,
             style: TextStyle(
                 fontSize: 20,
                 fontFamily: "ProductSans",
@@ -153,7 +154,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                   SizedBox(height: 16),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    height: 220,
+                    height: 270,
                     width: MediaQuery.of(context).size.width,
                     child: Card(
                       elevation: 4,
@@ -172,7 +173,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Weight",
+                                  Languages.of(context).weight,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -203,7 +204,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Height",
+                                  Languages.of(context).height,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -234,7 +235,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Marital Status",
+                                  Languages.of(context).marital_status,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -265,7 +266,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Blood Group",
+                                  Languages.of(context).blood_grp,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -294,7 +295,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Email",
+                                  Languages.of(context).email_address_hint,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -323,7 +324,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  "Phone number",
+                                  Languages.of(context).phone_number,
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 15,
@@ -375,7 +376,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "Appointment Prescriptions",
+                              Languages.of(context).appointment_presc,
                               style: TextStyle(
                                 fontFamily: "ProductSans",
                                 fontSize: 16,
@@ -398,7 +399,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                       tilePadding: EdgeInsets.only(left: 16.0, right: 16, top: 4),
                       childrenPadding: EdgeInsets.all(8),
                       title: Text(
-                        "Notes",
+                        Languages.of(context).notes,
                         style: TextStyle(
                           fontFamily: "ProductSans",
                           fontSize: 16,
@@ -424,7 +425,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                               decoration: InputDecoration(
                                 // prefixIcon: Icon(Icons.person_outline),
                                   border: OutlineInputBorder(),
-                                  hintText: 'Notes',
+                                  hintText: Languages.of(context).notes,
                                   hintStyle: TextStyle(fontFamily: "ProductSans")),
                             ),
                           ),
@@ -439,7 +440,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                             onPressed: (){
                               updateNotes();
                             },
-                            child: Text("UPDATE NOTES", style: TextStyle(color: Colors.white),),
+                            child: Text(Languages.of(context).update_notes, style: TextStyle(color: Colors.white),),
                           ),
                         ),
 
@@ -469,7 +470,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(
-                            "Next Appointment",
+                            Languages.of(context).next_appointment,
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 18,
@@ -533,7 +534,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
         context: context,
         builder: (BuildContext bc) {
           return Container(
-            height: 260,
+            height: 300,
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -545,7 +546,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                 ),
 
                 Text(
-                  "Select Next Schedule",
+                  Languages.of(context).select_next_schedual,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
@@ -578,7 +579,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     //prefixIcon: Icon(Icons.person_outline),
                     //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
                       border: OutlineInputBorder(),
-                      hintText: 'Select Date*',
+                      hintText: Languages.of(context).appointment_date,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
 
@@ -606,7 +607,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                     //prefixIcon: Icon(Icons.person_outline),
                     //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
                       border: OutlineInputBorder(),
-                      hintText: 'Select Time*',
+                      hintText: Languages.of(context).appointment_time,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
 
@@ -616,14 +617,15 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                 ),
 
                 Container(
-                  height: 40,
+                  padding: EdgeInsets.only(bottom: 8),
+                  height: 48,
                   width: MediaQuery.of(context).size.width-16,
                   child: RaisedButton(
                     onPressed: (){
 
                       updateAppointment();
                     },
-                    child: Text("SUBMIT"),
+                    child: Text(Languages.of(context).submit,),
                     textColor: Colors.white,
                     color: Constants.hexToColor(Constants.primaryDarkColor),
                   ),
@@ -640,7 +642,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
   Future<void> updateAppointment() async {
 
     if(dateController.text == "" || timeController.text == ""){
-          showAlertDialog("Error", "Appointment time and date both are required", context);
+          showAlertDialog(Languages.of(context).error_string, Languages.of(context).require_both_time_and_date, context);
           return;
     }else{
       Navigator.pop(context);
@@ -663,11 +665,11 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
       print(response.body);
 
       if (statusCode == 200) {
-        showAlertDialog("Success", "Appointment is updated successfully", context);
+        showAlertDialog(Languages.of(context).success, Languages.of(context).appointment_updated, context);
 
       } else {
         showAlertDialog(
-            "Error", "Something went wrong please try again", context);
+            Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       }
 
 
@@ -691,7 +693,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
               )),
           actions: [
             CupertinoDialogAction(
-              child: Text("OK",
+              child: Text(Languages.of(context).ok,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
@@ -721,9 +723,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
     print(response.body);
 
     if (statusCode == 200){
-      showAlertDialog("Success", "Notes updated successfully", context);
+      showAlertDialog(Languages.of(context).success, Languages.of(context).notes_updated, context);
     }else{
-      showAlertDialog("Error", "Something went wrong, Please try again", context);
+      showAlertDialog(Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
     }
 
 

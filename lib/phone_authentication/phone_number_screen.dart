@@ -1,3 +1,4 @@
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/phone_authentication/code_cerification_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -95,6 +96,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                 padding: EdgeInsets.only(left: 16, right: 16),
                 child: InternationalPhoneNumberInput(
 
+                  hintText: Languages.of(context).phone_number,
+                  errorMessage: Languages.of(context).invalid_phone_number,
                   onInputChanged: (PhoneNumber number) {
                     phoneNumber = number.phoneNumber;
                     setState(() {
@@ -108,7 +111,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                   },
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Please enter phone number";
+                      return Languages.of(context).please_enter_phone_number;
                     } else {
                       return null;
                     }
@@ -137,7 +140,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  "We will send you a One Time SMS message.\nCarrier rates may apply.",
+                  Languages.of(context).otp_message,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,

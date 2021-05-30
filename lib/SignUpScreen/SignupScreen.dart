@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:HealOnline/LoginScreen/login_screen.dart';
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/LoginResponse.dart';
 import 'package:HealOnline/models/RegisterDoctor.dart';
 import 'package:HealOnline/models/RegisterResponse.dart';
@@ -81,7 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'SignUp As',
+                  Languages.of(context).signup_as,
                   style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -107,8 +108,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     .of(context)
                     .canvasColor,
                 buttonLables: [
-                  'Patient',
-                  'Health Provider',
+                  Languages.of(context).patient_string,
+                  Languages.of(context).health_provider_string,
                 ],
                 buttonValues: [
                   "PATIENT",
@@ -134,11 +135,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 validator: (value) =>
                 (value
                     .toString()
-                    .isEmpty) ? "Please Enter First Name" : null,
+                    .isEmpty) ? Languages.of(context).enter_first_name : null,
                 decoration: InputDecoration(
                   // prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'First Name*',
+                    hintText: Languages.of(context).first_name,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
               SizedBox(
@@ -150,11 +151,11 @@ class _SignUpPageState extends State<SignUpPage> {
                 validator: (value) =>
                 (value
                     .toString()
-                    .isEmpty) ? "Please Enter Last Name" : null,
+                    .isEmpty) ? Languages.of(context).enter_last_name : null,
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'Last Name*',
+                    hintText: Languages.of(context).last_name,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
               SizedBox(
@@ -168,19 +169,19 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('DateOfBirth'),
                 controller: _dateofbirthController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Enter Date of Birth" : null,
+                (value.isEmpty) ? Languages.of(context).enter_date_of_birth : null,
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.person_outline),
                     suffixIcon: Icon(Icons.calendar_today),
                     border: OutlineInputBorder(),
-                    hintText: 'Date of Birth (mm/dd/yyyy)*',
+                    hintText: Languages.of(context).dob_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
               SizedBox(
                 height: 10,
               ),
               Container(
-                height: 90,
+                height: 94,
                 width: MediaQuery
                     .of(context)
                     .size
@@ -197,7 +198,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 14.0),
-                        child: Text("Gender*",
+                        child: Text(Languages.of(context).gender,
                             style: new TextStyle(
                                 fontSize: 16,
                                 fontFamily: "ProductSans",
@@ -218,7 +219,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: _handleRadioValueChange,
                           ),
                           new Text(
-                            'Male',
+                            Languages.of(context).male,
                             style: new TextStyle(
                                 fontFamily: "ProductSans", color: Colors.grey),
                           ),
@@ -230,7 +231,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: _handleRadioValueChange,
                           ),
                           new Text(
-                            'Female',
+                            Languages.of(context).female,
                             style: new TextStyle(
                                 fontFamily: "ProductSans", color: Colors.grey),
                           ),
@@ -242,7 +243,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             onChanged: _handleRadioValueChange,
                           ),
                           new Text(
-                            'Other',
+                              Languages.of(context).other,
                             style: new TextStyle(
                                 fontFamily: "ProductSans", color: Colors.grey),
                           ),
@@ -263,7 +264,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 key: Key('Language'),
                 controller: _lanuageController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Enter Language" : null,
+                (value.isEmpty) ? Languages.of(context).enter_language : null,
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.person_outline),
                     suffixIcon: Icon(
@@ -271,7 +272,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       size: 16,
                     ),
                     border: OutlineInputBorder(),
-                    hintText: 'Language*',
+                    hintText: Languages.of(context).language_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
               SizedBox(
@@ -282,9 +283,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 controller: _emailController,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return "Please Enter Email Address";
+                    return Languages.of(context).enter_email_address;
                   } else if (!validateEmail(value)) {
-                    return "Invalid Email Address";
+                    return Languages.of(context).invalid_email_address;
                   } else {
                     return null;
                   }
@@ -293,7 +294,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   //prefixIcon: Icon(Icons.person_outline),
                   //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
                     border: OutlineInputBorder(),
-                    hintText: 'Email Address*',
+                    hintText: Languages.of(context).email_address_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
               SizedBox(
@@ -326,7 +327,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 controller: _phoneNumberController,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return "Please enter phone number";
+                    return Languages.of(context).please_enter_phone_number;
                   } else {
                     return null;
                   }
@@ -335,7 +336,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   //prefixIcon: Icon(Icons.person_outline),
                   //suffixIcon: Icon(Icons.arrow_forward_ios, size: 8,),
                     border: OutlineInputBorder(),
-                    hintText: 'Phone Number*',
+                    hintText: Languages.of(context).phone_number,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
 
@@ -384,9 +385,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 controller: _passwordController,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return "Please Enter Password";
+                    return Languages.of(context).please_enter_password;
                   } else if (!validateStructure(value)) {
-                    return "Please use strong password.";
+                    return Languages.of(context).use_strong_password;
                   } else {
                     return null;
                   }
@@ -395,7 +396,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.lock_outline),
                   border: OutlineInputBorder(),
-                  hintText: 'Password*',
+                  hintText: Languages.of(context).password,
                   hintStyle: TextStyle(fontFamily: "ProductSans"),
                   suffixIcon: InkWell(
                     onTap: () {
@@ -419,7 +420,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 height: 8,
               ),
               Text(
-                "(Password must contain at least 8 characters, 1 lower case (a-z) & 1 Upper case (A-Z), 1 number (0-9) and 1 special character)",
+                Languages.of(context).password_instructions,
                 style: TextStyle(
                     fontFamily: "ProductSans",
                     color: Colors.grey,
@@ -433,10 +434,10 @@ class _SignUpPageState extends State<SignUpPage> {
                 controller: _conPasswordController,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return "Please Enter Confirm Password";
+                    return Languages.of(context).enter_confirm_password;
                   } else if (_conPasswordController.text !=
                       _passwordController.text) {
-                    return "Passwords don't match";
+                    return Languages.of(context).passwords_dont_match;
                   } else {
                     return null;
                   }
@@ -445,7 +446,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: InputDecoration(
                   //prefixIcon: Icon(Icons.lock_outline),
                   border: OutlineInputBorder(),
-                  hintText: 'Confirm Password*',
+                  hintText: Languages.of(context).confirm_password_hint,
                   hintStyle: TextStyle(fontFamily: "ProductSans"),
                   suffixIcon: InkWell(
                     onTap: () {
@@ -478,7 +479,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                   elevation: 8,
                   borderRadius: 10,
-                  child: Text('CREATE ACCOUNT',
+                  child: Text(Languages.of(context).create_account,
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -498,7 +499,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Already have an account? ",
+                       Languages.of(context).already_have_account,
                       style: TextStyle(fontFamily: "ProductSans"),
                     ),
                     InkWell(
@@ -511,7 +512,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         );
                       },
                       child: Text(
-                        "Login Here",
+                          Languages.of(context).login_here,
                         style: TextStyle(
                             fontSize: 14,
                             fontFamily: "ProductSans",
@@ -601,13 +602,13 @@ class _SignUpPageState extends State<SignUpPage> {
                       Constants.primaryDarkColor,
                     ),
                     searchInputDecoration: InputDecoration(
-                        hintText: 'Search...',
+                        hintText: Languages.of(context).search,
                         hintStyle: TextStyle(
                             fontFamily: "ProductSans",
                             fontSize: 14,
                             color: Colors.grey)),
                     isSearchable: true,
-                    title: Text("Select Language",
+                      title: Text(Languages.of(context).select_language,
                         style: TextStyle(
                             fontFamily: "ProductSans",
                             fontSize: 16,
@@ -685,11 +686,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
             _btnController.reset();
             if(p.err.email != null){
-              showAlertDialog("Error", p.err.email.toString(), context);
+              showAlertDialog(Languages.of(context).error_string, p.err.email.toString(), context);
             }
             else{
-              showAlertDialog("Server Error",
-                  'Some information went wrong. Please try again', context);
+              showAlertDialog(Languages.of(context).server_error,
+                  Languages.of(context).something_went_wrong, context);
             }
 
           }else{
@@ -718,20 +719,21 @@ class _SignUpPageState extends State<SignUpPage> {
             await prefs.setString('token', p.auth.toString());
 
             _btnController.reset();
-            showSuccessAlertDialog("Message", "User Registered Successfully !", context);
+            showSuccessAlertDialog(Languages.of(context).message,
+                Languages.of(context).user_registered, context);
 
           }
         }else{
           _btnController.reset();
-          showAlertDialog("Server Error",
-              'Some information went wrong. Please try again', context);
+          showAlertDialog(Languages.of(context).server_error,
+              Languages.of(context).something_went_wrong, context);
         }
 
 
       } catch (e) {
         _btnController.reset();
-        showAlertDialog("Server Error",
-            'Some information went wrong. Please try again', context);
+        showAlertDialog(Languages.of(context).server_error,
+            Languages.of(context).something_went_wrong, context);
         //print(e.message);
       }
     } else {
@@ -773,7 +775,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
@@ -825,7 +827,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),

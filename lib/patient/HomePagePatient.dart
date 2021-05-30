@@ -1,6 +1,8 @@
 import 'package:HealOnline/doctor/DoctorNotesScreen.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/patient/AppointmentDetail.dart';
 import 'package:HealOnline/patient/fragments/UpcomingAppointments.dart';
+
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -34,10 +37,24 @@ class HomePagePatient extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key}) : super(key: key);
 
+  @override
+  MyHomePageState createState() => MyHomePageState();
+}
 
+class MyHomePageState extends State<MyHomePage> {
+  // FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
-  final titles = ['Home', 'Appointments', 'Notifications', 'Profile'];
+  PageController _pageController;
+  MenuPositionController _menuPositionController;
+  bool userPageDragging = false;
+
+  static BuildContext ctx;
+
+  static MyHomePageState instance;
+
+  var titles = ['Home', 'Appointments', 'Notifications', 'Profile'];
   final components = [
     HomePage(),
     Appointments(),
@@ -52,36 +69,32 @@ class MyHomePage extends StatefulWidget {
     CupertinoIcons.profile_circled
   ];
 
-  MyHomePage({Key key}) : super(key: key);
-
-  @override
-  MyHomePageState createState() => MyHomePageState();
-}
-
-class MyHomePageState extends State<MyHomePage> {
-
-  // FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
-  PageController _pageController;
-  MenuPositionController _menuPositionController;
-  bool userPageDragging = false;
-
-  static BuildContext ctx;
-
-
-
-
   @override
   void initState() {
     _menuPositionController = MenuPositionController(initPosition: 0);
-
     _pageController =
         PageController(initialPage: 0, keepPage: false, viewportFraction: 1.0);
     _pageController.addListener(handlePageChange);
-
     super.initState();
-
+    getLocale();
     firebaseCloudMessaging_Listeners();
+    instance = this;
+  }
+
+  String savedCode;
+
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
   }
 
   void handlePageChange() {
@@ -100,23 +113,17 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     ctx = context;
     return Scaffold(
-
         body: NotificationListener<ScrollNotification>(
           onNotification: (scrollNotification) {
             checkUserDragging(scrollNotification);
           },
           child: PageView(
             controller: _pageController,
-            children:
-                widget.components.map(
-                        (Widget widget) => widget
-                ).toList(),
+            children: components.map((Widget widget) => widget).toList(),
             onPageChanged: (page) {},
           ),
         ),
@@ -135,16 +142,20 @@ class MyHomePageState extends State<MyHomePage> {
                 curve: Curves.easeInOutQuad,
                 duration: Duration(milliseconds: 500));
           },
-          items: widget.titles.map((title) {
-            var index = widget.titles.indexOf(title);
-            var icon = widget.icons[index];
+          items: titles.map((title) {
+            var index = titles.indexOf(title);
+            var icon = icons[index];
             return BubbledNavigationBarItem(
-              icon: getIcon(index, Constants.hexToColor(
-                Constants.primaryDarkColor,
-              )),
-              activeIcon: getIcon(index, Constants.hexToColor(
-                Constants.whiteColor,
-              )),
+              icon: getIcon(
+                  index,
+                  Constants.hexToColor(
+                    Constants.primaryDarkColor,
+                  )),
+              activeIcon: getIcon(
+                  index,
+                  Constants.hexToColor(
+                    Constants.whiteColor,
+                  )),
               bubbleColor: Constants.hexToColor(
                 Constants.primaryDarkColor,
               ),
@@ -159,24 +170,21 @@ class MyHomePageState extends State<MyHomePage> {
 
   Padding getIcon(int index, Color color) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 3),
-      child: Icon(
-          widget.icons[index], size: 30, color: color)
-      );
+        padding: const EdgeInsets.only(bottom: 3),
+        child: Icon(icons[index], size: 30, color: color));
   }
 
   static void openAppointmentDetailScreen(AppointmentUI appointment) {
     Navigator.push(
       ctx,
       MaterialPageRoute(
-        builder: (context) =>
-            AppointmentDetail(appointment),
+        builder: (context) => AppointmentDetail(appointment, instance),
       ),
     );
   }
 
-  void firebaseCloudMessaging_Listeners() {
 
+  void firebaseCloudMessaging_Listeners() {
     // _firebaseMessaging.configure(
     //   onMessage: (Map<String, dynamic> message) async {
     //     Fluttertoast.showToast(msg: "on: $message");
@@ -191,6 +199,12 @@ class MyHomePageState extends State<MyHomePage> {
     //     print('on launch $message');
     //   },
     // );
-
   }
+
+  void doMakeLangChanges() {
+    setState(() {
+      titles = ['بيت', 'تعيينات', 'إشعارات', 'الملف الشخصي'];
+    });
+  }
+
 }

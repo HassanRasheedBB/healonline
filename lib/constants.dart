@@ -1,6 +1,7 @@
 
 import 'dart:ui';
 
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'models/Appoitment.dart';
@@ -19,6 +20,10 @@ class Constants {
   static Color hexToColor(String code) {
     return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
   }
+
+  static BuildContext ctx;
+
+  static Languages languages;
 
   static String fcm_token = "1234";
 

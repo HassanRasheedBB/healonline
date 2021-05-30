@@ -1,7 +1,9 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 import 'CityPicker.dart';
@@ -14,6 +16,51 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+  }
+
+  String savedCode;
+
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+  }
+
+  String welcome_text = "Welcome to";
+  String what_looking_for = "What are you looking for ?";
+  String physician = "Physician";
+  var Dermatologist = "Dermatologist";
+  var Therapist = "Therapist";
+  var Vets = "Vets";
+  var Mental_Health_Councelling = "Mental Health Councelling";
+
+  void doMakeLangChanges() {
+    setState(() {
+      welcome_text = "مرحبا بك في";
+      what_looking_for = "عما تبحث ؟";
+      physician = "الطبيب المعالج";
+      Dermatologist = "طبيب الجلدية";
+      Therapist = "المعالج";
+      Vets = "الأطباء البيطريون";
+      Mental_Health_Councelling ="استشارات الصحة العقلية";
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -29,7 +76,7 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text("Welcome to Heal",
+                Text(welcome_text+" Heal",
                     style: TextStyle(
                         fontSize: 26,
                         fontFamily: "ProductSans",
@@ -50,7 +97,7 @@ class _HomePageState extends State<HomePage> {
           ),
           Padding(
             padding: EdgeInsets.only(left: 20),
-            child: Text("What are you looking for ?",
+            child: Text(what_looking_for,
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w400,
@@ -126,7 +173,7 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     height: 14,
                                   ),
-                                  Text("Physician",
+                                  Text(physician,
                                       style: TextStyle(
                                         fontFamily: "ProductSans",
                                         fontSize: 18,
@@ -150,7 +197,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: InkWell(
                           onTap: () {
-                            Constants.appointment.appointmentFor = "Dermatologist";
+                            Constants.appointment.appointmentFor =
+                                "Dermatologist";
                             showCupertinoModalBottomSheet(
                               elevation: 8,
                               topRadius: Radius.circular(24),
@@ -187,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     height: 14,
                                   ),
-                                  Text("Dermatologist",
+                                  Text(Dermatologist,
                                       style: TextStyle(
                                         fontFamily: "ProductSans",
                                         fontSize: 18,
@@ -214,7 +262,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: InkWell(
                             onTap: () {
-                              Constants.appointment.appointmentFor = "Therapist";
+                              Constants.appointment.appointmentFor =
+                                  "Therapist";
                               showCupertinoModalBottomSheet(
                                 elevation: 8,
                                 topRadius: Radius.circular(24),
@@ -226,44 +275,43 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               );
                             },
-                          child: Container(
-                            height: 130,
-                            width: MediaQuery.of(context).size.width / 2 - 28,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 18),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                      backgroundColor: Constants.hexToColor(
-                                        Constants.primaryDarkColor,
-                                      ),
-                                      radius: 28,
-                                      child: Container(
-                                        height: 32,
-                                        width: 32,
-                                        child: SvgPicture.asset(
-                                          "assets/images/therapist.svg",
-                                          color: Colors.white,
+                            child: Container(
+                              height: 130,
+                              width: MediaQuery.of(context).size.width / 2 - 28,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 18),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CircleAvatar(
+                                        backgroundColor: Constants.hexToColor(
+                                          Constants.primaryDarkColor,
                                         ),
-                                      )),
-                                  SizedBox(
-                                    height: 14,
-                                  ),
-                                  Text("Therapist",
-                                      style: TextStyle(
-                                        fontFamily: "ProductSans",
-                                        fontSize: 18,
-                                        color: Constants.hexToColor(
-                                          Constants.blackColor,
-                                        ),
-                                      )),
-                                ],
+                                        radius: 28,
+                                        child: Container(
+                                          height: 32,
+                                          width: 32,
+                                          child: SvgPicture.asset(
+                                            "assets/images/therapist.svg",
+                                            color: Colors.white,
+                                          ),
+                                        )),
+                                    SizedBox(
+                                      height: 14,
+                                    ),
+                                    Text(Therapist,
+                                        style: TextStyle(
+                                          fontFamily: "ProductSans",
+                                          fontSize: 18,
+                                          color: Constants.hexToColor(
+                                            Constants.blackColor,
+                                          ),
+                                        )),
+                                  ],
+                                ),
                               ),
-                            ),
-                          )
-                        ),
+                            )),
                       ),
                       SizedBox(
                         width: 8,
@@ -274,7 +322,6 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.circular(12.0),
                         ),
                         child: InkWell(
-
                           onTap: () {
                             Constants.appointment.appointmentFor = "Vets";
                             showCupertinoModalBottomSheet(
@@ -313,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                                   SizedBox(
                                     height: 14,
                                   ),
-                                  Text("Vets",
+                                  Text(Vets,
                                       style: TextStyle(
                                         fontFamily: "ProductSans",
                                         fontSize: 18,
@@ -336,8 +383,9 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: GestureDetector(
-                      onTap: (){
-                        Constants.appointment.appointmentFor = "Mental Health Councelling";
+                      onTap: () {
+                        Constants.appointment.appointmentFor =
+                            "Mental Health Councelling";
                         showCupertinoModalBottomSheet(
                           elevation: 8,
                           topRadius: Radius.circular(24),
@@ -349,14 +397,14 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                      child:  Container(
+                      child: Container(
                         height: 110,
-                        width: MediaQuery.of(context).size.width  - 14,
+                        width: MediaQuery.of(context).size.width - 14,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text("Mental Health Councelling",
+                            Text(Mental_Health_Councelling,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 18,
@@ -364,7 +412,6 @@ class _HomePageState extends State<HomePage> {
                                     Constants.blackColor,
                                   ),
                                 )),
-
                             SizedBox(
                               width: 14,
                             ),
@@ -386,7 +433,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   )
-
                 ],
               ),
             ),

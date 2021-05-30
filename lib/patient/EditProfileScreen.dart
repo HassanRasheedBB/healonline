@@ -4,11 +4,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/PatientModel.dart';
+import 'package:HealOnline/patient/PatientProfile.dart';
 import 'package:HealOnline/patient/fragments/CityPicker.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:language_pickers/language_picker_dialog.dart';
 import 'package:language_pickers/language_pickers.dart';
@@ -20,7 +25,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../constants.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  EditProfileScreen({Key key}) : super(key: key);
+  PatientProfileState fragment;
+  EditProfileScreen(this.fragment, {Key key}) : super(key: key);
 
   @override
   EditProfileScreenState createState() => EditProfileScreenState();
@@ -45,7 +51,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
 
   List<String> _gender = ["Male", "Female", "Other"];
-  String selectedGender;
+  String selectedGender ;
 
 
   List<String> _maritalStatus = ["Married", "Unmarried"];
@@ -63,9 +69,28 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     // TODO: implement initState
     super.initState();
     getProfileFromDB();
+    getLocale();
+  }
+
+
+
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, false);
+
+    }
+
+
     pr = new ProgressDialog(context);
     pr.style(
-        message: 'Please Wait...',
+        message: Languages.of(context).please_wait,
         borderRadius: 4.0,
         backgroundColor: Colors.white,
         progressWidget: Padding(
@@ -81,6 +106,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             color: Colors.black,
             fontSize: 19.0,
             fontWeight: FontWeight.w600));
+
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.fragment.getLocale();
   }
 
   @override
@@ -101,7 +134,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Edit Profile Info",
+        title: Text(Languages.of(context).edit_profile,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -123,11 +156,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Username'),
                 controller: fNameController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter First Name" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_first_name : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'First Name*',
+                    hintText: Languages.of(context).first_name,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -141,11 +174,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Username'),
                 controller: lNameController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Last Name" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_last_name : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'Last Name*',
+                    hintText: Languages.of(context).last_name,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -159,7 +192,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Phone Number'),
                 controller: phoneNoController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Enter Phone Number" : null,
+                    (value.isEmpty) ? Languages.of(context).please_enter_phone_number : null,
                 decoration: InputDecoration(
                     prefixIcon: Container(
                       //padding: EdgeInsets.all(12),
@@ -168,7 +201,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       child: Icon(CupertinoIcons.phone_fill),
                     ),
                     border: OutlineInputBorder(),
-                    hintText: 'Phone Number*',
+                    hintText: Languages.of(context).phone_number,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -186,11 +219,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('DOB'),
                 controller: dobController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Date of Birth" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_date_of_birth : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.calendar),
                     border: OutlineInputBorder(),
-                    hintText: 'Date of Birth*',
+                    hintText: Languages.of(context).dob_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -208,7 +241,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Username'),
                 controller: languageController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Language" : null,
+                    (value.isEmpty) ? Languages.of(context).select_language : null,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
@@ -225,7 +258,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     border: OutlineInputBorder(),
-                    hintText: 'Language',
+                    hintText: Languages.of(context).language_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -240,11 +273,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('DOB'),
                 controller: emailController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Email" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_email_address : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.mail),
                     border: OutlineInputBorder(),
-                    hintText: 'Email',
+                    hintText: Languages.of(context).email_address_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -265,7 +298,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.square_favorites),
                     border: OutlineInputBorder(),
-                    hintText: 'Weight',
+                    hintText: Languages.of(context).weight,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -283,7 +316,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.square_favorites),
                     border: OutlineInputBorder(),
-                    hintText: 'Height',
+                    hintText: Languages.of(context).height,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -303,7 +336,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.drop_fill),
                     border: OutlineInputBorder(),
-                    hintText: 'Blood Group',
+                    hintText: Languages.of(context).blood_grp,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -317,7 +350,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Gender',
+                    labelText: Languages.of(context).gender,
                     labelStyle: Theme.of(context)
                         .primaryTextTheme
                         .caption
@@ -327,7 +360,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton(
                       hint: Text(
-                        'Select Gender',
+                        Languages.of(context).gender,
                         style: TextStyle(fontFamily: "ProductSans"),
                       ),
                       //isExpanded: true,
@@ -359,7 +392,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Marital Status',
+                    labelText: Languages.of(context).marital_status,
                     labelStyle: Theme.of(context)
                         .primaryTextTheme
                         .caption
@@ -369,7 +402,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton(
                       hint: Text(
-                        'Select Marital Status',
+                        Languages.of(context).marital_status,
                         style: TextStyle(fontFamily: "ProductSans"),
                       ),
                       //isExpanded: true,
@@ -417,7 +450,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Health'),
                 controller: provinceController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Select Province" : null,
+                (value.isEmpty) ? Languages.of(context).select_province : null,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
@@ -426,7 +459,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.location),
                     border: OutlineInputBorder(),
-                    hintText: 'Province',
+                    hintText: Languages.of(context).province,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -466,7 +499,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 22),
-              child: Text('Preferred Pharmacy',
+              child: Text(Languages.of(context).pref_parmacy,
                   style: TextStyle(
                       color: Constants.hexToColor(
                         Constants.primaryDarkColor,
@@ -485,7 +518,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Username'),
                 controller: pharmacyController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Language" : null,
+                    (value.isEmpty) ? Languages.of(context).select_pharmacy : null,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
@@ -494,7 +527,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.lab_flask_solid),
                     border: OutlineInputBorder(),
-                    hintText: 'Pharmacy*',
+                    hintText: Languages.of(context).pref_parmacy,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -514,7 +547,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 22),
-              child: Text('Insurance',
+              child: Text(Languages.of(context).insurance,
                   style: TextStyle(
                       color: Constants.hexToColor(
                         Constants.primaryDarkColor,
@@ -533,11 +566,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Health'),
                 controller: insuranceProviderController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Province" : null,
+                    (value.isEmpty) ? Languages.of(context).select_province : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.domain),
                     border: OutlineInputBorder(),
-                    hintText: 'Insurance Provider',
+                    hintText: Languages.of(context).insurance_provider,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -551,11 +584,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                 key: Key('Health'),
                 controller: policyNoController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Policy No" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_policy_no : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.note),
                     border: OutlineInputBorder(),
-                    hintText: 'Policy No',
+                    hintText: Languages.of(context).policy_no,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -577,7 +610,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             updateProfile();
           },
           child: Center(
-            child: Text('SAVE',
+            child: Text(Languages.of(context).save_string,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -641,16 +674,21 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
 
         pr.hide();
-        showAlertDialog("Success", "Profile is updated successfully", context);
+        showAlertDialog(Languages.of(context).success, Languages.of(context).profile_updated, context);
+
+        if (Platform.isIOS) {
+          getNotificationForIos();
+        }
+        
       } else {
         pr.hide();
         showAlertDialog(
-            "Error", "Something went wrong please try again", context);
+            Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       }
     } catch (e) {
       pr.hide();
       showAlertDialog(
-          "Error", "Something went wrong please try again", context);
+          Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
     }
   }
 
@@ -668,7 +706,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
@@ -729,7 +767,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             selectedMaritalStatus = typeList["martial_status"] ;
           }
           if(typeList["gender"] != null){
-            selectedGender = typeList["gender"];
+            if(typeList["gender"] == "male" || typeList["gender"] == "Male") {
+              selectedGender = "Male";
+            }
+            else if(typeList["gender"] == "female" || typeList["gender"] == "Female"){
+              selectedGender = "Female";
+            }else{
+              selectedGender = "Other";
+            }
           }
         });
 
@@ -752,13 +797,13 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   Constants.primaryDarkColor,
                 ),
                 searchInputDecoration: InputDecoration(
-                    hintText: 'Search...',
+                    hintText: Languages.of(context).search,
                     hintStyle: TextStyle(
                         fontFamily: "ProductSans",
                         fontSize: 14,
                         color: Colors.grey)),
                 isSearchable: true,
-                title: Text("Select Language",
+                title: Text(Languages.of(context).select_language,
                     style: TextStyle(
                         fontFamily: "ProductSans",
                         fontSize: 16,
@@ -803,4 +848,45 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         dobController.text = "${selectedDate.toLocal()}".split(' ')[0];
       });
   }
+
+  Future<void> getNotificationForIos() async {
+
+    String url = Utils.baseURL +
+        Utils.GET_NOTIFICATIONS ;
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    print(Utils.user.token);
+    Response response = await get(Uri.parse(url), headers: headers);
+    String body = response.body;
+    print(response.body);
+
+    if(response.statusCode == 200) {
+
+      final List typeList = (json.decode(response.body))["notifications"];
+      if (typeList != null) {
+        for (int i = 0; i < typeList.length; i++) {
+          if (typeList[i]["title"] == "Profile Updated") {
+
+            AwesomeNotifications().createNotification(
+                content: NotificationContent(
+                    id: 10,
+                    channelKey: 'basic_channel',
+                    title: typeList[i]["title"],
+                    body: typeList[i]["body"]
+                )
+            );
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+
+
+
 }

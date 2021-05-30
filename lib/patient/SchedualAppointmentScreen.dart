@@ -2,17 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/CreditCardModel.dart';
 import 'package:HealOnline/models/HealthCardModel.dart';
 import 'package:HealOnline/models/PaymentModel.dart';
 import 'package:HealOnline/patient/HealthCardScreen.dart';
 import 'package:HealOnline/patient/SaveCardScreen.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:http/http.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -80,6 +83,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
   @override
   void initState() {
     super.initState();
+    getLocale();
     getHealthCard();
     getCardFromDB();
     Constants.appointment.appointmentDate = DateTime.now().toString();
@@ -87,6 +91,70 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
       timeObjectList.add(TimeObject(time[i], false));
     }
   }
+
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+
+  }
+
+
+  var Appointment = "Appointment";
+  var Time_Standard = "Time Standard";
+  var Appointment_Time = "Appointment Time";
+  var CONFIRM_APPOINTMENT = "CONFIRM APPOINTMENT";
+  var Error = "Error";
+  var select_appointment_time = "Please select appointment time";
+  var select_appointment_date = "Please select appointment date";
+  var appointment_will_at = "Appointment will schedule at";
+  var Cancel = "Cancel";
+  var OK = "OK";
+  var Health_Card = "Health Card";
+  var intimation = "Your health card information is required to book an appointment. To add or update health card, please press 'Continue' or press 'Pay Now' to pay via a stripe card now. Appointment Fee is CAD 50.00.";
+  var Continue = "Continue";
+  var Pay_Now = "Pay Now";
+  var Confirmed = "Confirmed!";
+  var appointment_confirmed = "Your appointment is confirmed";
+  var Times = "Times";
+  var some_went_wrong = "Some information went wrong please try again";
+
+
+  void doMakeLangChanges(){
+    setState(() {
+      Appointment = "ميعاد";
+      Time_Standard = "معيار الوقت";
+      Times = "مرات";
+      Appointment_Time = "وقت الموعد";
+      CONFIRM_APPOINTMENT = "تأكيد التعيين";
+      Error = "خطأ";
+       select_appointment_time = "الرجاء تحديد وقت الموعد";
+      select_appointment_date = "الرجاء تحديد تاريخ الموعد";
+      appointment_will_at = "سيتم تحديد موعد في";
+      OK = "نعم";
+      Cancel = "يلغي";
+      Health_Card = "بطاقة صحية";
+      intimation = "معلومات بطاقتك الصحية مطلوبة لحجز موعد. لإضافة بطاقة صحية أو تحديثها ، يرجى الضغط على متابعة أو الضغط على ادفع الآن للدفع عبر بطاقة مخططة الآن. رسوم التعيين هي 50.00 دولار كندي";
+      Continue = "يكمل";
+      Pay_Now = "ادفع الآن";
+      Confirmed = "مؤكد!";
+      appointment_confirmed = "تم تأكيد موعدك";
+      some_went_wrong = "حدث خطأ في بعض المعلومات ، يرجى المحاولة مرة أخرى";
+
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +173,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Appointment",
+        title: Text(Appointment,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -166,10 +234,10 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
 
 
             Padding(
-              padding: EdgeInsets.only(left: 20,),
+              padding: EdgeInsets.only(left: 20, top: 16),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: Text("Time Standard",
+                child: Text(Time_Standard,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 22,
@@ -188,7 +256,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
               margin: EdgeInsets.symmetric(horizontal: 16),
               child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Times',
+                    labelText: Times,
                     labelStyle: Theme.of(context)
                         .primaryTextTheme
                         .caption
@@ -227,7 +295,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
               padding: EdgeInsets.only(left: 20, top: 16),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: Text("Appointment Time",
+                child: Text(Appointment_Time,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 22,
@@ -241,7 +309,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
             SizedBox(height: 16),
             Container(
                 margin: EdgeInsets.symmetric(horizontal: 16),
-                height: 180,
+                height: 200,
                 child: GridView.count(
                   // Create a grid with 2 columns. If you change the scrollDirection to
                   // horizontal, this produces 2 rows.
@@ -315,7 +383,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
             color: Constants.hexToColor(Constants.primaryDarkColor),
             elevation: 4,
             borderRadius: 10,
-            child: Text('CONFIRM APPOINTMENT',
+            child: Text(CONFIRM_APPOINTMENT,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -396,7 +464,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
         ),
 
         weekFormat: false,
-        height: 380.0,
+        height: 410.0,
         selectedDateTime: _currentDate,
         daysHaveCircularBorder: true,
 
@@ -407,21 +475,21 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
 
   void schedualAppointment() {
     if (Constants.appointment.appointmentTime.isEmpty) {
-      showOtherAlertDialog("Error", "Please select appointment time", context);
+      showOtherAlertDialog(Error, select_appointment_time, context);
       return;
     } else if (Constants.appointment.appointmentDate.isEmpty) {
-      showOtherAlertDialog("Error", "Please select appointment date", context);
+      showOtherAlertDialog(Error, select_appointment_date, context);
       return;
     }
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-              title: Text("Confirm Appointment",
+              title: Text(CONFIRM_APPOINTMENT,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
               content: Text(
-                  "Appointment will schedule at " +
+                  appointment_will_at+" " +
                       Constants.appointment.appointmentDate.split(" ").first +
                       " " +
                       Constants.appointment.appointmentTime,
@@ -429,18 +497,9 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                     fontFamily: "ProductSans",
                   )),
               actions: [
+
                 CupertinoDialogAction(
-                  child: Text("OK",
-                      style: TextStyle(
-                        fontFamily: "ProductSans",
-                      )),
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    bookAppointment();
-                  },
-                ),
-                CupertinoDialogAction(
-                  child: Text("Cancel",
+                  child: Text(Cancel,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
@@ -449,6 +508,19 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                     Navigator.of(context).pop();
                   },
                 ),
+
+                CupertinoDialogAction(
+                  child: Text(OK,
+                      style: TextStyle(
+                        fontFamily: "ProductSans",
+                      )),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    bookAppointment();
+                  },
+                ),
+
+
               ],
             ));
   }
@@ -467,7 +539,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(OK,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
@@ -488,18 +560,29 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text("Health Card",
+          title: Text(Health_Card,
               style: TextStyle(
                 fontFamily: "ProductSans",
               )),
-          content: Text("Your health card information is required to book an appointment. To add or update health card, please press 'Continue' or press 'Pay Now' to pay via a stripe card now. Appointment Fee is CAD 50.00.",
+          content: Text(intimation,
               style: TextStyle(
                 fontFamily: "ProductSans",
               )),
           actions: [
 
             CupertinoDialogAction(
-              child: Text("Continue",
+              child: Text(Cancel,
+                  style: TextStyle(
+                    fontFamily: "ProductSans",
+                  )),
+              onPressed: () {
+                _btnController.reset();
+                Navigator.of(context).pop();
+              },
+            ),
+
+            CupertinoDialogAction(
+              child: Text(Continue,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
@@ -510,7 +593,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HealthCardScreen(showMessage: true),
+                      builder: (context) => HealthCardScreen(null, showMessage: true),
                     ),
                   );
 
@@ -518,7 +601,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
             ),
 
             CupertinoDialogAction(
-              child: Text("Pay Now",
+              child: Text(Pay_Now,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
@@ -532,22 +615,10 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SaveCardScreen(showMessage: true),
+                      builder: (context) => SaveCardScreen(null, showMessage: true),
                     ),
                   );
                 }
-              },
-            ),
-
-
-            CupertinoDialogAction(
-              child: Text("Cancel",
-                  style: TextStyle(
-                    fontFamily: "ProductSans",
-                  )),
-              onPressed: () {
-                _btnController.reset();
-                Navigator.of(context).pop();
               },
             ),
 
@@ -623,16 +694,22 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
       _btnController.reset();
       if (response.statusCode == 200) {
         showOtherAlertDialog(
-            "Confirmed!", "Your appointment is confirmed", context);
+            Confirmed, appointment_confirmed, context);
+
+        if (Platform.isIOS) {
+          getNotificationForIos();
+        }
+
+
       } else {
         showOtherAlertDialog(
-            "Error", "Some information went wrong please try again", context);
+            Error, some_went_wrong, context);
         print(response.toString());
       }
     }).catchError((error) async {
       _btnController.reset();
       showOtherAlertDialog(
-          "Error", "Some information went wrong please try again", context);
+          Error, some_went_wrong, context);
       print(error.toString());
     });
   }
@@ -720,7 +797,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
     }else{
       _btnController.reset();
       showAlertDialog(
-          "Error", "Something went wrong in processing payment, please try again", context);
+          Error, some_went_wrong, context);
     }
 
   }
@@ -740,7 +817,7 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
               )),
           actions: [
             CupertinoDialogAction(
-              child: Text("OK",
+              child: Text(OK,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
@@ -750,6 +827,44 @@ class SchedualAppointmentScreenState extends State<SchedualAppointmentScreen> {
             )
           ],
         ));
+  }
+
+
+
+  Future<void> getNotificationForIos() async {
+
+    String url = Utils.baseURL +
+        Utils.GET_NOTIFICATIONS ;
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    Response response = await get(Uri.parse(url), headers: headers);
+    String body = response.body;
+    print(response.body);
+
+    if(response.statusCode == 200) {
+
+      final List typeList = (json.decode(response.body))["notifications"];
+      if (typeList != null) {
+        for (int i = 0; i < typeList.length; i++) {
+          if (typeList[i]["title"] == "Booking confirmed") {
+
+            AwesomeNotifications().createNotification(
+                content: NotificationContent(
+                    id: 10,
+                    channelKey: 'basic_channel',
+                    title: typeList[i]["title"],
+                    body: typeList[i]["body"]
+                )
+            );
+            break;
+          }
+        }
+      }
+    }
+
   }
 
 

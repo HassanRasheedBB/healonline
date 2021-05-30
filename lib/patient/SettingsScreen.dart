@@ -1,9 +1,14 @@
 //SettingsScreen
+import 'package:HealOnline/LoginScreen/login_screen.dart';
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
+import 'package:HealOnline/patient/PatientProfile.dart';
 import 'package:HealOnline/patient/StripePaymentScreen.dart';
 import 'package:HealOnline/patient/pages/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
@@ -12,13 +17,47 @@ import 'FAQScreen.dart';
 import 'PasswordChangeScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  SettingsScreen({Key key}) : super(key: key);
+  PatientProfileState fragment;
+  SettingsScreen(this.fragment, {Key key}) : super(key: key);
 
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, false);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getLocale();
+    super.initState();
+
+
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    if(widget.fragment != null) {
+      widget.fragment.getLocale();
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -36,7 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Settings",
+        title: Text(Languages.of(context).settings,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -69,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                    );
                  },
                  title: Text(
-                   "Change Password",
+                   Languages.of(context).change_password,
                    style: TextStyle(
                      fontFamily: "ProductSans",
                      fontSize: 18,
@@ -107,7 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
 
                   title: Text(
-                    "Hotline",
+                    Languages.of(context).hotline,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 18,
@@ -144,7 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
 
                   title: Text(
-                    "FAQ's",
+                    Languages.of(context).faq,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 18,
@@ -178,7 +217,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     }
                   },
                   title: Text(
-                    "About Us",
+                    Languages.of(context).about_us,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 18,
@@ -214,7 +253,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
 
                   title: Text(
-                    "Contact Us",
+                    Languages.of(context).contact_us,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 18,

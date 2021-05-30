@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/PasswordChangeModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Password Change",
+        title: Text(Languages.of(context).password_change,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -72,7 +73,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 key: Key('Username'),
                 controller: currentPasswordController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Current Password" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_current_pass : null,
                 decoration: InputDecoration(
                     suffixIcon: InkWell(
                       onTap: () {
@@ -92,7 +93,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.lock),
                     border: OutlineInputBorder(),
-                    hintText: 'Current Password*',
+                    hintText: Languages.of(context).current_pass,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -106,7 +107,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 key: Key('Username'),
                 controller: newPasswordController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter New Password" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_new_pass : null,
                 decoration: InputDecoration(
                     suffixIcon: InkWell(
                       onTap: () {
@@ -126,7 +127,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.lock),
                     border: OutlineInputBorder(),
-                    hintText: 'New Password*',
+                    hintText: Languages.of(context).new_password,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -140,7 +141,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 key: Key('Username'),
                 controller: confirmPasswordController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Confirm Password" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_confirm_password : null,
                 decoration: InputDecoration(
                     suffixIcon: InkWell(
                       onTap: () {
@@ -160,7 +161,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.lock),
                     border: OutlineInputBorder(),
-                    hintText: 'Confirm Password*',
+                    hintText: Languages.of(context).confirm_pass,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -175,7 +176,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
           color: Constants.hexToColor(Constants.primaryDarkColor),
           elevation: 4,
           borderRadius: 10,
-          child: Text('UPDATE PASSWORD',
+          child: Text(Languages.of(context).update_pass,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -197,8 +198,8 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
       if (new_password != confirm_password) {
         _btnController.reset();
-        showAlertDialog("Error",
-            "Confirm and New Password don't match, please try again", context);
+        showAlertDialog(Languages.of(context).error_string,
+            Languages.of(context).passwords_dont_match, context);
         return ;
       }
 
@@ -226,15 +227,15 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
       if (statusCode == 200) {
         _btnController.reset();
-        showAlertDialog("Success", "Password is updated successfully", context);
+        showAlertDialog(Languages.of(context).success, Languages.of(context).password_updated, context);
       } else if (response.body.contains("Token expired")) {
         _btnController.reset();
-        showAlertDialog("Error",
-            "Your login session is expired, please Re-Login again", context);
+        showAlertDialog(Languages.of(context).error_string,
+            Languages.of(context).session_expired, context);
       } else {
         _btnController.reset();
         showAlertDialog(
-            "Error", "Something went wrong please try again", context);
+            Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       }
     }else{
       _btnController.reset();
@@ -255,7 +256,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),

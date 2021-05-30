@@ -2,11 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/UploadItem.dart';
+import 'package:HealOnline/patient/HomePagePatient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
@@ -15,8 +19,9 @@ import 'fragments/UpcomingAppointments.dart';
 
 class AppointmentDetail extends StatefulWidget {
   AppointmentUI appointment;
+  MyHomePageState fragment;
 
-  AppointmentDetail(this.appointment, {Key key}) : super(key: key);
+  AppointmentDetail(this.appointment, this.fragment, {Key key}) : super(key: key);
 
   @override
   _AppointmentDetailState createState() => _AppointmentDetailState();
@@ -29,8 +34,31 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
   @override
   void initState() {
     super.initState();
+    getLocale();
     getFilesFromDB(widget.appointment.id);
   }
+
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, true);
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if(widget.fragment != null){
+      widget.fragment.getLocale();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +75,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                   color: Constants.hexToColor(Constants.whiteColor)),
             )),
         title: Text(
-          "Appointment Detail",
+          Languages.of(context).appointment_detail,
           style: TextStyle(
               fontFamily: "ProductSans", fontSize: 22, color: Colors.white),
         ),
@@ -63,7 +91,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Doctor Name",
+                Languages.of(context).doc_name,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 22,
@@ -80,7 +108,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.docName,
+                widget.appointment.docName != null
+                    ? widget.appointment.docName
+                    : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -105,7 +135,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Doctor Speciality",
+                Languages.of(context).doc_speciality,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -122,7 +152,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.docSpeciality,
+                widget.appointment.docSpeciality != null
+                    ? widget.appointment.docSpeciality
+                    : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -147,7 +179,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Appointment Time",
+                Languages.of(context).appointment_time,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -164,7 +196,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.appointmentTime,
+                widget.appointment.appointmentTime != null
+                ? widget.appointment.appointmentTime
+                : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -189,7 +223,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Appointment Date",
+                Languages.of(context).appointment_date,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -206,7 +240,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.appointmentDate,
+                widget.appointment.appointmentDate != null
+                ? widget.appointment.appointmentDate
+                : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -231,7 +267,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Symptoms",
+                Languages.of(context).symptoms,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -248,7 +284,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.symptoms,
+                widget.appointment.symptoms != null
+                ? widget.appointment.symptoms
+                : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -273,7 +311,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Sick Note",
+                Languages.of(context).sick_note,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -290,7 +328,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.sick_note,
+                widget.appointment.sick_note != null
+                ? widget.appointment.sick_note
+                : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -315,7 +355,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Additional Details",
+                Languages.of(context).additional_details,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -335,7 +375,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
                 height: 120,
                 width: MediaQuery.of(context).size.width,
                 child: Text(
-                  widget.appointment.additional_details,
+                  widget.appointment.additional_details != null
+                  ? widget.appointment.additional_details
+                  : "",
                   style: TextStyle(
                     fontFamily: "ProductSans",
                     fontSize: 16,
@@ -361,7 +403,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Appointment For",
+                Languages.of(context).appointment_for,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -378,7 +420,9 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.only(left: 16, right: 16),
               child: Text(
-                widget.appointment.appointment_for,
+                widget.appointment.appointment_for != null
+                ? widget.appointment.appointment_for
+                : "",
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 16,
@@ -403,7 +447,7 @@ class _AppointmentDetailState extends State<AppointmentDetail> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "Attachments",
+                Languages.of(context).attachments,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,

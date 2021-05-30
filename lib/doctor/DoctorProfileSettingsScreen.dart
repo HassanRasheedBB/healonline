@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/DoctorModel.dart';
 import 'package:HealOnline/models/PatientModel.dart';
 import 'package:HealOnline/patient/fragments/CityPicker.dart';
@@ -110,7 +111,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Edit Profile Info",
+        title: Text(Languages.of(context).edit_profile,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -132,11 +133,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Username'),
                 controller: fNameController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter First Name" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_first_name : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'First Name*',
+                    hintText: Languages.of(context).first_name,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -150,11 +151,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Username'),
                 controller: lNameController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Last Name" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_last_name : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'Last Name*',
+                    hintText: Languages.of(context).last_name,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -168,7 +169,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Phone Number'),
                 controller: phoneNoController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Enter Phone Number" : null,
+                    (value.isEmpty) ? Languages.of(context).please_enter_phone_number : null,
                 decoration: InputDecoration(
                     prefixIcon: Container(
                       //padding: EdgeInsets.all(12),
@@ -177,7 +178,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                       child: Icon(CupertinoIcons.phone_fill),
                     ),
                     border: OutlineInputBorder(),
-                    hintText: 'Phone Number*',
+                    hintText: Languages.of(context).phone_number,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -195,7 +196,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('DOB'),
                 controller: dobController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Date of Birth" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_date_of_birth : null,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
@@ -204,7 +205,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.calendar),
                     border: OutlineInputBorder(),
-                    hintText: 'Date of Birth',
+                    hintText: Languages.of(context).dob_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -222,7 +223,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Username'),
                 controller: languageController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Language" : null,
+                    (value.isEmpty) ? Languages.of(context).select_language : null,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
                       Icons.arrow_forward_ios,
@@ -239,7 +240,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                       ),
                     ),
                     border: OutlineInputBorder(),
-                    hintText: 'Language',
+                    hintText: Languages.of(context).language_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -253,11 +254,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('DOB'),
                 controller: emailController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Enter Email" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_email_address : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.mail),
                     border: OutlineInputBorder(),
-                    hintText: 'Email',
+                    hintText: Languages.of(context).email_address_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -271,11 +272,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('CPSO'),
                 controller: cpsoController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please CPSO Number" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_cpso_number : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.number_square),
                     border: OutlineInputBorder(),
-                    hintText: 'CPSO Number',
+                    hintText: Languages.of(context).cpso_number,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -289,11 +290,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('MINC'),
                 controller: mincController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please MINC Number" : null,
+                    (value.isEmpty) ? Languages.of(context).enter_minc_number : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.number_square),
                     border: OutlineInputBorder(),
-                    hintText: 'MINC Number',
+                    hintText: Languages.of(context).minc_number,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -331,7 +332,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 22),
-              child: Text('Recent Education',
+              child: Text(Languages.of(context).recent_education,
                   style: TextStyle(
                       color: Constants.hexToColor(
                         Constants.primaryDarkColor,
@@ -350,11 +351,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Degree'),
                 controller: degreeController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Degree" : null,
+                    (value.isEmpty) ? Languages.of(context).degree: null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(Icons.badge),
                     border: OutlineInputBorder(),
-                    hintText: 'Degree',
+                    hintText: Languages.of(context).degree,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -368,7 +369,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Degree Date'),
                 controller: degreeDateController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Date" : null,
+                    (value.isEmpty) ? Languages.of(context).date: null,
                 onTap: () {
                   _selectDegreeDate(context);
                 },
@@ -381,7 +382,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.calendar),
                     border: OutlineInputBorder(),
-                    hintText: 'Date',
+                    hintText: Languages.of(context).date,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -395,7 +396,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Degree Date'),
                 controller: degreeUniversityController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Institution" : null,
+                    (value.isEmpty) ? Languages.of(context).institution : null,
                 onTap: () => showUniModal(context),
                 readOnly: true,
                 decoration: InputDecoration(
@@ -406,7 +407,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(Icons.apartment_rounded),
                     border: OutlineInputBorder(),
-                    hintText: 'Institution',
+                    hintText: Languages.of(context).institution,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -420,11 +421,11 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Degree Location'),
                 controller: degreeLocationController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Location" : null,
+                    (value.isEmpty) ? Languages.of(context).address : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.location_solid),
                     border: OutlineInputBorder(),
-                    hintText: 'Address',
+                    hintText: Languages.of(context).address,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -442,7 +443,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 22),
-              child: Text('Professional Experience',
+              child: Text(Languages.of(context).prof_experience,
                   style: TextStyle(
                       color: Constants.hexToColor(
                         Constants.primaryDarkColor,
@@ -463,7 +464,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Years'),
                 controller: totalExpController,
                 validator: (value) => (value.isEmpty)
-                    ? "Please Select Overall Experience Years"
+                    ? Languages.of(context).tot_experience
                     : null,
                 decoration: InputDecoration(
                     suffixIcon: Icon(
@@ -473,7 +474,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(Icons.app_registration),
                     border: OutlineInputBorder(),
-                    hintText: 'Total Experience',
+                    hintText: Languages.of(context).tot_experience,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -487,7 +488,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Speciality'),
                 controller: specialityController,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Speciality" : null,
+                    (value.isEmpty) ? Languages.of(context).select_prim_spec : null,
                 readOnly: true,
                 onTap: () {
                   selectedSpecialityIndex = 1;
@@ -501,7 +502,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.asterisk_circle),
                     border: OutlineInputBorder(),
-                    hintText: 'Select Primary Speciality ',
+                    hintText: Languages.of(context).select_prim_spec,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -515,7 +516,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Speciality'),
                 controller: speciality1Controller,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Speciality" : null,
+                    (value.isEmpty) ? Languages.of(context).select_speciality : null,
                 readOnly: true,
                 onTap: () {
                   selectedSpecialityIndex = 2;
@@ -529,7 +530,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.asterisk_circle),
                     border: OutlineInputBorder(),
-                    hintText: 'Select Speciality ',
+                    hintText: Languages.of(context).select_speciality,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -543,7 +544,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Speciality'),
                 controller: speciality2Controller,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Speciality" : null,
+                    (value.isEmpty) ? Languages.of(context).select_speciality : null,
                 readOnly: true,
                 onTap: () {
                   selectedSpecialityIndex = 3;
@@ -557,7 +558,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.asterisk_circle),
                     border: OutlineInputBorder(),
-                    hintText: 'Select Speciality ',
+                    hintText: Languages.of(context).select_speciality,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -571,7 +572,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Speciality'),
                 controller: speciality3Controller,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Speciality" : null,
+                    (value.isEmpty) ? Languages.of(context).select_speciality : null,
                 readOnly: true,
                 onTap: () {
                   selectedSpecialityIndex = 4;
@@ -585,7 +586,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.asterisk_circle),
                     border: OutlineInputBorder(),
-                    hintText: 'Select Speciality ',
+                    hintText: Languages.of(context).select_speciality,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -599,7 +600,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                 key: Key('Speciality'),
                 controller: speciality4Controller,
                 validator: (value) =>
-                    (value.isEmpty) ? "Please Select Speciality" : null,
+                    (value.isEmpty) ? Languages.of(context).select_speciality : null,
                 readOnly: true,
                 onTap: () {
                   selectedSpecialityIndex = 5;
@@ -613,7 +614,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     ),
                     prefixIcon: Icon(CupertinoIcons.asterisk_circle),
                     border: OutlineInputBorder(),
-                    hintText: 'Select Speciality ',
+                    hintText: Languages.of(context).select_speciality,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -636,7 +637,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
             updateProfile();
           },
           child: Center(
-            child: Text('SAVE',
+            child: Text(Languages.of(context).save_string,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -663,8 +664,8 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
             speciality3Controller.text.toString() != "" ||
             speciality4Controller.text.toString() != "")) {
       pr.hide();
-      showAlertDialog("Missing Information",
-          "Please select your primary speciality first.", context);
+      showAlertDialog(Languages.of(context).missing_information,
+          Languages.of(context).select_primary_first, context);
       return;
     } else {
       if (speciality1Controller.text.toString() != "") {
@@ -733,17 +734,17 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
 
     if (statusCode == 200) {
       pr.hide();
-      showAlertDialog("Success", "Profile is updated successfully", context);
+      showAlertDialog(Languages.of(context).success, Languages.of(context).profile_updated, context);
     } else {
       pr.hide();
       showAlertDialog(
-          "Error", "Something went wrong please try again", context);
+          Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
     }
     } catch (e) {
       print(e.toString());
       pr.hide();
       showAlertDialog(
-          "Error", "Something went wrong please try again", context);
+          Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
     }
   }
 
@@ -761,7 +762,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
@@ -888,13 +889,13 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                   Constants.primaryDarkColor,
                 ),
                 searchInputDecoration: InputDecoration(
-                    hintText: 'Search...',
+                    hintText: Languages.of(context).search,
                     hintStyle: TextStyle(
                         fontFamily: "ProductSans",
                         fontSize: 14,
                         color: Colors.grey)),
                 isSearchable: true,
-                title: Text("Select Language",
+                title: Text(Languages.of(context).select_language,
                     style: TextStyle(
                         fontFamily: "ProductSans",
                         fontSize: 16,
@@ -983,7 +984,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     children: [
                       Padding(
                           child: Text(
-                            "Select Institution",
+                            Languages.of(context).institution,
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 24,
@@ -992,7 +993,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                                   Constants.primaryDarkColor),
                             ),
                           ),
-                          padding: EdgeInsets.only(top: 24, left: 16)),
+                          padding: EdgeInsets.only(top: 24, left: 16, right: 16)),
                       SizedBox(
                         height: 16,
                       ),
@@ -1067,7 +1068,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     children: [
                       Padding(
                           child: Text(
-                            "Select Total Experience",
+                            Languages.of(context).tot_experience,
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 24,
@@ -1076,7 +1077,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                                   Constants.primaryDarkColor),
                             ),
                           ),
-                          padding: EdgeInsets.only(top: 24, left: 16)),
+                          padding: EdgeInsets.only(top: 24, left: 16, right: 16)),
                       SizedBox(
                         height: 16,
                       ),
@@ -1154,7 +1155,7 @@ class _DoctorProfileSettingScreen extends State<DoctorProfileSettingScreen> {
                     children: [
                       Padding(
                           child: Text(
-                            "Select Speciality",
+                            Languages.of(context).select_speciality,
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 24,

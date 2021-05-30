@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/UploadItem.dart';
 import 'package:HealOnline/patient/fragments/UploadDocsScreen.dart';
 import 'package:HealOnline/patient/fragments/UploadImages.dart';
@@ -131,7 +132,7 @@ class _DoctorNotesScreenState extends State<DoctorNotesScreen>
             ],
           ),
           title: Text(
-            "Doctor Notes",
+            Languages.of(context).doc_notes,
             style: TextStyle(
               fontFamily: "ProductSans",
               fontSize: 20,

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/doctor/DoctorProfileSettingsScreen.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/RegisterDoctor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
 
                         ///here we create space for the circle avatar to get ut of the box
                         child: Container(
-                          height: 230.0,
+                          height: 240.0,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12.0),
                             color: Colors.white,
@@ -147,7 +148,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            "Appointments",
+                                            Languages.of(context).appointments,
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -180,7 +181,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            "Patients",
+                                            Languages.of(context).patients,
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -248,7 +249,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Container(
-                  height: 316,
+                  height: 340,
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -262,7 +263,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Email Address",
+                                Languages.of(context).email,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -299,7 +300,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Phone Number",
+                                Languages.of(context).phone_number,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -348,7 +349,9 @@ class _DoctorProfileState extends State<DoctorProfile> {
                               Padding(
                                 padding: EdgeInsets.only(left: 130, top: 2),
                                 child: Text(
-                                  user.csnNo,
+                                  user.csnNo != null
+                                  ? user.csnNo
+                                  : "",
                                   style: TextStyle(
                                     fontFamily: "ProductSans",
                                     fontSize: 14,
@@ -373,7 +376,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Experience",
+                                Languages.of(context).experience,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -410,7 +413,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Address",
+                               Languages.of(context).address,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -447,7 +450,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Average Rating",
+                               Languages.of(context).ave_rating,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -501,7 +504,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
                   child: Align(
                     alignment: Alignment.center,
                     child: Text(
-                      "Edit Profile",
+                      Languages.of(context).edit_profile,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                         fontSize: 18,

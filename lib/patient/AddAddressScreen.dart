@@ -2,19 +2,24 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/AdditionalAddress.dart';
+import 'package:HealOnline/patient/PatientProfile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import 'fragments/CityPicker.dart';
 import 'package:http/http.dart' as http;
 
 class AddAddressScreen extends StatefulWidget {
-  AddAddressScreen({Key key}) : super(key: key);
+  PatientProfileState fragment;
+  AddAddressScreen(this.fragment, {Key key}) : super(key: key);
 
   @override
   AddAddressScreenState createState() => AddAddressScreenState();
@@ -40,7 +45,28 @@ class AddAddressScreenState extends State<AddAddressScreen> {
     // TODO: implement initState
     super.initState();
     getAdditionalAddressFromDB();
+    getLocale();
   }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, true);
+
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.fragment.getLocale();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +86,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Add Address",
+        title: Text(Languages.of(context).add_address,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -83,11 +109,11 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                   key: Key('Address 1'),
                   controller: addressOneController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Address" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_address : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.map_pin_ellipse),
                       border: OutlineInputBorder(),
-                      hintText: 'Address 1*',
+                      hintText: Languages.of(context).address_1,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -100,11 +126,11 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                   key: Key('Address 2'),
                   controller: addressTwoController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Address" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_address: null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.map_pin_ellipse),
                       border: OutlineInputBorder(),
-                      hintText: 'Address 2*',
+                      hintText: Languages.of(context).address_2,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -130,7 +156,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                   key: Key('City Name'),
                   controller: cityController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter City Name" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_city : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.location),
                       suffixIcon: Icon(
@@ -139,7 +165,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                         color: Colors.grey,
                       ),
                       border: OutlineInputBorder(),
-                      hintText: 'City Name*',
+                      hintText: Languages.of(context).city_name,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -152,11 +178,11 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                   key: Key('Postal / ZipCode'),
                   controller: zipCodeController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Postal / Zip Code" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_postal_code : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.creditcard),
                       border: OutlineInputBorder(),
-                      hintText: 'Postal / ZipCode*',
+                      hintText: Languages.of(context).postal_code,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -182,7 +208,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                   },
                   controller: provinceController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Province" : null,
+                      (value.isEmpty) ? Languages.of(context).select_province : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.location),
                       suffixIcon: Icon(
@@ -191,7 +217,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                         color: Colors.grey,
                       ),
                       border: OutlineInputBorder(),
-                      hintText: 'Province*',
+                      hintText: Languages.of(context).province,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -210,7 +236,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
           color: Constants.hexToColor(Constants.primaryDarkColor),
           elevation: 4,
           borderRadius: 10,
-          child: Text('SAVE ADDRESS',
+          child: Text(Languages.of(context).save_address,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -251,16 +277,16 @@ class AddAddressScreenState extends State<AddAddressScreen> {
 
       if (statusCode == 200) {
         _btnController.reset();
-        showAlertDialog("Success", "Address is updated successfully", context);
+        showAlertDialog(Languages.of(context).success, Languages.of(context).address_updated, context);
       } else {
         _btnController.reset();
         showAlertDialog(
-            "Error", "Something went wrong please try again", context);
+            Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       }
     } else {
       _btnController.reset();
       showAlertDialog(
-          "Error", "Something went wrong please try again", context);
+          Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
     }
   }
 
@@ -278,7 +304,7 @@ class AddAddressScreenState extends State<AddAddressScreen> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text( Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),

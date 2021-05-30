@@ -1,5 +1,8 @@
+import 'package:HealOnline/localization/locale_constant.dart';
+import 'package:HealOnline/patient/HomePagePatient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'CovidScreen.dart';
 
 import '../constants.dart';
@@ -14,6 +17,47 @@ class TimeQuestionScreen extends StatefulWidget {
 }
 
 class _TimeQuestionScreenState extends State<TimeQuestionScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    getLocale();
+
+  }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+
+  }
+
+  String time = 'Tap here to select duration !';
+  var Questions = "Questions";
+  var How_Long = "How long have you felt this way?";
+  var CONTINUE = "CONTINUE";
+
+  void doMakeLangChanges(){
+
+    setState(() {
+      time = "اضغط هنا لتحديد المدة!";
+      Questions = "أسئلة";
+      How_Long = "منذ متى وأنت تشعر بهذه الطريقة؟";
+      CONTINUE = "استمر";
+
+    });
+  }
+
+
   void _showCustomTimePicker() {
     showModalBottomSheet(
         backgroundColor: Constants.hexToColor(Constants.whiteColor),
@@ -28,7 +72,8 @@ class _TimeQuestionScreenState extends State<TimeQuestionScreen> {
     });
   }
 
-  String time = 'Tap here to select duration !';
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +91,7 @@ class _TimeQuestionScreenState extends State<TimeQuestionScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Questions",
+        title: Text(Questions,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -59,7 +104,7 @@ class _TimeQuestionScreenState extends State<TimeQuestionScreen> {
           SizedBox(height: 24,),
           Align(
             alignment: Alignment.topCenter,
-            child: Text("How long have you felt this way?",
+            child: Text(How_Long,
                 style: TextStyle(
                   fontFamily: "ProductSans",
                   fontSize: 20,
@@ -108,7 +153,7 @@ class _TimeQuestionScreenState extends State<TimeQuestionScreen> {
             );
           },
           child: Center(
-            child: Text('CONTINUE',
+            child: Text(CONTINUE,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

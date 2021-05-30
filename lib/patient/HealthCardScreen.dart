@@ -3,20 +3,26 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/HealthCardModel.dart';
+import 'package:HealOnline/patient/PatientProfile.dart';
 import 'package:HealOnline/patient/SchedualAppointmentScreen.dart';
 import 'package:HealOnline/patient/fragments/CityPicker.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
 class HealthCardScreen extends StatefulWidget {
+  PatientProfileState fragment;
   bool showMessage = false;
-  HealthCardScreen({Key key, this.showMessage}) : super(key: key);
+  HealthCardScreen(this.fragment, {Key key, this.showMessage}) : super(key: key);
 
   @override
   HealthCardScreenState createState() => HealthCardScreenState();
@@ -44,10 +50,31 @@ class HealthCardScreenState extends State<HealthCardScreen> {
   void initState() {
     getHealthCard();
     super.initState();
-
-
+    getLocale();
 
   }
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, true);
+
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    if(widget.fragment != null) {
+      widget.fragment.getLocale();
+    }
+  }
+
 
 
   @override
@@ -66,7 +93,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Health Card",
+        title: Text(Languages.of(context).health_card,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -102,7 +129,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   key: Key('Health'),
                   controller: provinceController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Select Province" : null,
+                      (value.isEmpty) ? Languages.of(context).select_province : null,
                   decoration: InputDecoration(
                       suffixIcon: Icon(
                         Icons.arrow_forward_ios,
@@ -111,7 +138,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                       ),
                       prefixIcon: Icon(CupertinoIcons.location),
                       border: OutlineInputBorder(),
-                      hintText: 'Province',
+                      hintText: Languages.of(context).province,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -124,11 +151,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   key: Key('Health Card'),
                   controller: cardNoController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Health Card No" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_health_card_no : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.number_circle),
                       border: OutlineInputBorder(),
-                      hintText: 'Health Card No',
+                      hintText: Languages.of(context).health_card_no,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -145,11 +172,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   key: Key('DOB'),
                   controller: dobController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter date of Birth" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_date_of_birth : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.calendar),
                       border: OutlineInputBorder(),
-                      hintText: 'Date of birth',
+                      hintText: Languages.of(context).dob_hint,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -162,11 +189,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   key: Key('Phone Number'),
                   controller: phoneController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter phone number" : null,
+                      (value.isEmpty) ? Languages.of(context).please_enter_phone_number : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.phone_fill),
                       border: OutlineInputBorder(),
-                      hintText: 'Enter phone number',
+                      hintText: Languages.of(context).phone_number,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -179,11 +206,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   key: Key('Address'),
                   controller: addressController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Address" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_address : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.location_solid),
                       border: OutlineInputBorder(),
-                      hintText: 'Enter Address',
+                      hintText: Languages.of(context).email_address_hint,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -194,7 +221,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 16),
                 child: InputDecorator(
                     decoration: InputDecoration(
-                      labelText: 'Gender',
+                      labelText: Languages.of(context).gender,
                       labelStyle: Theme.of(context)
                           .primaryTextTheme
                           .caption
@@ -204,7 +231,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton(
                         hint: Text(
-                          'Select Gender',
+                            Languages.of(context).gender,
                           style: TextStyle(fontFamily: "ProductSans"),
                         ),
                         //isExpanded: true,
@@ -235,11 +262,11 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   key: Key('Postal Code'),
                   controller: postalCodeController,
                   validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Postal Code" : null,
+                      (value.isEmpty) ? Languages.of(context).enter_postal_code : null,
                   decoration: InputDecoration(
                       prefixIcon: Icon(CupertinoIcons.number_circle),
                       border: OutlineInputBorder(),
-                      hintText: 'Postal Code',
+                      hintText: Languages.of(context).postal_code,
                       hintStyle: TextStyle(fontFamily: "ProductSans")),
                 ),
               ),
@@ -258,7 +285,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
           color: Constants.hexToColor(Constants.primaryDarkColor),
           elevation: 4,
           borderRadius: 10,
-          child: Text('UPDATE CARD',
+          child: Text(Languages.of(context).update_card,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -312,15 +339,20 @@ class HealthCardScreenState extends State<HealthCardScreen> {
           }
         }
         showAlertDialog(
-            "Success", "Health card is updated successfully", context);
+            Languages.of(context).success, Languages.of(context).card_updated, context);
+
+        if (Platform.isIOS) {
+          getNotificationForIos();
+        }
+
       } else {
         _btnController.reset();
         showAlertDialog(
-            "Error", "Something went wrong please try again", context);
+            Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       }
     } else {
       showAlertDialog(
-          "Error", "Something went wrong please try again", context);
+          Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       _btnController.reset();
     }
   }
@@ -339,7 +371,7 @@ class HealthCardScreenState extends State<HealthCardScreen> {
                   )),
               actions: [
                 CupertinoDialogAction(
-                  child: Text("OK",
+                  child: Text(Languages.of(context).ok,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                       )),
@@ -402,4 +434,43 @@ class HealthCardScreenState extends State<HealthCardScreen> {
       }
     });
   }
+
+  Future<void> getNotificationForIos() async {
+
+    String url = Utils.baseURL +
+        Utils.GET_NOTIFICATIONS ;
+    print(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      HttpHeaders.authorizationHeader: "Bearer " + Utils.user.token
+    };
+    print(Utils.user.token);
+    Response response = await get(Uri.parse(url), headers: headers);
+    String body = response.body;
+    print(response.body);
+
+    if(response.statusCode == 200) {
+
+      final List typeList = (json.decode(response.body))["notifications"];
+      if (typeList != null) {
+        for (int i = 0; i < typeList.length; i++) {
+          if (typeList[i]["title"] == "Health Card") {
+
+            AwesomeNotifications().createNotification(
+                content: NotificationContent(
+                    id: 10,
+                    channelKey: 'basic_channel',
+                    title: typeList[i]["title"],
+                    body: typeList[i]["body"]
+                )
+            );
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+
 }

@@ -2,6 +2,8 @@ import 'package:HealOnline/LoginScreen/login_screen.dart';
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/VideoCall/call.dart';
 import 'package:HealOnline/VideoCall/index.dart';
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/patient/ContactUsScreen.dart';
 import 'package:HealOnline/patient/SettingsScreen.dart';
 import 'package:flutter/cupertino.dart';
@@ -75,8 +77,29 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getLocale();
     home = AppointmentList();
+
+
   }
+
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, false);
+
+    }
+    setState(() {
+      appBarTitle = Languages.of(context).appointments;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 title: Text(
-                  "Appointments",
+                  Languages.of(context).appointments,
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -228,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 title: Text(
-                  "Patients",
+                  Languages.of(context).patients,
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -266,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 title: Text(
-                  "Notifications",
+                  Languages.of(context).notifications,
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -302,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 title: Text(
-                  "Profile",
+                  Languages.of(context).profile,
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -335,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Icon(Icons.settings, color: Constants.hexToColor(Constants.primaryDarkColor),),
                 ),
                 title: Text(
-                  "Settings",
+                  Languages.of(context).settings,
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -349,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SettingsScreen(),
+                      builder: (context) => SettingsScreen(null),
                     ),
                   );
                 },
@@ -372,7 +395,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 title: Text(
-                  "Logout",
+                    Languages.of(context).logout,
                   style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -411,10 +434,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   getPage() {
     if (_page == 0) {
-      appBarTitle = "Appointments";
+      appBarTitle = Languages.of(context).appointments;
       home = AppointmentList();
     } else if (_page == 1) {
-      appBarTitle = "Patients";
+      appBarTitle = Languages.of(context).patients;
       home = Container(
         child: FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 1000)),
@@ -431,7 +454,7 @@ class _HomeScreenState extends State<HomeScreen> {
 //home = AllPatientListScreen()
 
     } else if (_page == 2) {
-      appBarTitle = "Notifications";
+      appBarTitle = Languages.of(context).notifications;
       home = Container(
         child: FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 1000)),
@@ -460,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     else {
-      appBarTitle = "Profile";
+      appBarTitle = Languages.of(context).profile;
       home = Container(
         child: FutureBuilder(
             future: Future.delayed(Duration(milliseconds: 1000)),

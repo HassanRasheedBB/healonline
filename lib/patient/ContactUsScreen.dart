@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:HealOnline/models/ContactUsModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Contact Us",
+        title: Text(Languages.of(context).contact_us,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -79,12 +80,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 key: Key('Username'),
                 controller: nameController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Enter Name" : null,
+                (value.isEmpty) ? Languages.of(context).please_enter_user_name : null,
                 decoration: InputDecoration(
 
                     prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'Name*',
+                    hintText: Languages.of(context).username,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -98,11 +99,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 key: Key('Username'),
                 controller: emailController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Enter Email" : null,
+                (value.isEmpty) ? Languages.of(context).enter_email_address : null,
                 decoration: InputDecoration(
                     prefixIcon: Icon(CupertinoIcons.mail),
                     border: OutlineInputBorder(),
-                    hintText: 'Email*',
+                    hintText:Languages.of(context).email_address_hint,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -141,11 +142,11 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
                 key: Key('Location'),
                 controller: messageController,
                 validator: (value) =>
-                (value.isEmpty) ? "Please Enter Message" : null,
+                (value.isEmpty) ? Languages.of(context).enter_message : null,
                 decoration: InputDecoration(
                   // prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'Message*',
+                    hintText: Languages.of(context).message,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -161,7 +162,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
           color: Constants.hexToColor(Constants.primaryDarkColor),
           elevation: 4,
           borderRadius: 10,
-          child: Text('SUBMIT',
+          child: Text(Languages.of(context).submit,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -207,12 +208,12 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
 
       if (statusCode == 200) {
         _btnController.reset();
-        showAlertDialog("Success", "Query is sent to admin successfully!", context);
+        showAlertDialog(Languages.of(context).success, Languages.of(context).query_sent, context);
 
       } else {
         _btnController.reset();
         showAlertDialog(
-            "Error", "Something went wrong please try again", context);
+            Languages.of(context).error_string, Languages.of(context).something_went_wrong, context);
       }
 
     }else{
@@ -235,7 +236,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
               )),
           actions: [
             CupertinoDialogAction(
-              child: Text("OK",
+              child: Text(Languages.of(context).ok,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),

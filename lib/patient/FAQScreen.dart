@@ -1,6 +1,9 @@
 //FAQScreen
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -12,6 +15,7 @@ class FAQScreen extends StatefulWidget {
 }
 
 class _FAQScreenState extends State<FAQScreen> {
+
   var questions = [
     "What is an online doctor visit ?",
     "How do I get a prescription? will my pharmacy accept it ?",
@@ -33,6 +37,29 @@ class _FAQScreenState extends State<FAQScreen> {
     "The doctors on HealOnline are certified canadian doctors who have years of experience. Doctors are both single- and multi- province licenced and credentialed to work in your province of residence, 24 hours a day, 365 days a year."
   ];
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+
+  }
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      if(savedCode == "ar"){
+        doMakeLangChanges();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -50,7 +77,7 @@ class _FAQScreenState extends State<FAQScreen> {
                 child: Icon(Icons.arrow_back_ios,
                     color: Constants.hexToColor(Constants.blackColor)),
               )),
-          title: Text("FAQ's",
+          title: Text(Languages.of(context).faq,
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -102,6 +129,36 @@ class _FAQScreenState extends State<FAQScreen> {
         )
     );
   }
+
+  void doMakeLangChanges() {
+
+    setState(() {
+
+      questions = [
+        "ما هي زيارة الطبيب عبر الإنترنت؟",
+        "كيف أحصل على وصفة طبية؟ هل ستقبله صيدليتي؟",
+        "هل HealOnline آمن للاستخدام؟",
+        "ما هي مدة زيارة الطبيب النموذجي عبر الإنترنت على HealOnline؟",
+        "ماذا لو لم يكن لدي تأمين صحي؟",
+        "كيف يتم الدفع؟",
+        "من هم الاطباء؟"
+
+      ];
+
+      answers = [
+        "HealOnline هو وسيلة ميسورة التكلفة لحل الحالات الطبية الروتينية. تتيح تقنيتنا الآمنة الفريدة من نوعها زيارة الطبيب وجهاً لوجه دون الحاجة إلى مغادرة منزلك على هاتفك الذكي وسطح المكتب والهاتف عبر مكالمة فيديو.",
+        "يقوم أطباؤنا المرخصون بإصدار الوصفات الطبية في نهاية الموعد حسب الحاجة. وصفاتهم الطبية مشروعة ومقبولة من قبل الصيدليات",
+        "نعم HealOnline هي عبارة عن منصة تربطك بطبيب كندي. زيارة الطبيب هي المسؤولة عن تحليل حالتك وتاريخك الطبي وتحديد العلاج المناسب.",
+        "تستغرق زيارة الطبيب النموذجية على HealOnline 10 دقائق - وهو مقدار الوقت اللازم للتعامل مع معظم المشكلات الطبية بالطبع",
+        "جميع خدمات HealOnline متاحة بدون تأمين. يمكنك إجراء الدفع مباشرة باستخدام البطاقة.",
+        "نحن نقبل بطاقات VISA و MasterCard و Stripe وغيرها من البطاقات الممكّنة للدفع عبر الإنترنت.",
+        "الأطباء في HealOnline هم أطباء كنديون معتمدون ولديهم سنوات من الخبرة. الأطباء حاصلون على ترخيص من مقاطعة واحدة ومتعددة المقاطعات ومعتمدين للعمل في مقاطعة إقامتك ، 24 ساعة في اليوم ، 365 يومًا في السنة."
+      ];
+
+    });
+  }
+
+
 }
 
 /*

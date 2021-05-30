@@ -39,6 +39,8 @@ class Utils{
 
   static String UPDATE_NOTES= "appointment_notes/";
 
+  static String GET_NOTIFICATIONS= "notifications";
+
 
   static Map<String, String> HEADERS = {"Content-type": "application/json"};
 

@@ -1,6 +1,8 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -13,6 +15,54 @@ class PhysicianInformtion extends StatefulWidget {
 
 class _PhysicianInformtionState extends State<PhysicianInformtion> {
   final double circleRadius = 70.0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+  }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+
+  }
+
+  var Physician_Detail = "Physician Detail";
+  var Appointments = "Appointments";
+  var Patients = "Patients";
+  var Email_Address = "Email Address";
+  var Phone_Number = "Phone Number";
+  var Experience = "Experience";
+  var Address = "Address";
+  var Average_Rating = "Average Rating";
+  var recent_reviews = "Most Recent Reviews";
+
+  void doMakeLangChanges(){
+    setState(() {
+      Physician_Detail = "تفاصيل الطبيب";
+      Appointments = "تعيينات";
+      Patients = "مرضى";
+      Email_Address = "بريد إلكتروني";
+      Phone_Number = "رقم الهاتف";
+      Experience = "خبرة";
+      Address = "عنوان";
+      Average_Rating = "متوسط ​​تقييم";
+      recent_reviews = "أحدث المراجعات";
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +81,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Physician Detail",
+        title: Text(Physician_Detail,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -121,7 +171,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            "Appointments",
+                                            Appointments,
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -154,7 +204,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            "Patients",
+                                            Patients,
                                             style: TextStyle(
                                                 fontFamily: "ProductSans",
                                                 fontSize: 16,
@@ -222,7 +272,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                   borderRadius: BorderRadius.circular(12.0),
                 ),
                 child: Container(
-                  height: 316,
+                  height: 340,
                   width: MediaQuery.of(context).size.width,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -236,7 +286,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Email Address",
+                                Email_Address,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -273,7 +323,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Phone Number",
+                                Phone_Number,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -347,7 +397,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Experience",
+                                Experience,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -384,7 +434,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Address",
+                                Address,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -421,7 +471,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
                             alignment: Alignment.centerLeft,
                             children: [
                               Text(
-                                "Average Rating",
+                                Average_Rating,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 16,
@@ -457,7 +507,7 @@ class _PhysicianInformtionState extends State<PhysicianInformtion> {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24),
                 child: Text(
-                  "Most Recent Reviews",
+                  recent_reviews,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                     fontSize: 22,

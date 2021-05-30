@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/RegisterDoctor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import 'PhysicianInformtion.dart';
@@ -31,8 +33,42 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getLocale();
     getDoctors();
   }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+
+  }
+
+  var Select_Physician = "Select Physician";
+  var CONFIRM = "CONFIRM";
+  var View_Details = "View Details";
+  var Language = "Language";
+
+  void doMakeLangChanges(){
+    setState(() {
+      Select_Physician = "حدد الطبيب";
+      CONFIRM = "تؤكد";
+      View_Details = "عرض التفاصيل";
+      Language = "لغة";
+
+
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +87,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Select Physician",
+        title: Text(Select_Physician,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -77,7 +113,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
             );
           },
           child: Center(
-            child: Text('CONFIRM',
+            child: Text(CONFIRM,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -348,7 +384,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                                 ),
                               );
                             },
-                            child: Text("View Details",
+                            child: Text(View_Details,
                                 style: TextStyle(
                                   fontFamily: "ProductSans",
                                   fontSize: 18,
@@ -362,7 +398,7 @@ class _DoctorsFoundScreenState extends State<DoctorsFoundScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(left: 78, top: 184),
-                        child: Text("Language: " + users[index].lanuage.toUpperCase(),
+                        child: Text(Language+": " + users[index].lanuage.toUpperCase(),
                             style: TextStyle(
                               fontFamily: "ProductSans",
                               fontSize: 12,

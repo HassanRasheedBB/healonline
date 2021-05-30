@@ -1,8 +1,10 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/patient/EditProfileScreen.dart';
 import 'package:HealOnline/patient/HealthCardScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 import '../AddAddressScreen.dart';
@@ -50,6 +52,38 @@ class _HomePageState extends State<CityPicker> {
 
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+
+  }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      if(savedCode == "ar"){
+        doMakeLangChanges();
+      }
+    }
+  }
+
+  var SELECT = "SELECT";
+  var select_yr = "Select Your";
+  var choose_province = "Choose Your province so we can offer the\nservices that suit you";
+  void doMakeLangChanges(){
+    setState(() {
+      SELECT = "تحديد";
+      select_yr = "حدد الخاص بك";
+      choose_province = "اختر مقاطعتك حتى نتمكن من تقديم الخدمات التي تناسبك";
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       type: MaterialType.transparency,
@@ -66,7 +100,7 @@ class _HomePageState extends State<CityPicker> {
           ),
           SizedBox(height: 16),
           Text(
-            "Select Your $title",
+            select_yr+" $title",
             style: TextStyle(
               fontFamily: "ProductSans",
               fontSize: 20,
@@ -78,7 +112,7 @@ class _HomePageState extends State<CityPicker> {
           ),
           SizedBox(height: 8),
           Text(
-            "Choose Your province so we can offer the\nservices that suit you",
+            choose_province,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: "ProductSans",
@@ -90,7 +124,7 @@ class _HomePageState extends State<CityPicker> {
           ),
           SizedBox(height: 16),
           Container(
-            height: 380 ,
+            height: 360 ,
             child: ListView.separated(
               itemCount: cities.length,
               itemBuilder: (context, index) {
@@ -129,6 +163,7 @@ class _HomePageState extends State<CityPicker> {
           ),
           SizedBox(height: 8),
           Container(
+            margin: EdgeInsets.only(bottom: 12),
             height: 50,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -158,7 +193,7 @@ class _HomePageState extends State<CityPicker> {
               }
               },
               child: Center(
-                child: Text('SELECT',
+                child: Text(SELECT,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,

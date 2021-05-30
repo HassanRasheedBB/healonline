@@ -1,11 +1,16 @@
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
+import 'package:HealOnline/patient/PatientProfile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
 class ReferApp extends StatefulWidget {
-  ReferApp({Key key}) : super(key: key);
+  PatientProfileState fragment;
+  ReferApp(this.fragment, {Key key}) : super(key: key);
 
   @override
   _ReferAppState createState() => _ReferAppState();
@@ -19,8 +24,31 @@ class _ReferAppState extends State<ReferApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getLocale();
 
   }
+
+
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, true);
+
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget.fragment.getLocale();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +68,7 @@ class _ReferAppState extends State<ReferApp> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Refer HealOnline App",
+        title: Text(Languages.of(context).refer_app,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -70,7 +98,7 @@ class _ReferAppState extends State<ReferApp> {
             SizedBox(height: 32,),
 
             Container(
-              height:100,
+              height:105,
               padding: EdgeInsets.all(12),
               width: MediaQuery.of(context).size.width,
               margin: EdgeInsets.symmetric(horizontal:22),
@@ -85,7 +113,7 @@ class _ReferAppState extends State<ReferApp> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
 
-                  Text('Referral Link',
+                  Text(Languages.of(context).referal_link,
                       style: TextStyle(
                           color: Constants.hexToColor(
                             Constants.primaryColor,
@@ -123,7 +151,7 @@ class _ReferAppState extends State<ReferApp> {
                 onPressed: () {
                 },
                 child: Center(
-                  child: Text('Share with friends',
+                  child: Text(Languages.of(context).share_with_friends,
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -137,7 +165,7 @@ class _ReferAppState extends State<ReferApp> {
 
             Align(
               alignment: Alignment.center,
-              child: Text('- OR -',
+              child: Text(Languages.of(context).or_string,
                   style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -159,7 +187,7 @@ class _ReferAppState extends State<ReferApp> {
                 onPressed: () {
                 },
                 child: Center(
-                  child: Text('Refer by email',
+                  child: Text(Languages.of(context).refer_email,
                       style: TextStyle(
                           color: Constants.hexToColor(Constants.primaryDarkColor),
                           fontSize: 16,
@@ -167,7 +195,6 @@ class _ReferAppState extends State<ReferApp> {
                 ),
               ),
             ),
-
 
           ],
         ),

@@ -1,5 +1,7 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 import '../TimeQuestionScreen.dart';
@@ -28,6 +30,61 @@ class _HomePageState extends State<SelectSypmtomScreen> {
     'Other': false
   };
 
+  @override
+  void initState() {
+    super.initState();
+    getLocale();
+
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+
+  }
+
+  var Select_Symptoms = "Select Symptoms";
+  var CONTINUE = "CONTINUE";
+  void doMakeLangChanges(){
+    setState(() {
+
+      values = {
+        'الوسواس القهري': false,
+        'نوبات ذعر': false,
+        'القلق الاجتماعي': false,
+        'قلق': false,
+        'الفجيعة / الحزن': false,
+        'علاج الأزواج': false,
+        'انتقال الحياة': false,
+        'استشارات LGBTQ': false,
+        'اضطراب ما بعد الصدمة / الصدمة': false,
+        'ادارة الاجهاد': false,
+        'آخر': false
+      };
+      Select_Symptoms = "حدد الأعراض";
+      CONTINUE = "استمر";
+
+    });
+  }
+
+
+
   var _checked = false;
   String symptoms= "";
 
@@ -48,7 +105,7 @@ class _HomePageState extends State<SelectSypmtomScreen> {
               child: Icon(Icons.arrow_back_ios,
                   color: Constants.hexToColor(Constants.blackColor)),
             )),
-        title: Text("Select Symptoms",
+        title: Text(Select_Symptoms,
             style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -107,7 +164,7 @@ class _HomePageState extends State<SelectSypmtomScreen> {
             );
           },
           child: Center(
-            child: Text('CONTINUE',
+            child: Text(CONTINUE,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

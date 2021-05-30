@@ -5,12 +5,16 @@ import 'dart:io';
 import 'package:HealOnline/LoginScreen/login_screen.dart';
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/VideoCall/index.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
+import 'package:HealOnline/main.dart';
 import 'package:HealOnline/models/ContactUsModel.dart';
 import 'package:HealOnline/patient/HealthCardScreen.dart';
+import 'package:HealOnline/restart_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,13 +30,89 @@ class PatientProfile extends StatefulWidget {
   PatientProfile({Key key}) : super(key: key);
 
   @override
-  _PatientProfileState createState() => _PatientProfileState();
+  PatientProfileState createState() => PatientProfileState();
 }
 
-class _PatientProfileState extends State<PatientProfile> {
+class PatientProfileState extends State<PatientProfile>{
   final double circleRadius = 80.0;
 
   TextEditingController commentsController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+
+  }
+
+
+  var Profile = "Profile";
+  var Personal_Info = "Personal Info";
+  var Health_Card = "Health Card";
+  var Refer_Healonline_App = "Refer Healonline App";
+  var Address = "Address";
+  var Payment_Method = "Payment Method";
+  var Feedback = "Feedback";
+  var Log_Out = "Log Out";
+  var did_you_like_app = "Did you like the app?";
+  var let_us_know = "Let us know what you think";
+  var Please_Enter_Message = "Please Enter Message";
+  var Comments = "Comments";
+  var SEND_COMMENT = "SEND COMMENT";
+  var CANCEL = "CANCEL";
+  var thanks_for_feedback = "Thank you so much for your feedback !";
+  var Success = "Success";
+  var some_went_wrong = "Something went wrong please try again";
+  var ok = "Ok";
+  var Error = "Error";
+
+
+  void doMakeLangChanges(){
+    setState(() {
+      Profile = "الملف الشخصي";
+      Personal_Info = "معلومات شخصية";
+      Health_Card = "بطاقة صحية";
+      Refer_Healonline_App = "قم بإحالة تطبيق Healonline";
+      Address = "عنوان";
+      Payment_Method = "طريقة الدفع او السداد";
+      Feedback = "تعليق";
+      Log_Out = "تسجيل خروج";
+      did_you_like_app = "هل أعجبك التطبيق؟";
+      let_us_know = "اسمحوا لنا أن نعرف ما هو رأيك";
+      Please_Enter_Message = "الرجاء إدخال الرسالة";
+      Comments = "تعليقات";
+      SEND_COMMENT = "إرسال تعليق";
+      CANCEL = "إلغاء";
+      thanks_for_feedback = "شكرا لملاحظاتك";
+      Success = "نجاح";
+      some_went_wrong = "حدث خطأ ما. أعد المحاولة من فضلك";
+      ok = "نعم";
+      Error = "خطأ";
+
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +132,7 @@ class _PatientProfileState extends State<PatientProfile> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SettingsScreen(),
+                  builder: (context) => SettingsScreen(this),
                 ),
               );
             },
@@ -62,7 +142,7 @@ class _PatientProfileState extends State<PatientProfile> {
         title: Padding(
           padding: EdgeInsets.only(left: 8.0),
           child: Text(
-            "Profile",
+            Profile,
             style: TextStyle(
               fontFamily: "ProductSans",
               fontSize: 24,
@@ -88,7 +168,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditProfileScreen(),
+                      builder: (context) => EditProfileScreen(this),
                     ),
                   );
                 },
@@ -130,7 +210,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditProfileScreen(),
+                      builder: (context) => EditProfileScreen(this),
                     ),
                   );
                 },
@@ -139,7 +219,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Personal Info',
+                title: Text(Personal_Info,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -161,7 +241,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HealthCardScreen(),
+                      builder: (context) => HealthCardScreen(this,showMessage: false,),
                     ),
                   );
                 },
@@ -170,7 +250,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Health Card',
+                title: Text(Health_Card,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -192,7 +272,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ReferApp(),
+                      builder: (context) => ReferApp(this),
                     ),
                   );
                 },
@@ -201,7 +281,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Refer Healonline App',
+                title: Text(Refer_Healonline_App,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -223,7 +303,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddAddressScreen(),
+                      builder: (context) => AddAddressScreen(this),
                     ),
                   );
                 },
@@ -232,7 +312,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Address',
+                title: Text(Address,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -254,7 +334,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SaveCardScreen(),
+                      builder: (context) => SaveCardScreen(this, showMessage: false,),
                     ),
                   );
                 },
@@ -263,7 +343,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Payment Method',
+                title: Text(Payment_Method,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -315,7 +395,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Feedback',
+                title: Text(Feedback,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -341,7 +421,7 @@ class _PatientProfileState extends State<PatientProfile> {
                   size: 28,
                   color: Constants.hexToColor(Constants.primaryDarkColor),
                 ),
-                title: Text('Log Out',
+                title: Text(Log_Out,
                     style: TextStyle(
                         color: Constants.hexToColor(
                           Constants.blackColor,
@@ -353,17 +433,20 @@ class _PatientProfileState extends State<PatientProfile> {
                       await SharedPreferences.getInstance();
                   await prefs.remove('loggedIn');
 
+
+
                   Future.delayed(
                     Duration(milliseconds: 500),
                     () {
-                      setState(() {
+                      Utils.user.is_loggedIn = "0";
+                      // setState(() {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                             builder: (context) => LoginPage(),
                           ),
                         );
-                      });
+                      // });
                     },
                   );
                 },
@@ -395,7 +478,7 @@ class _PatientProfileState extends State<PatientProfile> {
                         alignment: Alignment.center,
                         width: MediaQuery.of(context).size.width,
                         child: Text(
-                          "Did you like the app?",
+                          did_you_like_app,
                           style: TextStyle(
                               fontFamily: "ProductSans",
                               color: Colors.black,
@@ -412,7 +495,7 @@ class _PatientProfileState extends State<PatientProfile> {
                         alignment: Alignment.center,
                         width: MediaQuery.of(context).size.width,
                         child: Text(
-                          "Let us know what you think",
+                          let_us_know,
                           style: TextStyle(
                             fontFamily: "ProductSans",
                             color: Colors.grey,
@@ -456,10 +539,10 @@ class _PatientProfileState extends State<PatientProfile> {
                       maxLines: 4,
                       key: Key('Location'),
                       validator: (value) =>
-                      (value.isEmpty) ? "Please Enter Message" : null,
+                      (value.isEmpty) ? Please_Enter_Message : null,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          hintText: 'Comments',
+                          hintText: Comments,
                           hintStyle: TextStyle(fontFamily: "ProductSans")),
                     ),
                   ),
@@ -480,7 +563,7 @@ class _PatientProfileState extends State<PatientProfile> {
                             Navigator.of(context).pop();
                           },
                           child: Text(
-                            "CANCEL",
+                            CANCEL,
                             style: TextStyle(
                                 color: Constants.hexToColor(Constants.primaryColor),
                                 fontWeight: FontWeight.bold,
@@ -499,7 +582,7 @@ class _PatientProfileState extends State<PatientProfile> {
                             sendQueryToAdmin();
                           },
                           child: Text(
-                            "SEND COMMENT",
+                            SEND_COMMENT,
                             style: TextStyle(
                                 color: Constants.hexToColor(Constants.primaryColor),
                                 fontWeight: FontWeight.bold,
@@ -549,11 +632,11 @@ class _PatientProfileState extends State<PatientProfile> {
     print(Utils.user.token);
 
     if (statusCode == 200) {
-      showAlertDialog("Success", "Thank you so much for your feedback !", context);
+      showAlertDialog(Success, thanks_for_feedback, context);
 
     } else {
       showAlertDialog(
-          "Error", "Something went wrong please try again", context);
+          Error, some_went_wrong, context);
     }
 
 
@@ -573,7 +656,7 @@ class _PatientProfileState extends State<PatientProfile> {
               )),
           actions: [
             CupertinoDialogAction(
-              child: Text("OK",
+              child: Text(ok,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
@@ -585,5 +668,7 @@ class _PatientProfileState extends State<PatientProfile> {
           ],
         ));
   }
+
+
 
 }

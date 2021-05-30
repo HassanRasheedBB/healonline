@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:HealOnline/SignUpScreen/SignupScreen.dart';
 import 'package:HealOnline/constants.dart';
+import 'package:HealOnline/localization/language/languages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +86,7 @@ class _CodeVerificationState extends State<CodeVerification> {
     final text_title = Container(
         margin: EdgeInsets.only(left: 32.0, right: 32.0, top: 16),
         child: Text(
-          "Verification Code",
+          Languages.of(context).verfication_code,
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
@@ -94,7 +95,7 @@ class _CodeVerificationState extends State<CodeVerification> {
     final text_sub_title = Container(
       margin: EdgeInsets.only(left: 32.0, right: 32.0),
       child: Text(
-        "Please type the verification code sent \nto " + number,
+        Languages.of(context).type_verification_sent+" \nto " + number,
         style: TextStyle(fontSize: 16, color: Colors.white),
         textAlign: TextAlign.center,
       ),
@@ -218,7 +219,7 @@ class _CodeVerificationState extends State<CodeVerification> {
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: Center(
               child: Text(
-                "Resend Code",
+                Languages.of(context).resend_code,
                 style: TextStyle(
                     color: Constants.hexToColor(Constants.primaryColor),
                     fontSize: 16,
@@ -264,7 +265,7 @@ class _CodeVerificationState extends State<CodeVerification> {
               ),
             );
           } else {
-            showAlertDialog("Error", "Invalid Code", context);
+            showAlertDialog(Languages.of(context).error_string, Languages.of(context).invalid_code, context);
           }
         }
 
@@ -279,7 +280,7 @@ class _CodeVerificationState extends State<CodeVerification> {
 
       },
       verificationFailed: (FirebaseAuthException error) {
-        print("Error: " + error.message);
+        print(Languages.of(context).error_string+": " + error.message);
       },
     );
   }
@@ -299,7 +300,7 @@ class _CodeVerificationState extends State<CodeVerification> {
               )),
           actions: [
             CupertinoDialogAction(
-              child: Text("OK",
+              child: Text(Languages.of(context).ok,
                   style: TextStyle(
                     fontFamily: "ProductSans",
                   )),
@@ -320,9 +321,9 @@ class _CodeVerificationState extends State<CodeVerification> {
      PhoneAuthCredential credential = PhoneAuthProvider.credential(
          verificationId: verifyId, smsCode: currentPin);
     var res =  await auth.signInWithCredential(credential).whenComplete(() => () {
-       print("Success:  " + credential.smsCode);
+       print(Languages.of(context).success+":  " + credential.smsCode);
      }).catchError((err) {
-       showAlertDialog("Error", "Invalid Code", context);
+       showAlertDialog(Languages.of(context).error_string, Languages.of(context).invalid_code, context);
      });
 
 
@@ -334,11 +335,11 @@ class _CodeVerificationState extends State<CodeVerification> {
          ),
        );
      }else{
-       showAlertDialog("Error", "Invalid Code", context);
+       showAlertDialog(Languages.of(context).error_string, Languages.of(context).invalid_code, context);
      }
 
    }catch(e){
-     showAlertDialog("Error", "Invalid Code", context);
+     showAlertDialog(Languages.of(context).error_string, Languages.of(context).invalid_code, context);
    }
 
 

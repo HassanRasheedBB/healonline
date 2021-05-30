@@ -1,6 +1,8 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -12,7 +14,7 @@ class NotificationScreen extends StatefulWidget {
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
-  final List<String> appointmentStatus = <String>[
+   List<String> appointmentStatus = <String>[
     'New Appointment',
     'Appointment Cancelled',
     'Appointment Updated',
@@ -30,7 +32,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     "assets/images/check.png",
   ];
 
-  final List<String> appointmentDesc = <String>[
+   List<String> appointmentDesc = <String>[
     'New Appointment is scheduled at 2020-02-30 03:00 PM with William James',
     'You hve cancelled an appointment with Robert Hudson',
     'Your Next Appointment schedule changed to 2020-02-30 02:00 PM with Hazel Grayson',
@@ -39,7 +41,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     'Your Next Appointment schedule changed to 2020-02-30 06:00 PM with Miles Jackson',
   ];
 
-  final List<String> appointmentTimeAgo = <String>[
+   List<String> appointmentTimeAgo = <String>[
     '1 minute ago',
     '4 minutes ago',
     '10 minutes ago',
@@ -48,6 +50,32 @@ class _NotificationScreenState extends State<NotificationScreen> {
     '1 day ago',
   ];
 
+
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+  }
+
+  String savedCode;
+
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      //changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+  }
 
 
 
@@ -131,5 +159,41 @@ class _NotificationScreenState extends State<NotificationScreen> {
             ));
       },
     );
+  }
+
+  void doMakeLangChanges() {
+    setState(() {
+
+
+      appointmentStatus = <String>[
+        'موعد جديد',
+        'تم إلغاء الموعد',
+        'تم تحديث الموعد',
+        'موعد جديد',
+        'تم إلغاء الموعد',
+        'تم تحديث الموعد',
+      ];
+
+      appointmentDesc = <String>[
+        'تم تحديد موعد جديد في 2020-02-30 03:00 مساءً مع الدكتور ويليام جيمس',
+        'لقد ألغيت موعدًا مع دكتور روبرت هدسون',
+        'تم تغيير جدول موعدك التالي إلى 2020-02-30 02:00 مساءً مع الدكتورة هازل جرايسون',
+        'تم تحديد موعد جديد في 2020-02-30 05:00 مساءً مع الدكتور مايلز هنتر',
+        'لقد ألغيت موعدًا مع دكتور جون ويليام',
+        'تم تغيير جدول موعدك التالي إلى 2020-02-30 06:00 مساءً مع دكتور مايلز جاكسون',
+      ];
+
+      appointmentTimeAgo = <String>[
+        '1 دقيقة متبقية',
+        'منذ 4 دقيقة',
+        '10 دقائق متبقية',
+        'بقي 23 دقيقة',
+        'قبل 4 ساعات',
+        '6 ساعات متبقية',
+      ];
+
+
+
+    });
   }
 }

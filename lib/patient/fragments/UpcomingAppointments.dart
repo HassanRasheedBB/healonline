@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:HealOnline/Utils.dart';
 import 'package:HealOnline/VideoCall/call.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:HealOnline/models/Appoitment.dart';
 import 'package:HealOnline/patient/AppointmentDetail.dart';
 import 'package:HealOnline/patient/HomePagePatient.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants.dart';
 
@@ -32,7 +34,37 @@ class _UpcomingAppointmentsState extends State<UpcomingAppointments> {
     // TODO: implement initState
     super.initState();
     getUpcomingAppointments();
+    getLocale();
   }
+
+  String savedCode;
+
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+  }
+
+
+  var Call = "Call";
+  var Cancel = "Cancel";
+
+  void doMakeLangChanges() {
+    setState(() {
+      Call = "يتصل";
+      Cancel = "يلغي";
+
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -193,21 +225,19 @@ class _UpcomingAppointmentsState extends State<UpcomingAppointments> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          InkWell(
-                            onTap: (){
-                              onJoin(appointments[index].channelName,appointments[index].videoToken);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 16, top: 8),
-                              child: Text(
-                                "Call",
-                                style: TextStyle(
-                                    fontFamily: "ProductSans",
-                                    fontSize: 16,
-                                    color: Colors.grey),
-                              ),
+
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 16, top: 8),
+                            child: Text(
+                              Cancel,
+                              style: TextStyle(
+                                  fontFamily: "ProductSans",
+                                  fontSize: 16,
+                                  color: Colors.grey),
                             ),
                           ),
+
+
                           Padding(
                             padding: EdgeInsets.only(bottom: 16, top: 8),
                             child: Container(
@@ -217,16 +247,23 @@ class _UpcomingAppointmentsState extends State<UpcomingAppointments> {
                                   Constants.graySepratorColor),
                             ),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 16, top: 8),
-                            child: Text(
-                              "Cancel",
-                              style: TextStyle(
-                                  fontFamily: "ProductSans",
-                                  fontSize: 16,
-                                  color: Colors.red),
+
+                          InkWell(
+                            onTap: (){
+                              onJoin(appointments[index].channelName,appointments[index].videoToken);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 16, top: 8),
+                              child: Text(
+                                Call,
+                                style: TextStyle(
+                                    fontFamily: "ProductSans",
+                                    fontSize: 16,
+                                    color: Colors.grey),
+                              ),
                             ),
                           ),
+
                         ],
                       )),
                 ],

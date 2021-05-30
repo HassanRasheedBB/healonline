@@ -1,11 +1,15 @@
 import 'dart:io';
 
+import 'package:HealOnline/localization/language/languages.dart';
+import 'package:HealOnline/localization/locale_constant.dart';
+import 'package:HealOnline/patient/HomePagePatient.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
 import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import 'DoctorsFoundScreen.dart';
@@ -28,11 +32,33 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     imgContainer = Container();
     imagePlaceHolder = Container();
+    getLocale();
   }
+
+  String savedCode;
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, savedCode, false);
+
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    MyHomePageState.instance.getLocale();
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +78,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
                 child: Icon(Icons.arrow_back_ios,
                     color: Constants.hexToColor(Constants.blackColor)),
               )),
-          title: Text("Questions",
+          title: Text(Languages.of(context).questions,
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -66,9 +92,10 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             ),
             Align(
                 alignment: Alignment.topLeft,
-                child: Padding(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.only(left: 18),
-                  child: Text("Write a sick note",
+                  child: Text(Languages.of(context).write_sick_note,
                       style: TextStyle(
                         fontFamily: "ProductSans",
                         fontSize: 20,
@@ -90,7 +117,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
                 decoration: InputDecoration(
                   // prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'I need a sick note',
+                    hintText: Languages.of(context).need_sick_note,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -162,7 +189,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Tell us more',
+                          Languages.of(context).tell_us_more,
                           style: TextStyle(
                               fontSize: 16,
                               color: Constants.hexToColor(
@@ -200,7 +227,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
                 decoration: InputDecoration(
                   // prefixIcon: Icon(Icons.person_outline),
                     border: OutlineInputBorder(),
-                    hintText: 'Enter Additional Details',
+                    hintText: Languages.of(context).enter_additional_details,
                     hintStyle: TextStyle(fontFamily: "ProductSans")),
               ),
             ),
@@ -209,10 +236,11 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             ),
             Align(
                 alignment: Alignment.centerLeft,
-                child: Padding(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 18),
                   child: Text(
-                    'Upload image of your physical symptoms /\n Injury',
+                    Languages.of(context).img_physical_symp+' /\n '+Languages.of(context).injury,
                     style: TextStyle(
                         fontSize: 16,
                         color: Constants.hexToColor(
@@ -254,7 +282,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
                                 height: 4,
                               ),
                               Text(
-                                'Upload Image',
+                                Languages.of(context).upload_image,
                                 style: TextStyle(
                                     fontSize: 14,
                                     color: Constants.hexToColor(
@@ -298,7 +326,7 @@ class _RemainingQuestionScreenState extends State<RemainingQuestionScreen> {
             );
           },
           child: Center(
-            child: Text('CONTINUE',
+            child: Text(Languages.of(context).continue_string,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,

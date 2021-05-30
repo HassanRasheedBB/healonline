@@ -1,5 +1,7 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import 'fragments/CompletedAppointmets.dart';
@@ -26,6 +28,46 @@ class _AppointmentsState extends State<Appointments> {
     800: Color.fromRGBO(255, 92, 87, .9),
     900: Color.fromRGBO(255, 92, 87, 1),
   };
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+  }
+
+  String savedCode;
+
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+  }
+
+
+  var Today = "Today";
+  var Upcoming = "Upcoming";
+  var Appointments = "Appointments";
+
+  void doMakeLangChanges() {
+    setState(() {
+
+      Today = "اليوم";
+      Upcoming = "القادمة";
+      Appointments = "تعيينات";
+
+
+    });
+  }
 
 
 
@@ -56,7 +98,7 @@ class _AppointmentsState extends State<Appointments> {
                 Padding(
                   padding: EdgeInsets.only(bottom:8.0),
                   child: Text(
-                    "Today",
+                    Today,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -69,7 +111,7 @@ class _AppointmentsState extends State<Appointments> {
                 Padding(
                     padding: EdgeInsets.only(bottom:8.0),
                   child: Text(
-                    "Upcoming",
+                    Upcoming,
                     style: TextStyle(
                       fontFamily: "ProductSans",
                       fontSize: 16,
@@ -85,7 +127,7 @@ class _AppointmentsState extends State<Appointments> {
             title: Padding(
               padding: EdgeInsets.only(left:8.0, top:16.0),
              child: Text(
-               "Appointments",
+               Appointments,
                style: TextStyle(
                  fontFamily: "ProductSans",
                  fontSize: 24,

@@ -1,5 +1,7 @@
+import 'package:HealOnline/localization/locale_constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -12,7 +14,7 @@ class PatientNotifications extends StatefulWidget {
 
 class _PatientNotificationsState extends State<PatientNotifications> {
 
-  final List<String> appointmentStatus = <String>[
+  List<String> appointmentStatus = <String>[
     'New Appointment',
     'Appointment Cancelled',
     'Appointment Updated',
@@ -21,7 +23,7 @@ class _PatientNotificationsState extends State<PatientNotifications> {
     'Appointment Updated',
   ];
 
-  final List<String> appointmentStatusIcon = <String>[
+  List<String> appointmentStatusIcon = <String>[
     "assets/images/check.png",
     "assets/images/close.png",
     "assets/images/check.png",
@@ -30,7 +32,7 @@ class _PatientNotificationsState extends State<PatientNotifications> {
     "assets/images/check.png",
   ];
 
-  final List<String> appointmentDesc = <String>[
+  List<String> appointmentDesc = <String>[
     'New Appointment is scheduled at 2020-02-30 03:00 PM with Dr. William James',
     'You hve cancelled an appointment with Dr. Robert Hudson',
     'Your Next Appointment schedule changed to 2020-02-30 02:00 PM with Dr. Hazel Grayson',
@@ -39,7 +41,7 @@ class _PatientNotificationsState extends State<PatientNotifications> {
     'Your Next Appointment schedule changed to 2020-02-30 06:00 PM with Dr. Miles Jackson',
   ];
 
-  final List<String> appointmentTimeAgo = <String>[
+  List<String> appointmentTimeAgo = <String>[
     '1 minute left',
     '4 minutes ago',
     '10 minutes left',
@@ -47,6 +49,38 @@ class _PatientNotificationsState extends State<PatientNotifications> {
     '4 hours ago',
     '6 hours left',
   ];
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getLocale();
+  }
+
+  String savedCode;
+
+  getLocale() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    String languageCode = _prefs.getString(prefSelectedLanguageCode);
+
+    if (languageCode != null) {
+      savedCode = languageCode;
+      changeLanguage(context, "en", false);
+
+      if (savedCode == "ar") {
+        doMakeLangChanges();
+      }
+    }
+  }
+
+
+  var Notifications = "Notifications";
+
+
+
+
 
 
   @override
@@ -59,7 +93,7 @@ class _PatientNotificationsState extends State<PatientNotifications> {
         title: Padding(
           padding: EdgeInsets.only(left:8),
           child: Text(
-            "Notifications",
+            Notifications,
             style: TextStyle(
               fontFamily: "ProductSans",
               fontSize: 24,
@@ -149,6 +183,44 @@ class _PatientNotificationsState extends State<PatientNotifications> {
         },
       ),
     );
+  }
+
+
+  void doMakeLangChanges(){
+    setState(() {
+      Notifications = "إشعارات";
+
+
+      appointmentStatus = <String>[
+        'موعد جديد',
+        'تم إلغاء الموعد',
+        'تم تحديث الموعد',
+        'موعد جديد',
+        'تم إلغاء الموعد',
+        'تم تحديث الموعد',
+      ];
+
+      appointmentDesc = <String>[
+        'تم تحديد موعد جديد في 2020-02-30 03:00 مساءً مع الدكتور ويليام جيمس',
+        'لقد ألغيت موعدًا مع دكتور روبرت هدسون',
+        'تم تغيير جدول موعدك التالي إلى 2020-02-30 02:00 مساءً مع الدكتورة هازل جرايسون',
+        'تم تحديد موعد جديد في 2020-02-30 05:00 مساءً مع الدكتور مايلز هنتر',
+        'لقد ألغيت موعدًا مع دكتور جون ويليام',
+        'تم تغيير جدول موعدك التالي إلى 2020-02-30 06:00 مساءً مع دكتور مايلز جاكسون',
+      ];
+
+      appointmentTimeAgo = <String>[
+        '1 دقيقة متبقية',
+        'منذ 4 دقيقة',
+        '10 دقائق متبقية',
+        'بقي 23 دقيقة',
+        'قبل 4 ساعات',
+        '6 ساعات متبقية',
+      ];
+
+
+
+    });
   }
 
 }
